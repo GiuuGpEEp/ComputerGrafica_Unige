@@ -12,14 +12,14 @@ FetchContent_Declare(SFML
     SYSTEM)
 FetchContent_MakeAvailable(SFML)
 
-add_executable(main1 src/main.cpp)
-target_compile_features(main1 PRIVATE cxx_std_17)
-target_link_libraries(main1 PRIVATE SFML::Graphics)
+add_executable(main src/main.cpp)
+target_compile_features(main PRIVATE cxx_std_17)
+target_link_libraries(main PRIVATE SFML::Graphics)
 
-add_executable(main2 src/main2.cpp)
+add_executable(main src/main2.cpp)
 target_compile_features(main2 PRIVATE cxx_std_17)
 target_link_libraries(main2 PRIVATE SFML::Graphics)
 
-add_executable(main3 src/main3.cpp)
+add_executable(main src/main3.cpp)
 target_compile_features(main3 PRIVATE cxx_std_17)
 target_link_libraries(main3 PRIVATE SFML::Graphics)
