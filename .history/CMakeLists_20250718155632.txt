@@ -14,6 +14,6 @@ FetchContent_MakeAvailable(SFML)
 
 add_executable(mainTappa1 
     Progetto/Tappa_01/main.cpp
-    Progetto/Tappa_01/Card/Card.cpp)
+    )
 target_compile_features(mainTappa1 PRIVATE cxx_std_17)
 target_link_libraries(mainTappa1 PRIVATE SFML::Graphics)
