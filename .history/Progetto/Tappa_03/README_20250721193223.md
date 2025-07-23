@@ -1,0 +1,4 @@
+# Terza Tappa del Progetto
+
+In questa terza tappa lascio momentaneamente da parte le carte che ho implementato precedentemente, e mi concentro principalmente sulla creazione di quello che sarà il campo da gioco.
+
