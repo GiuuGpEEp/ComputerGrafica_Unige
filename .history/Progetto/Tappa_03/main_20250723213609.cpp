@@ -3,7 +3,7 @@
 
 int main(){
     // Definisci le dimensioni della finestra
-    sf::Vector2u windowSize(1920, 1080);
+    sf::Vector2u windowSize(1920, 600);
     sf::RenderWindow window(sf::VideoMode(windowSize), "Progetto Tappa 03 - Test Field");
 
     // Carico le texture necessarie

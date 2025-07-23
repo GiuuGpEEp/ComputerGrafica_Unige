@@ -22,6 +22,7 @@ private:
     std::vector<Slot> slots;
     sf::Vector2u windowSize;  // Memorizza la dimensione della finestra
     
+    void createSlots(const sf::Texture& slotTexture);
     sf::Vector2f calculateSlotSize() const;  // Calcola dimensioni ottimali slot
     float calculateSpacing() const;          // Calcola spaziatura ottimale
 };

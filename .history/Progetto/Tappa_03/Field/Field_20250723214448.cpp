@@ -59,13 +59,13 @@ Field::Field(
     // 3 slot magie/trappole giocatore 2 
     for (int i = 0; i < 3; ++i) {
         float x = mainStartX + i * (slotSize.x + spacing);
-        slots.emplace_back(sf::Vector2f(x, p2SpellY), monsterTexture, Slot::Type::Monster, slotSize);
+        slots.emplace_back(sf::Vector2f(x, p2SpellY), spellTrapTexture, Slot::Type::SpellTrap, slotSize);
     }
     
     // 3 slot mostri giocatore 2
     for (int i = 0; i < 3; ++i) {
         float x = mainStartX + i * (slotSize.x + spacing);
-        slots.emplace_back(sf::Vector2f(x, p2MonsterY), spellTrapTexture, Slot::Type::SpellTrap, slotSize);
+        slots.emplace_back(sf::Vector2f(x, p2MonsterY), monsterTexture, Slot::Type::Monster, slotSize);
     }
 
     //------- ZONE SPECIALI -------
@@ -88,36 +88,36 @@ Field::Field(
     slots.emplace_back(sf::Vector2f(rightX, p1SpellY), graveyardTexture, Slot::Type::Graveyard, slotSize);
 
     // Zone speciali giocatore 2 (destra del campo)
-    slots.emplace_back(sf::Vector2f(rightX, p2MonsterY), extraDeckTexture, Slot::Type::Extra, slotSize);
-    slots.emplace_back(sf::Vector2f(rightX, p2SpellY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
-
+    slots.emplace_back(sf::Vector2f(rightX, p2MonsterY), deckTexture, Slot::Type::Deck, slotSize);
+    slots.emplace_back(sf::Vector2f(rightX, p2SpellY), graveyardTexture, Slot::Type::Graveyard, slotSize);
+    
     // Extra Deck e Field Spell a sinistra
     slots.emplace_back(sf::Vector2f(leftX, p1MonsterY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
     slots.emplace_back(sf::Vector2f(leftX, p1SpellY), extraDeckTexture, Slot::Type::Extra, slotSize);
 
-    slots.emplace_back(sf::Vector2f(leftX, p2MonsterY), deckTexture, Slot::Type::Deck, slotSize);
-    slots.emplace_back(sf::Vector2f(leftX, p2SpellY), graveyardTexture, Slot::Type::Graveyard, slotSize);
+    slots.emplace_back(sf::Vector2f(leftX, p2MonsterY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
+    slots.emplace_back(sf::Vector2f(leftX, p2SpellY), extraDeckTexture, Slot::Type::Extra, slotSize);
 }
 
 sf::Vector2f Field::calculateSlotSize() const {
     // Calcola dimensioni slot in base alla finestra
-    // Aumentato ulteriormente la percentuale per slot ancora più grandi
-    float availableWidth = windowSize.x * 0.72f; // Aumentato da 68% a 72%
+    // Aumentato leggermente la percentuale per slot più grandi mantenendo i margini
+    float availableWidth = windowSize.x * 0.68f; // Aumentato da 65% a 68%
     float slotWidth = availableWidth / 5.0f; // 3 slot + 2 spaziature equivalenti
     
     // Mantieni proporzioni 128:180 dalla texture originale  
     float aspectRatio = 180.0f / 128.0f;
     float slotHeight = slotWidth * aspectRatio;
     
-    // Aumentato ancora l'altezza massima
-    float maxHeight = windowSize.y * 0.16f; // Aumentato da 14% a 16%
+    // Aumentato leggermente l'altezza massima per slot più grandi
+    float maxHeight = windowSize.y * 0.14f; // Aumentato da 12% a 14%
     if (slotHeight > maxHeight) {
         slotHeight = maxHeight;
         slotWidth = slotHeight / aspectRatio;
     }
     
     // Aumentato anche la dimensione minima
-    float minHeight = 70.0f; // Aumentato da 60 a 70
+    float minHeight = 60.0f; // Aumentato da 50 a 60
     if (slotHeight < minHeight) {
         slotHeight = minHeight;
         slotWidth = slotHeight / aspectRatio;

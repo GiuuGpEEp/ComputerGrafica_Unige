@@ -3,30 +3,15 @@
 
 int main(){
     // Definisci le dimensioni della finestra
-    sf::Vector2u windowSize(1920, 1080);
+    sf::Vector2u windowSize(800, 600);
     sf::RenderWindow window(sf::VideoMode(windowSize), "Progetto Tappa 03 - Test Field");
 
     // Carico le texture necessarie
     sf::Texture fieldTexture("../../Progetto/resources/backgroundTexture.jpg");
-    sf::Texture monsterTexture("../../Progetto/resources/monsterText.png");
-    sf::Texture spellTrapTexture("../../Progetto/resources/spellTrapTexture.png");
-    sf::Texture deckTexture("../../Progetto/resources/deckTexture.png");
-    sf::Texture graveyardTexture("../../Progetto/resources/graveTexture.png");
-    sf::Texture extraDeckTexture("../../Progetto/resources/ExtraDeckTexture.png");
-    sf::Texture fieldSpellTexture("../../Progetto/resources/fieldSpell.png");
+    sf
 
     // Crea il campo di gioco con dimensioni dinamiche
-    Field field
-    (
-        fieldTexture, 
-        monsterTexture, 
-        spellTrapTexture, 
-        deckTexture, 
-        graveyardTexture, 
-        extraDeckTexture, 
-        fieldSpellTexture, 
-        windowSize
-    );        
+    Field field(fieldTexture, slotsTexture, windowSize);
 
     while(window.isOpen()){
         while (const std::optional event = window.pollEvent()){

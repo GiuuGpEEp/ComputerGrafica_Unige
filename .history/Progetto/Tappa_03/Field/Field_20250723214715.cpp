@@ -65,7 +65,7 @@ Field::Field(
     // 3 slot mostri giocatore 2
     for (int i = 0; i < 3; ++i) {
         float x = mainStartX + i * (slotSize.x + spacing);
-        slots.emplace_back(sf::Vector2f(x, p2MonsterY), spellTrapTexture, Slot::Type::SpellTrap, slotSize);
+        slots.emplace_back(sf::Vector2f(x, p2MonsterY), spell, Slot::Type::Monster, slotSize);
     }
 
     //------- ZONE SPECIALI -------
@@ -88,15 +88,15 @@ Field::Field(
     slots.emplace_back(sf::Vector2f(rightX, p1SpellY), graveyardTexture, Slot::Type::Graveyard, slotSize);
 
     // Zone speciali giocatore 2 (destra del campo)
-    slots.emplace_back(sf::Vector2f(rightX, p2MonsterY), extraDeckTexture, Slot::Type::Extra, slotSize);
-    slots.emplace_back(sf::Vector2f(rightX, p2SpellY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
-
+    slots.emplace_back(sf::Vector2f(rightX, p2MonsterY), deckTexture, Slot::Type::Deck, slotSize);
+    slots.emplace_back(sf::Vector2f(rightX, p2SpellY), graveyardTexture, Slot::Type::Graveyard, slotSize);
+    
     // Extra Deck e Field Spell a sinistra
     slots.emplace_back(sf::Vector2f(leftX, p1MonsterY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
     slots.emplace_back(sf::Vector2f(leftX, p1SpellY), extraDeckTexture, Slot::Type::Extra, slotSize);
 
-    slots.emplace_back(sf::Vector2f(leftX, p2MonsterY), deckTexture, Slot::Type::Deck, slotSize);
-    slots.emplace_back(sf::Vector2f(leftX, p2SpellY), graveyardTexture, Slot::Type::Graveyard, slotSize);
+    slots.emplace_back(sf::Vector2f(leftX, p2MonsterY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
+    slots.emplace_back(sf::Vector2f(leftX, p2SpellY), extraDeckTexture, Slot::Type::Extra, slotSize);
 }
 
 sf::Vector2f Field::calculateSlotSize() const {

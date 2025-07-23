@@ -12,6 +12,8 @@ Slot::Slot(sf::Vector2f position, const sf::Texture& textureRef, Type type, cons
     sprite.setPosition(position);
 }
 
+
+
 void Slot::draw(sf::RenderWindow& window, bool hovered) const {
     window.draw(sprite);
 

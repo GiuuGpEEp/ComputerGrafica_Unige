@@ -89,8 +89,8 @@ Field::Field(
 
     // Zone speciali giocatore 2 (destra del campo)
     slots.emplace_back(sf::Vector2f(rightX, p2MonsterY), extraDeckTexture, Slot::Type::Extra, slotSize);
-    slots.emplace_back(sf::Vector2f(rightX, p2SpellY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
-
+    slots.emplace_back(sf::Vector2f(rightX, p2SpellY), fieldSpellTexture, Slot::Type::Graveyard, slotSize);
+    
     // Extra Deck e Field Spell a sinistra
     slots.emplace_back(sf::Vector2f(leftX, p1MonsterY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
     slots.emplace_back(sf::Vector2f(leftX, p1SpellY), extraDeckTexture, Slot::Type::Extra, slotSize);

@@ -32,9 +32,7 @@ Field::Field(
     float mainStartX = centerX - mainZoneWidth / 2.0f;
     
     // Distanza dal centro per le zone principali (proporzionale all'altezza)
-    // Calcola offset dinamico per evitare overflow e lasciare spazio per le carte
-    float maxTotalHeight = 4 * slotSize.y + 3 * spacing; // 2 righe per giocatore + spaziature
-    float zoneOffset = std::min(windowSize.y * 0.06f, (windowSize.y - maxTotalHeight) / 5.0f); // Ridotto per più margine
+    float zoneOffset = windowSize.y * 0.12f; // 12% dell'altezza finestra
     
     //------- GIOCATORE 1 (in basso) -------
     float p1MonsterY = centerY + zoneOffset;
@@ -59,67 +57,51 @@ Field::Field(
     // 3 slot magie/trappole giocatore 2 
     for (int i = 0; i < 3; ++i) {
         float x = mainStartX + i * (slotSize.x + spacing);
-        slots.emplace_back(sf::Vector2f(x, p2SpellY), monsterTexture, Slot::Type::Monster, slotSize);
+        slots.emplace_back(sf::Vector2f(x, p2SpellY), spellTrapTexture, Slot::Type::SpellTrap, slotSize);
     }
     
     // 3 slot mostri giocatore 2
     for (int i = 0; i < 3; ++i) {
         float x = mainStartX + i * (slotSize.x + spacing);
-        slots.emplace_back(sf::Vector2f(x, p2MonsterY), spellTrapTexture, Slot::Type::SpellTrap, slotSize);
+        slots.emplace_back(sf::Vector2f(x, p2MonsterY), monsterTexture, Slot::Type::Monster, slotSize);
     }
 
     //------- ZONE SPECIALI -------
-    // Margine dinamico dai bordi - aumentato per più spazio per le carte
-    float margin = std::max(windowSize.x * 0.04f, 20.0f); // Aumentato a 4% della larghezza o min 20px
+    // Margine dinamico dai bordi
+    float margin = windowSize.x * 0.05f; // 5% della larghezza
     float rightX = windowSize.x - slotSize.x - margin;
     float leftX = margin;
-    
-    // Verifica che le zone speciali non si sovrappongano alle zone principali
-    float mainZoneRight = mainStartX + mainZoneWidth;
-    if (rightX < mainZoneRight + spacing * 2) { // Aumentato spacing per più distanza
-        rightX = std::min(windowSize.x - slotSize.x - 10.0f, mainZoneRight + spacing * 2);
-    }
-    if (leftX + slotSize.x + spacing * 2 > mainStartX) { // Aumentato spacing per più distanza
-        leftX = std::max(10.0f, mainStartX - slotSize.x - spacing * 2);
-    }
     
     // Zone speciali giocatore 1 (destra del campo)
     slots.emplace_back(sf::Vector2f(rightX, p1MonsterY), deckTexture, Slot::Type::Deck, slotSize);
     slots.emplace_back(sf::Vector2f(rightX, p1SpellY), graveyardTexture, Slot::Type::Graveyard, slotSize);
 
     // Zone speciali giocatore 2 (destra del campo)
-    slots.emplace_back(sf::Vector2f(rightX, p2MonsterY), extraDeckTexture, Slot::Type::Extra, slotSize);
-    slots.emplace_back(sf::Vector2f(rightX, p2SpellY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
-
+    slots.emplace_back(sf::Vector2f(rightX, p2MonsterY), deckTexture, Slot::Type::Deck, slotSize);
+    slots.emplace_back(sf::Vector2f(rightX, p2SpellY), graveyardTexture, Slot::Type::Graveyard, slotSize);
+    
     // Extra Deck e Field Spell a sinistra
-    slots.emplace_back(sf::Vector2f(leftX, p1MonsterY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
-    slots.emplace_back(sf::Vector2f(leftX, p1SpellY), extraDeckTexture, Slot::Type::Extra, slotSize);
+    slots.emplace_back(sf::Vector2f(leftX, p1MonsterY), extraDeckTexture, Slot::Type::Extra, slotSize);
+    slots.emplace_back(sf::Vector2f(leftX, p1SpellY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
 
-    slots.emplace_back(sf::Vector2f(leftX, p2MonsterY), deckTexture, Slot::Type::Deck, slotSize);
-    slots.emplace_back(sf::Vector2f(leftX, p2SpellY), graveyardTexture, Slot::Type::Graveyard, slotSize);
+    slots.emplace_back(sf::Vector2f(leftX, p2MonsterY), fieldSpellTexture, Slot::Type::FieldSpell, slotSize);
+    slots.emplace_back(sf::Vector2f(leftX, p2SpellY), extraDeckTexture, Slot::Type::FieldSpell, slotSize);
 }
 
 sf::Vector2f Field::calculateSlotSize() const {
     // Calcola dimensioni slot in base alla finestra
-    // Aumentato ulteriormente la percentuale per slot ancora più grandi
-    float availableWidth = windowSize.x * 0.72f; // Aumentato da 68% a 72%
+    // Riserviamo circa 70% della larghezza per le 3 zone principali + margini
+    float availableWidth = windowSize.x * 0.7f;
     float slotWidth = availableWidth / 5.0f; // 3 slot + 2 spaziature equivalenti
     
     // Mantieni proporzioni 128:180 dalla texture originale  
     float aspectRatio = 180.0f / 128.0f;
     float slotHeight = slotWidth * aspectRatio;
     
-    // Aumentato ancora l'altezza massima
-    float maxHeight = windowSize.y * 0.16f; // Aumentato da 14% a 16%
+    // Limita l'altezza se troppo grande
+    float maxHeight = windowSize.y * 0.18f; // Max 18% dell'altezza finestra
     if (slotHeight > maxHeight) {
         slotHeight = maxHeight;
-        slotWidth = slotHeight / aspectRatio;
-    }
-    
-    // Aumentato anche la dimensione minima
-    float minHeight = 70.0f; // Aumentato da 60 a 70
-    if (slotHeight < minHeight) {
-        slotHeight = minHeight;
         slotWidth = slotHeight / aspectRatio;
     }
     

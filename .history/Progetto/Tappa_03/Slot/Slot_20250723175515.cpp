@@ -1,6 +1,6 @@
 #include "Slot.h"
 
-Slot::Slot(sf::Vector2f position, const sf::Texture& textureRef, Type type, const sf::Vector2f& size)
+Slot::Slot(sf::Vector2f position, const sf::Texture& textureRef, const sf::Vector2f& size)
     : sprite(textureRef), type(type)
     
 {   
