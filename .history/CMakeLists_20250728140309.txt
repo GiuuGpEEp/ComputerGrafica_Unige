@@ -1,0 +1,45 @@
+cmake_minimum_required(VERSION 3.28)
+project(CMakeSFMLProject LANGUAGES CXX)
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+include(FetchContent)
+FetchContent_Declare(SFML
+    GIT_REPOSITORY https://github.com/SFML/SFML.git
+    GIT_TAG 3.0.0
+    GIT_SHALLOW ON
+    EXCLUDE_FROM_ALL
+    SYSTEM)
+FetchContent_MakeAvailable(SFML)
+
+#Compilazione Prima Tappa
+add_executable(mainTappa1 
+    Progetto/Tappa_01/main.cpp
+    Progetto/Tappa_01/Card/Card.cpp)
+target_compile_features(mainTappa1 PRIVATE cxx_std_17)
+target_link_libraries(mainTappa1 PRIVATE SFML::Graphics)
+
+#Compilazione Seconda Tappa
+add_executable(mainTappa2 
+    Progetto/Tappa_02/main.cpp
+    Progetto/Tappa_02/Card/Card.cpp)
+target_compile_features(mainTappa2 PRIVATE cxx_std_17)
+target_link_libraries(mainTappa2 PRIVATE SFML::Graphics)
+
+#Compilazione Terza Tappa
+add_executable(mainTappa3 
+    Progetto/Tappa_03/main.cpp
+    Progetto/Tappa_03/Field/Field.cpp
+    Progetto/Tappa_03/Slot/Slot.cpp
+    Progetto/resources/auxFunc.cpp)
+target_compile_features(mainTappa3 PRIVATE cxx_std_17)
+target_link_libraries(mainTappa3 PRIVATE SFML::Graphics)
+
+#Compilazione Quarta Tappa
+add_executable(mainTappa4 
+    Progetto/Tappa_04/main.cpp
+    Progetto/Tappa_04/Field/Field.cpp
+    Progetto/Tappa_04/Slot/Slot.cpp
+    Progetto/resources/auxFunc.cpp)
+target_compile_features(mainTappa4 PRIVATE cxx_std_17)
+target_link_libraries(mainTappa3 PRIVATE SFML::Graphics)

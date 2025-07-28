@@ -1,0 +1,8 @@
+# Quarta Tappa del Progetto
+
+In questa quarta tappa cerco di aggiungere le carte precedentemente implementate al campo di gioco.
+
+Quindi il primo passo è stato quello di visualizzare il campo da gioco assieme alle carte. 
+Per far ciò ho prima creato il main con tutta la fase per disegnare le carte, successivamente ho modificato il costruttore della classe card per far in modo di avere delle dimensioni delle carte che siano dinamiche e si adattino alla dimensione dello schermo.
+
+Dopo aver ottenuto un risultato soddisfacente, ho "rispristinato" la stessa logica, facendo si che cliccando sulla carta ottenga i dettagli della carta stessa, stampati a schermo (parte implementata direttamente nel main, per gestire l'evento click su una carta)
