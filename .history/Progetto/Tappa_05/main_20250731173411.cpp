@@ -77,6 +77,16 @@ int main(){
     //Ripristino la posizione originale delle carte
     float y = windowSize.y - cardSize.y - 15.f; 
 
+    // Creo le carte e le posiziono nella mano
+    //for (int i = 0; i < initialCard-1; ++i) {
+    //    sf::Vector2f pos(startX + i * (cardSize.x + spacing), y);
+    //    cards.emplace_back("Carta " + std::to_string(i + 1), "Descrizione della carta " + std::to_string(i + 1), 
+    //                       1000, 800, pos, cardSize, textureNonFlipped);
+    //}
+    //sf::Vector2f pos(startX + 4 * (cardSize.x + spacing), y);
+    //cards.emplace_back("Drago Bianco", "Questo drago leggendario e' una potente macchina distruttrice. Virtualmente invincibile, sono in pochi ad aver fronteggiato questa creatura ed essere sopravvissuti per raccontarlo.", 
+    //                   3000, 2500, pos, cardSize, textureNonFlipped);
+   
     std::optional<size_t> selectedCardIndex; // Indice della carta selezionata
     float scrollOffset = 0.f; //Offset per lo scroll del testo dei dettagli della carta
 
@@ -110,11 +120,6 @@ int main(){
                         drawnCard.setTexture(textureNonFlipped);
                         drawnCard.setSize(cardSize); // Imposta la dimensione corretta per le carte in mano
                         drawnCard.setPosition(sf::Vector2f(startX + i * (cardSize.x + spacing), y));
-                        
-                        // Imposta il rettangolo di texture per mostrare l'intera texture
-                        sf::Vector2u texSize = textureNonFlipped.getSize();
-                        drawnCard.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
-
                         cards.push_back(drawnCard);
                     }
                 }

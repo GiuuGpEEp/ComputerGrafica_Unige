@@ -67,9 +67,18 @@ int main(){
     cards.reserve(10); 
     const int initialCard = 5;
 
-    //Calcolo la dimensione della carta rendendola un po' più grande delle dimensioni degli slot e prendo i parametri di posizione e spaziatura
+    //Calcolo la dimensione della carta mantenendo le proporzioni della texture originale
     float scaleFactor = 1.1f;
-    sf::Vector2f cardSize(slotSize.x * scaleFactor, slotSize.y * scaleFactor);
+    
+    // Ottieni le dimensioni originali della texture per mantenere le proporzioni
+    sf::Vector2u textureSize = textureNonFlipped.getSize();
+    float aspectRatio = static_cast<float>(textureSize.y) / static_cast<float>(textureSize.x);
+    
+    // Calcola la dimensione basandosi sulla larghezza dello slot scalata
+    float cardWidth = slotSize.x * scaleFactor;
+    float cardHeight = cardWidth * aspectRatio;
+    sf::Vector2f cardSize(cardWidth, cardHeight);
+    
     float spacing = 15.f;
     float totalHandWidth = initialCard * cardSize.x + (initialCard - 1) * spacing;
     float startX = (windowSize.x - totalHandWidth) / 2.f;
@@ -77,6 +86,16 @@ int main(){
     //Ripristino la posizione originale delle carte
     float y = windowSize.y - cardSize.y - 15.f; 
 
+    // Creo le carte e le posiziono nella mano
+    //for (int i = 0; i < initialCard-1; ++i) {
+    //    sf::Vector2f pos(startX + i * (cardSize.x + spacing), y);
+    //    cards.emplace_back("Carta " + std::to_string(i + 1), "Descrizione della carta " + std::to_string(i + 1), 
+    //                       1000, 800, pos, cardSize, textureNonFlipped);
+    //}
+    //sf::Vector2f pos(startX + 4 * (cardSize.x + spacing), y);
+    //cards.emplace_back("Drago Bianco", "Questo drago leggendario e' una potente macchina distruttrice. Virtualmente invincibile, sono in pochi ad aver fronteggiato questa creatura ed essere sopravvissuti per raccontarlo.", 
+    //                   3000, 2500, pos, cardSize, textureNonFlipped);
+   
     std::optional<size_t> selectedCardIndex; // Indice della carta selezionata
     float scrollOffset = 0.f; //Offset per lo scroll del testo dei dettagli della carta
 
@@ -110,11 +129,6 @@ int main(){
                         drawnCard.setTexture(textureNonFlipped);
                         drawnCard.setSize(cardSize); // Imposta la dimensione corretta per le carte in mano
                         drawnCard.setPosition(sf::Vector2f(startX + i * (cardSize.x + spacing), y));
-                        
-                        // Imposta il rettangolo di texture per mostrare l'intera texture
-                        sf::Vector2u texSize = textureNonFlipped.getSize();
-                        drawnCard.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
-
                         cards.push_back(drawnCard);
                     }
                 }

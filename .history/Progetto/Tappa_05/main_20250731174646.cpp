@@ -110,10 +110,7 @@ int main(){
                         drawnCard.setTexture(textureNonFlipped);
                         drawnCard.setSize(cardSize); // Imposta la dimensione corretta per le carte in mano
                         drawnCard.setPosition(sf::Vector2f(startX + i * (cardSize.x + spacing), y));
-                        
-                        // Imposta il rettangolo di texture per mostrare l'intera texture
-                        sf::Vector2u texSize = textureNonFlipped.getSize();
-                        drawnCard.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+                        drawnCard.setTextureRect(sf::IntRect(0, 0, textureNonFlipped.getSize().x, textureNonFlipped.getSize().y));
 
                         cards.push_back(drawnCard);
                     }

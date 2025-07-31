@@ -42,11 +42,6 @@ void Card::setTexture(sf::Texture& texture) {
     sprite.setTexture(texture);
 }
 
-//Imposto il rettangolo di texture per lo sprite
-void Card::setTextureRect(const sf::IntRect& rect) {
-    sprite.setTextureRect(rect);
-}
-
 //Cambio le dimensioni della carta
 void Card::setSize(sf::Vector2f size) {
     const sf::Texture& currentTexture = sprite.getTexture();
