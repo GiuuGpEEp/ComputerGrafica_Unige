@@ -1,0 +1,160 @@
+#pragma once
+#include <SFML/Graphics.hpp>
+#include <string>
+#include <sstream>
+#include <algorithm>
+#include "Card/Card.h"
+
+//-------------------------------- Strutture per le animazioni --------------------------------//
+
+/**
+ * Struttura per gestire l'animazione di pesca delle carte
+ */
+struct CardDrawAnimation {
+    Card card;                    // La carta da animare
+    sf::Vector2f startPos;        // Posizione iniziale (deck)
+    sf::Vector2f targetPos;       // Posizione finale (mano)
+    sf::Vector2f currentPos;      // Posizione corrente durante l'animazione
+    float progress;               // Progresso dell'animazione (0.0f - 1.0f)
+    float duration;               // Durata totale dell'animazione in secondi
+    sf::Texture* flippedTexture;  // Texture per carta a faccia in giù
+    sf::Texture* normalTexture;   // Texture per carta a faccia in su
+    bool isFlipping;              // Se la carta è nella fase di flip
+    bool isActive;                // Se l'animazione è attiva
+    
+    CardDrawAnimation() : progress(0.0f), duration(1.5f), flippedTexture(nullptr), 
+                         normalTexture(nullptr), isFlipping(false), isActive(false) {}
+};
+
+//-------------------------------- Funzioni di manipolazione del testo --------------------------------//
+
+/**
+ * Funzione per il word wrapping del testo che preserva la formattazione
+ */
+std::string wrapText(const std::string& text, const sf::Font& font, unsigned int characterSize, float maxWidth);
+
+//-------------------------------- Funzioni di calcolo del layout --------------------------------//
+
+/**
+ * Calcola le dimensioni ottimali per gli slot del campo di gioco
+ * @param windowSize Dimensioni della finestra
+ * @param widthPercentage Percentuale della larghezza da utilizzare (default: 0.72f)
+ * @param maxHeightPercentage Percentuale massima dell'altezza (default: 0.16f)
+ * @param minHeight Altezza minima in pixel (default: 70.0f)
+ * @return Dimensioni calcolate per gli slot
+ */
+sf::Vector2f calculateSlotSize(const sf::Vector2u& windowSize, 
+                              float widthPercentage = 0.72f, 
+                              float maxHeightPercentage = 0.16f, 
+                              float minHeight = 70.0f);
+
+/**
+ * Calcola la spaziatura tra gli slot
+ * @param windowSize Dimensioni della finestra
+ * @param spacingPercentage Percentuale della larghezza per la spaziatura (default: 0.01f)
+ * @return Spaziatura calcolata
+ */
+float calculateSpacing(const sf::Vector2u& windowSize, float spacingPercentage = 0.01f);
+
+/**
+ * Calcola l'offset delle zone dal centro
+ * @param windowSize Dimensioni della finestra
+ * @param slotSize Dimensioni degli slot
+ * @param spacing Spaziatura tra slot
+ * @param offsetPercentage Percentuale di offset (default: 0.06f)
+ * @return Offset calcolato
+ */
+float calculateZoneOffset(const sf::Vector2u& windowSize, 
+                         const sf::Vector2f& slotSize, 
+                         float spacing, 
+                         float offsetPercentage = 0.06f);
+
+/**
+ * Calcola i margini per le zone speciali
+ * @param windowSize Dimensioni della finestra
+ * @param marginPercentage Percentuale del margine (default: 0.04f)
+ * @param minMargin Margine minimo in pixel (default: 20.0f)
+ * @return Margine calcolato
+ */
+float calculateMargin(const sf::Vector2u& windowSize, 
+                     float marginPercentage = 0.04f, 
+                     float minMargin = 20.0f);
+
+//-------------------------------- Funzioni per l'interfaccia utente delle carte --------------------------------//
+
+/**
+ * Mostra i dettagli di una carta in un pannello scrollabile
+ * @param window Finestra di rendering
+ * @param card Carta di cui mostrare i dettagli
+ * @param font Font da utilizzare per il testo
+ * @param panelPos Posizione del pannello
+ * @param panelSize Dimensioni del pannello
+ * @param scrollOffset Offset di scroll per il testo
+ */
+void showCardDetails(sf::RenderWindow& window, 
+                    const Card& card, 
+                    const sf::Font& font,
+                    sf::Vector2f panelPos,
+                    sf::Vector2f panelSize,
+                    float scrollOffset);
+
+//-------------------------------- Funzioni per disegnare il testo della schermata di avvio --------------------------------//
+
+/**
+ * Disegna la schermata di avvio con le istruzioni del gioco
+ */
+void drawStartScreen(sf::RenderWindow& window, const sf::Font& font, const sf::Vector2u& windowSize);
+
+//-------------------------------- Funzioni per la gestione delle carte in mano --------------------------------//
+
+/**
+ * Aggiorna le posizioni e dimensioni delle carte in mano per adattarle dinamicamente
+ * @param cards Vettore delle carte in mano da aggiornare
+ * @param windowSize Dimensioni della finestra
+ * @param cardSize Dimensioni base delle carte
+ * @param spacing Spaziatura base tra le carte
+ * @param y Posizione Y delle carte
+ * @param maxHandSize Numero massimo di carte visualizzabili senza ridimensionamento
+ */
+void updateHandPositions(std::vector<Card>& cards, 
+                        const sf::Vector2u& windowSize,
+                        const sf::Vector2f& cardSize,
+                        float spacing,
+                        float y,
+                        int maxHandSize = 7);
+
+/**
+ * Inizia l'animazione di pesca di una carta
+ * @param animation Struttura dell'animazione da inizializzare
+ * @param card Carta da animare
+ * @param startPos Posizione iniziale (dal deck)
+ * @param targetPos Posizione finale (nella mano)
+ * @param flippedTexture Texture per carta coperta
+ * @param normalTexture Texture per carta scoperta
+ * @param duration Durata dell'animazione in secondi
+ */
+void startCardDrawAnimation(CardDrawAnimation& animation,
+                           const Card& card,
+                           const sf::Vector2f& startPos,
+                           const sf::Vector2f& targetPos,
+                           sf::Texture* flippedTexture,
+                           sf::Texture* normalTexture,
+                           float duration = 1.5f);
+
+/**
+ * Aggiorna l'animazione di pesca di una carta
+ * @param animation Struttura dell'animazione da aggiornare
+ * @param deltaTime Tempo trascorso dall'ultimo frame
+ * @param windowSize Dimensioni della finestra per calcolare le posizioni di uscita
+ * @return true se l'animazione è completata, false altrimenti
+ */
+bool updateCardDrawAnimation(CardDrawAnimation& animation, 
+                            float deltaTime, 
+                            const sf::Vector2u& windowSize);
+
+/**
+ * Disegna una carta in animazione
+ * @param window Finestra di rendering
+ * @param animation Animazione da disegnare
+ */
+void drawCardAnimation(sf::RenderWindow& window, const CardDrawAnimation& animation);
