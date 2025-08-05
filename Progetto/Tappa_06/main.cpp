@@ -123,6 +123,8 @@ int main(){
 
 
     while(window.isOpen()){
+
+        //1. Gestione degli eventi
         while (const std::optional event = window.pollEvent()){
             if (event->is<sf::Event::Closed>()) {
                 std::cout << "Richiesta di chiusura..." << std::endl;
@@ -206,8 +208,74 @@ int main(){
                 }
             }
         }
-        
-        //Blocco Rendering
+        //2. Aggiornamento della logica del gioco
+
+        static sf::Clock clock;
+        float deltaTime = clock.restart().asSeconds();
+
+        if(gamestate == GameState::Playing){
+            float moveSpeed = 800.f; // Velocità di movimento delle carte in pixel al secondo
+            
+            for(auto& anim : animations){
+                switch(anim.phase){
+                    case DrawAnimationPhases::MovingOut:
+                        // Se sono nella fase di MovingOut vuol dire che la carta deve passare dal deck a fuori la mano
+                        
+                        if(moveTowards(anim.card.getPositionRef(), anim.outScreenPos, moveSpeed, deltaTime)) {
+                            anim.phase = DrawAnimationPhases::ShowCard; // Passa alla fase di mostrare la carta
+                            anim.card.setTexture(textureNonFlipped);
+                            
+                            sf::Vector2u texSize = textureNonFlipped.getSize();
+                            anim.card.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+                            anim.card.setPosition(anim.pausePos);
+                        }
+                        break;
+
+                    case DrawAnimationPhases::ShowCard:
+                        // Se sono nella fase di ShowCard, aspetto un po' di tempo prima di passare alla fase successiva e spostarla nella mano
+                        anim.pauseTime += deltaTime;
+                        if(anim.pauseTime >= 1.f){ //mostro la carta per 1 secondo e passo alla fase successiva
+                            anim.phase = DrawAnimationPhases::MovingHand;
+
+                            //Calcolo la posizione finale di anim.card nella mano per far ciò inserisco momentaneamente la carta nella mano
+                            cards.push_back(anim.card);
+                            updateHandPositions(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
+                            anim.handPos = cards.back().getPosition();
+                            cards.pop_back(); // Rimuovo la carta dalla mano per non disegnarla due volte
+
+                            anim.card.setSize(cardSize); 
+                            sf::Vector2u texSize = textureNonFlipped.getSize();
+                            anim.card.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+                        } 
+                        break;
+                    case DrawAnimationPhases::MovingHand:
+                        // Se sono nella fase di MovingHand, sposto la carta nella mano
+                        
+                        if(moveTowards(anim.card.getPositionRef(), anim.handPos, moveSpeed, deltaTime)){
+                            anim.phase = DrawAnimationPhases::Done; 
+                            anim.finished = true; 
+                        }
+                    break;
+                    
+                    case DrawAnimationPhases::Done:
+                    break;    
+                }            
+            }
+
+            //Quando un'animazione è finita, la rimuovo dalla lista 
+            auto it = animations.begin(); // Inizializzo l'iteratore per scorrere le animazioni (begin serve per allocare le risorse necessarie)
+            while (it != animations.end()) {
+                if (it->finished) {
+                    cards.push_back(it->card); 
+                    it = animations.erase(it); // Rimuove l'animazione e aggiorna l'iteratore
+                    updateHandPositions(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE); 
+                } else {
+                    ++it; // Altrimenti, passa all'animazione successiva
+                }    
+            }   
+        }
+
+        //3. Blocco Rendering
         window.clear(sf::Color::Black);
 
         // Ottieni la posizione del mouse
@@ -217,16 +285,19 @@ int main(){
         field.draw(window, mousePos, gamestate);
         
         // Se siamo nello stato Intro, disegna il testo sopra lo sfondo
-        if(gamestate == GameState::Intro) {
-            drawStartScreen(window, detailFont, windowSize);
-        } else {
+        if(gamestate == GameState::Intro) drawStartScreen(window, detailFont, windowSize);
+        
+        else {
             // Negli altri stati, disegna anche carte e deck
             for (auto& card : cards) card.draw(window);
 
             // Disegna il deck 
             deck.draw(window, mousePos, detailFont, deckSlotPos, slotSize, gamestate);
 
-            // Se c'è una carta selezionata, mostra i dettagli
+            //Disegna le animazioni delle carte
+            for(auto& anim : animations) anim.card.draw(window);
+            
+            // Se c'è una carta selezionata, mostra i dettagli - Non influisce sullo stato del gioco, ma solo sulla visualizzazione (rendering)
             if (selectedCardIndex.has_value()) {
                 const Card& selectedCard = cards[selectedCardIndex.value()];
                 sf::Vector2f panelPos{400.f, 150.f};

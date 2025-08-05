@@ -19,9 +19,12 @@ public:
     std::string getName() const;
     std::string getDescription() const;
     std::pair<int, int> getValues() const;
+    sf::Vector2f& getPositionRef(); // Restituisce una reference alla posizione della carta
+    sf::Vector2f getPosition() const; // Restituisce la posizione della carta
 
 private:
     std::string name, description;
     int attack, defense;
     sf::Sprite sprite;
+    sf::Vector2f position;
 };

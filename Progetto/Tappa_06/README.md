@@ -24,5 +24,11 @@ Altra aggiunta per facilitare l'implementazione dell'animazione è stata la funz
 QUindi prendendo un punto corrente, un target e la velocità di movimento vado a calcolare la distanza euclidea tra i due punti, e di volta in volta sposto il current in base alla velocità di movimento e al DeltaTime. Il deltaTime rappresenta il tempo trascorso (in secondi) dall’ultimo aggiornamento del frame. Serve a rendere il movimento indipendente dal frame rate, Se si moltiplica la velocità (speed) per deltaTime, ottieni la distanza che l’oggetto dovrebbe percorrere in quel frame.
 Così, anche se il gioco va a 30 FPS o 144 FPS, l’oggetto si muoverà sempre alla stessa velocità reale (ad esempio, 100 pixel al secondo), perché ogni frame si muove solo della distanza appropriata per il tempo trascorso.
 
+La logica effettiva dell'animazione viene gestita dopo la gestine degli eventi; infatti l'animazione non è un evento:
+- Non risponde direttamente all'input dell'utente (non è causato da un tasto, click, ecc.).
+- È parte della logica di aggiornamento del gioco: fa "progredire" le animazioni nel tempo.
+- Dipende dal tempo (deltaTime), non da un input diretto.
 
+**Nota** --> Modifiche alla classe Card: Siccome durante l'animazione è necessario prendere la posizione della carta ho aggiunto all'interno della classe card il metodo getPosition(), che restituisce la posizione della carta. 
+Siccome l'implementazione iniziale fatta della funzione moveTowards prende come parametro un riferimento a una posizione, e lo modifica incrementandolo, ho aggiunto anche il metodo getPositionRef() --> questo metodo permette di ottenere un riferimento alla posizione  
 

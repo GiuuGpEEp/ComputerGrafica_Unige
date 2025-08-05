@@ -3,9 +3,8 @@
 #include "Card.h"
 
 Card::Card(const std::string& name, const std::string& description, int atk, int def, sf::Vector2f pos, sf::Vector2f size, sf::Texture& textureRef)
-    : name(name), description(description), attack(atk), defense(def), sprite(textureRef) //Inizializzo sprite con textureRef
+    : name(name), description(description), attack(atk), defense(def), sprite(textureRef), position(pos) //Inizializzo sprite con textureRef e position
 {
-
     //Inizializzo lo sprite della carta
     sprite.setTexture(textureRef);
 
@@ -15,7 +14,7 @@ Card::Card(const std::string& name, const std::string& description, int atk, int
     sprite.setScale(scale);
     
     sprite.setPosition(pos);
-}    
+}
 
 //Distruttore
 Card::~Card() {
@@ -35,6 +34,7 @@ bool Card::isClicked(const sf::Vector2i& mousePos) {
 //Imposto la posizione della carta
 void Card::setPosition(sf::Vector2f pos) {
     sprite.setPosition(pos);
+    position = pos;
 }
 
 //Cambio la texture della carta
@@ -67,4 +67,12 @@ std::string Card::getDescription() const {
 //Restituisco i valori di attacco e difesa della carta (si usa const per garantire che la funzione non modifichi lo stato dell'oggetto)
 std::pair<int, int> Card::getValues() const {
     return {attack, defense};
+}
+
+sf::Vector2f& Card::getPositionRef() {
+    return position;
+}
+
+sf::Vector2f Card::getPosition() const {
+    return position;
 }
