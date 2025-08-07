@@ -16,15 +16,18 @@ public:
         const sf::Texture& fieldSpellTexture,
         const sf::Vector2u& windowSize  // Aggiungiamo la dimensione della finestra
     );
-    void draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, GameState gamestate) const;
+    void draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, GameState gamestate, float fieldAlpha, float fieldOffset) const;
     
     // Metodo per ottenere la posizione di uno slot per tipo, giocatore e indice slot
     sf::Vector2f getSlotPosition(Slot::Type slotType, int player = 1, int slotIndex = 0) const;
+    bool isAnimationFinished() const;
+    void setAnimationFinished();
 
 private:
     sf::Sprite background;
     std::vector<Slot> slots;
     sf::Vector2u windowSize;  // Memorizza la dimensione della finestra
+    bool animationFinished = false; 
     
     // Texture ruotate per il giocatore 2
     sf::Texture rotatedMonsterTexture;

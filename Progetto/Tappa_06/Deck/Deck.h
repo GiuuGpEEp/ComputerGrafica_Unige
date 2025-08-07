@@ -10,10 +10,13 @@ class Deck{
         Card drawCard();
         int getSize() const;
         bool isEmpty() const;
-        void draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, const sf::Font& font, sf::Vector2f slotPos, sf::Vector2f slotSize, GameState gamestate);
+        void draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, const sf::Font& font, sf::Vector2f slotPos, sf::Vector2f slotSize, GameState gamestate, float deckAlpha);
+        bool isAnimationFinished() const;
+        void setAnimationFinished();
         
     private:
         std::vector<Card> cards;
         int cardsSize;
+        bool animationFinished;
 
 };

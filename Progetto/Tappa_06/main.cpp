@@ -9,6 +9,7 @@
 #define P2 2
 #define DECK_SIZE 30 // Numero di carte nel deck
 #define HAND_MAXSIZE 7 
+#define CARD_MAXOFFSET 50.f
 
 enum class DrawAnimationPhases{
     MovingOut,
@@ -50,9 +51,10 @@ int main(){
 
     std::vector<CardAnimation> animations;
     GameState gamestate = GameState::Intro;
+    bool mousePressed = false; 
 
     // Definisci le dimensioni della finestra
-    sf::Vector2u windowSize(1920, 1080);
+    sf::Vector2u windowSize(2500, 1400);
     sf::RenderWindow window(sf::VideoMode(windowSize), "Progetto Tappa 06 - Animationz");
 
     // Carico le texture necessarie per il campo di gioco
@@ -118,9 +120,9 @@ int main(){
     std::optional<size_t> selectedCardIndex; // Indice della carta selezionata
     float scrollOffset = 0.f; //Offset per lo scroll del testo dei dettagli della carta
 
-    //Creo un clock per far passare qualche secondo prima di mostrare il campo di gioco
-    sf::Clock clock;
-
+    float fieldAlpha = 0.f; // Inizialmente il campo di gioco è trasparente
+    float fieldOffset = 200.f; //Inizialmente ci troviamo verso l'alto dello schermo
+    float deckAlpha = 0.f;
 
     while(window.isOpen()){
 
@@ -135,60 +137,40 @@ int main(){
                 if(keyPressed->code == sf::Keyboard::Key::Enter && gamestate == GameState::Intro) {
                     std::cout << "Passaggio allo stato FieldVisible..." << std::endl;
                     gamestate = GameState::FieldVisible; 
-                    clock.restart(); // 
                 }
             }
 
-            if(gamestate == GameState::FieldVisible && clock.getElapsedTime().asSeconds() > 1.f) {
-                std::cout << "Passaggio allo stato Playing..." << std::endl;
-                gamestate = GameState::Playing; // Passa allo stato di gioco dopo 1 secondo
-
-                //Pesco le carte iniziali
-                for(int i=0; i<initialCard; ++i){
-                    if(!deck.isEmpty()){
-                        Card drawnCard = deck.drawCard();
-                        CardAnimation anim{
-                            drawnCard, 
-                            DrawAnimationPhases::MovingOut, 
-                            deckSlotPos, 
-                            (deckSlotPos + sf::Vector2f(0, 150)),
-                            (sf::Vector2f(windowSize.x / 2.f - cardSize.x / 2.f, windowSize.y / 2.f - cardSize.y / 2.f)),
-                        };        
-                        
-                        animations.push_back(anim);
-                    }
-                }
-
-                 // Ricalcola le posizioni dopo aver aggiunto le carte
-                updateHandPositions(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
-            }
 
             if (const auto *mouseButton = event->getIf<sf::Event::MouseButtonPressed>()) {
                 sf::Mouse::Button but = mouseButton->button;
                 if(but == sf::Mouse::Button::Left) {
-                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-
-                    bool cardClicked = false;
-                    for (size_t i = 0; i < cards.size(); ++i) {
-                        if (cards[i].isClicked(mousePos)) {
-                            // Se è una carta diversa da quella già selezionata, resetta lo scroll
-                            if (selectedCardIndex.has_value() && selectedCardIndex.value() != i) {
-                                scrollOffset = 0.f; // Reset dello scroll
-                            }
-
-                            selectedCardIndex = i; // Aggiorna l'indice della carta selezionata
-                            cardClicked = true;
-                            std::cout << "Hai cliccato: " << cards[i].getName() << std::endl;
-                            break;
+                    mousePressed = true;
+                }
+            }
+            if (const auto *mouseButton = event->getIf<sf::Event::MouseButtonReleased>()) {
+                sf::Mouse::Button but = mouseButton->button;
+                if(but == sf::Mouse::Button::Left) {
+                    mousePressed = false;
+                }
+            }
+            // Se il mouse è premuto, aggiorna la selezione della carta sotto il mouse
+            if (mousePressed) {
+                sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                bool cardClicked = false;
+                for (size_t i = 0; i < cards.size(); ++i) {
+                    if (cards[i].isClicked(mousePos)) {
+                        if (!selectedCardIndex.has_value() || selectedCardIndex.value() != i) {
+                            scrollOffset = 0.f;
                         }
+                        selectedCardIndex = i;
+                        cardClicked = true;
+                        break;
                     }
-
-                     // Se ho cliccato fuori dalle carte, deseleziona
-                    if (!cardClicked) {
-                        selectedCardIndex.reset();
-                        scrollOffset = 0.f; // Resettando lo scroll quando seleziono fuori (o un'altra carta) ritorno in cima alla view
-                    }
-                }    
+                }
+                if (!cardClicked) {
+                    selectedCardIndex.reset();
+                    scrollOffset = 0.f;
+                }
             }
 
             // Gestione tasto ESC per deselezionare
@@ -209,9 +191,51 @@ int main(){
             }
         }
         //2. Aggiornamento della logica del gioco
-
+        
         static sf::Clock clock;
         float deltaTime = clock.restart().asSeconds();
+
+        if(gamestate == GameState::FieldVisible) {
+            float scrollSpeed = 300.f;
+            float fadeSpeed = 200.f;
+                
+            fieldOffset -= scrollSpeed * deltaTime; 
+            fieldAlpha += fadeSpeed * deltaTime;
+            
+            //Se superiamo i limiti, blocco gli offset
+            if(fieldOffset <= 0.f) fieldOffset = 0.f; 
+            if(fieldAlpha >= 255.f) fieldAlpha = 255.f;
+
+            if(fieldOffset == 0.f && fieldAlpha == 255.f) {
+                field.setAnimationFinished();
+
+                deckAlpha += fadeSpeed * deltaTime;
+                if(deckAlpha >= 255.f) deckAlpha = 255.f;
+
+                if(deckAlpha >= 255.f) {
+                    deck.setAnimationFinished();
+                    std::cout << "Passaggio allo stato Playing..." << std::endl;
+                    gamestate = GameState::Playing; // Passa allo stato di gioco dopo 1 secondo
+
+                    //Pesco le carte iniziali
+                    for(int i=0; i<initialCard; ++i){
+                        if(!deck.isEmpty()){
+                            Card drawnCard = deck.drawCard();
+                            CardAnimation anim{
+                                drawnCard, 
+                                DrawAnimationPhases::MovingOut, 
+                                deckSlotPos, 
+                                (deckSlotPos + sf::Vector2f(0, 150)),
+                                (sf::Vector2f(windowSize.x / 2.f - cardSize.x / 2.f, windowSize.y / 2.f - cardSize.y / 2.f)),
+                            };        
+
+                            animations.push_back(anim);
+                        }
+                    }
+                }
+            }
+        }
+
 
         if(gamestate == GameState::Playing){
             float moveSpeed = 800.f; // Velocità di movimento delle carte in pixel al secondo
@@ -275,6 +299,25 @@ int main(){
             }   
         }
 
+
+        float targetCardOffset = 0.f;
+        float offsetSpeed = 200.f; 
+        for(size_t i = 0; i<cards.size(); ++i){
+            float currentOffset = cards[i].getOffset();
+            if(selectedCardIndex.has_value() && selectedCardIndex.value() == i) targetCardOffset = CARD_MAXOFFSET; // l'offset di destinazione per la carta selezionata è al massimo
+            else targetCardOffset = 0.f; 
+
+            //Dopo aver calcolato l'offset di destinazione mi sposto piano piano verso di esso
+            if(currentOffset < targetCardOffset) {
+                currentOffset = std::min(currentOffset + offsetSpeed * deltaTime, targetCardOffset); 
+                cards[i].setOffset(currentOffset);
+            } else { 
+                // Se l'offset corrente è maggiore del target, lo riduco (torno indietro)
+                currentOffset = std::max(currentOffset - offsetSpeed * deltaTime, targetCardOffset);
+                cards[i].setOffset(currentOffset);
+            }    
+        }
+
         //3. Blocco Rendering
         window.clear(sf::Color::Black);
 
@@ -282,21 +325,27 @@ int main(){
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
         
         // Disegna sempre il campo di gioco (che include lo sfondo)
-        field.draw(window, mousePos, gamestate);
+        field.draw(window, mousePos, gamestate, fieldAlpha, fieldOffset);
         
         // Se siamo nello stato Intro, disegna il testo sopra lo sfondo
         if(gamestate == GameState::Intro) drawStartScreen(window, detailFont, windowSize);
         
         else {
-            // Negli altri stati, disegna anche carte e deck
-            for (auto& card : cards) card.draw(window);
-
+            
             // Disegna il deck 
-            deck.draw(window, mousePos, detailFont, deckSlotPos, slotSize, gamestate);
+            if(field.isAnimationFinished()) deck.draw(window, mousePos, detailFont, deckSlotPos, slotSize, gamestate, deckAlpha);
 
             //Disegna le animazioni delle carte
-            for(auto& anim : animations) anim.card.draw(window);
+            if(deck.isAnimationFinished()) for(auto& anim : animations) anim.card.draw(window);
             
+            for (auto& card : cards){
+                sf::Vector2f originalPos = card.getPosition();
+                float offset = card.getOffset();
+                card.setPosition(originalPos - sf::Vector2f(0.f, offset));
+                card.draw(window);
+                card.setPosition(originalPos); // Ripristino la posizione originale per il prossimo ciclo
+            } 
+
             // Se c'è una carta selezionata, mostra i dettagli - Non influisce sullo stato del gioco, ma solo sulla visualizzazione (rendering)
             if (selectedCardIndex.has_value()) {
                 const Card& selectedCard = cards[selectedCardIndex.value()];

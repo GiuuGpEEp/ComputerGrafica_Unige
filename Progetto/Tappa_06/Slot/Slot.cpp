@@ -12,8 +12,9 @@ Slot::Slot(sf::Vector2f position, const sf::Texture& textureRef, Type type, cons
     sprite.setPosition(position);
 }
 
-void Slot::draw(sf::RenderWindow& window, bool hovered, GameState gamestate) const {
-    window.draw(sprite);
+void Slot::draw(sf::RenderWindow& window, bool hovered, GameState gamestate, sf::RenderStates states, sf::Color alphaColor) const {
+    sprite.setColor(alphaColor);
+    window.draw(sprite, states);
 
     if(hovered && gamestate == GameState::Playing){ //Se il mouse è sopra lo slot, disegno un bordo giallo
         sf::RectangleShape hoverBorder;

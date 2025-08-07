@@ -113,13 +113,19 @@ Field::Field(
     slots.emplace_back(sf::Vector2f(leftX, p2SpellY), rotatedGraveyardTexture, Slot::Type::Graveyard, slotSize);
 }
 
-void Field::draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, GameState gamestate) const {
+void Field::draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, GameState gamestate, float fieldAlpha, float fieldOffset) const {
     window.draw(background);
 
+    sf::Transform transform;
+    transform.translate(sf::Vector2f(0, fieldOffset)); 
+    sf::Color alphaColor(255, 255, 255, static_cast<uint8_t>(fieldAlpha));
+
+    sf::RenderStates states(transform);
+    
     if(gamestate == GameState::FieldVisible || gamestate == GameState::Playing) {
         for (const auto& slot : slots) {
             bool hovered = slot.isHovered(mousePos);
-            slot.draw(window, hovered, gamestate);
+            slot.draw(window, hovered, gamestate, states, alphaColor);
         }
     }
     
@@ -197,6 +203,14 @@ sf::Vector2f Field::getSlotPosition(Slot::Type slotType, int player, int slotInd
     
     // Se l'indice non è valido, restituisce (0,0)
     return sf::Vector2f(0.f, 0.f);
+}
+
+void Field::setAnimationFinished() {
+    animationFinished = true; 
+}
+
+bool Field::isAnimationFinished() const{
+    return animationFinished; 
 }
 
 

@@ -22,7 +22,8 @@ Card::~Card() {
 }
 
 //Disegno la carta
-void Card::draw(sf::RenderWindow& window) {
+void Card::draw(sf::RenderWindow& window, sf::Color color) {
+    sprite.setColor(color);
     window.draw(sprite);
 }
 
@@ -75,4 +76,12 @@ sf::Vector2f& Card::getPositionRef() {
 
 sf::Vector2f Card::getPosition() const {
     return position;
+}
+
+void Card::setOffset(float offset) {
+    this->offset = offset;
+}
+
+float Card::getOffset() const {
+    return offset;
 }

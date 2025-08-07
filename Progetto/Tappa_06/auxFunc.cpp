@@ -105,16 +105,31 @@ void showCardDetails(sf::RenderWindow& window,
                     sf::Vector2f panelPos,
                     sf::Vector2f panelSize,
                     float scrollOffset) {
-    
+    // Ottieni la dimensione della finestra
+    sf::Vector2u winSize = window.getSize();
+
+    // Dimensioni e posizione scalate in base alla risoluzione (più piccolo)
+    float panelWidth = std::max(panelSize.x, winSize.x * 0.13f); // almeno 13% larghezza
+    float panelHeight = std::max(panelSize.y, winSize.y * 0.15f); // almeno 15% altezza
+    sf::Vector2f scaledPanelSize(panelWidth, panelHeight);
+    sf::Vector2f scaledPanelPos(
+        std::max(panelPos.x, winSize.x * 0.15f),
+        std::max(panelPos.y, winSize.y * 0.08f)
+    );
+
+    // Font size scalato (più piccolo)
+    unsigned int detailFontSize = std::max(12u, static_cast<unsigned int>(winSize.y * 0.012f));
+    unsigned int escFontSize = std::max(10u, static_cast<unsigned int>(winSize.y * 0.009f));
+
     // Valori della carta
     auto [atk, def] = card.getValues();
 
     // Pannello dei dettagli
-    sf::RectangleShape detailPanel(panelSize);
+    sf::RectangleShape detailPanel(scaledPanelSize);
     detailPanel.setFillColor(sf::Color(0, 0, 0, 200));
     detailPanel.setOutlineColor(sf::Color::White);
     detailPanel.setOutlineThickness(2.f);
-    detailPanel.setPosition(panelPos);
+    detailPanel.setPosition(scaledPanelPos);
 
     // Creo la stringa con il testo principale 
     std::string detailRaw = "DETTAGLI CARTA\n\n";
@@ -124,40 +139,35 @@ void showCardDetails(sf::RenderWindow& window,
     detailRaw += "DEF: " + std::to_string(def);
 
     // Applica word wrapping al testo principale
-    float textMaxWidth = panelSize.x - 40.f; // Margine di 20px per lato
-    std::string wrappedText = wrapText(detailRaw, font, 14, textMaxWidth);
+    float textMaxWidth = scaledPanelSize.x - 40.f;
+    std::string wrappedText = wrapText(detailRaw, font, detailFontSize, textMaxWidth);
 
-    // Partendo dalla stringa originale, dopo averne fatto il wrapping, creo l'effettivo oggetto Text (il testo scrollabile effettivo)
-    sf::Text detailTextObj(font, wrappedText, 14);
+    // Testo dettagli
+    sf::Text detailTextObj(font, wrappedText, detailFontSize);
     detailTextObj.setFillColor(sf::Color::White);
-    detailTextObj.setPosition(sf::Vector2f(panelPos.x + 10.f, panelPos.y + 10.f - scrollOffset));
+    detailTextObj.setPosition(sf::Vector2f(scaledPanelPos.x + 10.f, scaledPanelPos.y + 10.f - scrollOffset));
 
-    // Crea il testo ESC fisso in fondo al pannello
-    sf::Text escTextObj(font, "Premi ESC per chiudere", 12);
+    // Testo ESC
+    sf::Text escTextObj(font, "Premi ESC per chiudere", escFontSize);
     escTextObj.setFillColor(sf::Color::Yellow);
-    escTextObj.setPosition(sf::Vector2f(panelPos.x + 10.f, panelPos.y + panelSize.y - 25.f));
+    escTextObj.setPosition(sf::Vector2f(scaledPanelPos.x + 10.f, scaledPanelPos.y + scaledPanelSize.y - 25.f));
 
     // Disegna prima il pannello 
     window.draw(detailPanel);
 
     // Salva la view corrente
     sf::View originalView = window.getView();
-    
-    // Crea una view limitata al pannello per il clipping del testo scrollabile
-    // Riduciamo l'altezza per lasciare spazio al testo ESC
+    // View limitata al pannello per il clipping del testo scrollabile
     sf::View textView;
-    textView.setSize(sf::Vector2f(panelSize.x - 20.f, panelSize.y - 50.f)); // Più spazio in basso per ESC
-    textView.setCenter(sf::Vector2f(panelPos.x + panelSize.x/2.f, panelPos.y + (panelSize.y - 50.f)/2.f + 10.f));
+    textView.setSize(sf::Vector2f(scaledPanelSize.x - 20.f, scaledPanelSize.y - 50.f));
+    textView.setCenter(sf::Vector2f(scaledPanelPos.x + scaledPanelSize.x/2.f, scaledPanelPos.y + (scaledPanelSize.y - 50.f)/2.f + 10.f));
     textView.setViewport(sf::FloatRect(
-        sf::Vector2f((panelPos.x + 10.f) / window.getSize().x, (panelPos.y + 10.f) / window.getSize().y),
-        sf::Vector2f((panelSize.x - 20.f) / window.getSize().x, (panelSize.y - 50.f) / window.getSize().y)
+        sf::Vector2f((scaledPanelPos.x + 10.f) / winSize.x, (scaledPanelPos.y + 10.f) / winSize.y),
+        sf::Vector2f((scaledPanelSize.x - 20.f) / winSize.x, (scaledPanelSize.y - 50.f) / winSize.y)
     ));
 
-    // Imposta la view per il testo scrollabile e disegnalo
     window.setView(textView);
     window.draw(detailTextObj);
-    
-    // Ripristina la view originale per disegnare il testo ESC fisso
     window.setView(originalView);
     window.draw(escTextObj);
 }

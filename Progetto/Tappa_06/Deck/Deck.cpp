@@ -1,4 +1,4 @@
-#include "Deck.h"
+ #include "Deck.h"
 
 Deck::Deck(sf::Vector2f pos, sf::Vector2f deckCardSize, sf::Vector2f slotSize, sf::Texture& texture, int numberDeckCards)
     : cardsSize(numberDeckCards){
@@ -47,14 +47,17 @@ bool Deck::isEmpty() const {
     return cards.empty();
 }
 
-void Deck::draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, const sf::Font& font, sf::Vector2f slotPos, sf::Vector2f slotSize, GameState gamestate){
-    
+void Deck::draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, const sf::Font& font, sf::Vector2f slotPos, sf::Vector2f slotSize, GameState gamestate, float deckAlpha){
+
     if(gamestate != GameState::FieldVisible && gamestate != GameState::Playing) {
         return;
     }
+
+    sf::Color alphaColor(255, 255, 255, static_cast<uint8_t>(deckAlpha));
+
     // Disegna le carte del deck
     for(int i = 0; i < static_cast<int>(cards.size()); ++i) 
-        cards[cards.size() - 1 - i].draw(window);
+        cards[cards.size() - 1 - i].draw(window, alphaColor);
     
     // Disegna il testo con il numero di carte solo se il mouse è sopra l'area del deck
     sf::Vector2f mouseFloat(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
@@ -74,4 +77,11 @@ void Deck::draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, const sf
     }
 }
 
+void Deck::setAnimationFinished() {
+    animationFinished = true; 
+}
+
+bool Deck::isAnimationFinished() const{
+    return animationFinished; 
+}
 

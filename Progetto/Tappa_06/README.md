@@ -30,5 +30,21 @@ La logica effettiva dell'animazione viene gestita dopo la gestine degli eventi; 
 - Dipende dal tempo (deltaTime), non da un input diretto.
 
 **Nota** --> Modifiche alla classe Card: Siccome durante l'animazione è necessario prendere la posizione della carta ho aggiunto all'interno della classe card il metodo getPosition(), che restituisce la posizione della carta. 
-Siccome l'implementazione iniziale fatta della funzione moveTowards prende come parametro un riferimento a una posizione, e lo modifica incrementandolo, ho aggiunto anche il metodo getPositionRef() --> questo metodo permette di ottenere un riferimento alla posizione  
+Siccome l'implementazione iniziale fatta della funzione moveTowards prende come parametro un riferimento a una posizione, e lo modifica incrementandolo, ho aggiunto anche il metodo getPositionRef() --> questo metodo permette di ottenere un riferimento alla posizione 
 
+---
+
+**Animazione Per il Campo da Gioco**: L'obiettivo di questa animazione è avere una comparsa progressiva del campo da gioco. L'animazione è strutturata con un mix di fade-in e slide-in. è necessario quindi spostare l'offset e mano a mano abbassarlo. In contemporanea a ciò ci basta aggiungere un coeficiente alpha per gestire la trasparenza e ottenere l'effetto fade-in.
+Siccome ho introdotto l'animazione posso anche rimuovere il clock per far trascorrere tot secondi (post pressione di INVIO, inizia subito l'animazione), nella parte di gestione degli eventi che si occupava unicamente di passare a Playing, ho quindi modificato la logica per far scorrere sia l'offset per l'efferto di slide-in che l'offset per l'effetto di fade-in. 
+
+**Modifica della classe Field e Slot**: Quando ho progettato l'animazione delle carte ho fatto si che fosse un'altra struttura dati ad occuparsi dell'animazione, di conseguenza è bastato fare una draw di questa struttura dati. In questo caso invece vengono modificati l'offset del campo stesso e l'alpha, è quindi necessario andare a modificare la classe field, in particolare il metodo draw di quest'ultima per far si che riceva anche i 2 valori e cambi la visualizzazione del campo stesso in base ad essi. Ho dovuto modificare leggermente anche il metodo draw della classe Slot per far si che fosse compatibili con i nuovi valori.
+
+Successivamente ho notato che aggiungendo l'animazione il deck veniva visualizzato prima che l'animazione fosse effettivamente terminata, di conseguenza ho aggiunto la stessa animazione per il deck. Per far ciò ho modificato ulteriormente la classe Field, aggiungendo un booleano che segnasse il termine della generazione, oltre a 2 metodi per ricavarne il valore e modificarlo e modificato il metodo draw della classe deck (e della classe card) per poter funzionare con questa logica e modificare la trasparenza. Ho successivamente aggiunto anche all'interno della classe deck i metodi per interagire con il booleano  
+
+
+---
+
+**Animazione per il sollevamento delle carte**: Questa animazione fa si che quando si clicca su una carta quest'ultima si sollevi. Per realizzarla basta semplicemente aggiornare la poszione della carta, modificando l'offset. A tal proposito andiamo a modificare la classe card aggiungendo proprio un offset, e 2 metodi che permettono di:
+- setOffset --> aggiornare l'offset
+- getOffset --> ottenere il valore dell'offset
+**Modifica della gestione degli eventi**: Per poter gestire meglio il caso in cui si tiene premuto il tasto sinistro del mouse ho modificato il blocco della gestione degli eventi, distinguendo tra pressione del mouse e rilascio del mouse. Adesso si può passare dalla selezione di una carta a un altra tenendo premuto il mouse
