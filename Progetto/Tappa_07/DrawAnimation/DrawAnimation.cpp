@@ -1,0 +1,93 @@
+#include "DrawAnimation.h"
+
+DrawAnimation::DrawAnimation(Card drawnCard, DrawAnimationPhases phase, sf::Vector2f startPos, sf::Vector2f pausePos)
+    : card(drawnCard), phase(phase), startPos(startPos), pausePos(pausePos) {
+
+}
+
+bool DrawAnimation::moveTowards(sf::Vector2f& current, const sf::Vector2f& target, float speed, float deltaTime, Card& card) {
+    sf::Vector2f direction = target - current;
+    float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+
+    if (distance < 2.0f) {
+        current = target;
+        card.setPosition(current);
+        return true;
+    }
+
+    direction /= distance;
+    current += direction * speed * deltaTime;
+    card.setPosition(current); 
+    return false;
+}
+
+
+void DrawAnimation::update(float moveSpeed, float deltaTime, sf::Texture& texture, std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE) {
+    switch(phase){
+        case DrawAnimationPhases::MovingOut: {
+            sf::Vector2f& current = card.getPositionRef();
+            if(current.y < static_cast<float>(windowSize.y)) { 
+                current.y = current.y + moveSpeed * deltaTime;
+                card.setPosition(current);
+            } else { 
+                current.y = static_cast<float>(windowSize.y);
+                card.setPosition(current);
+                // Imposta la fase successiva
+                phase = DrawAnimationPhases::MovingToPause;
+            }
+            break;
+        }
+
+        case DrawAnimationPhases::MovingToPause: {
+            card.setSize(cardSize);
+            card.setTexture(texture);
+            sf::Vector2u texSize = texture.getSize();
+            card.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+
+            sf::Vector2f& current = card.getPositionRef();
+            if(moveTowards(current, pausePos, moveSpeed * 2.f, deltaTime, card)){
+                phase = DrawAnimationPhases::ShowCard;
+            }
+            break;
+        }
+
+        case DrawAnimationPhases::ShowCard: {
+            pauseTime += deltaTime;
+            if(pauseTime >= 1.f){ 
+                phase = DrawAnimationPhases::MovingHand;
+                setHandPos(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE); 
+            }
+            break;
+        }
+        case DrawAnimationPhases::MovingHand: {
+            if(moveTowards(card.getPositionRef(), handPos, moveSpeed * 3.f, deltaTime, card)){
+                phase = DrawAnimationPhases::Done; 
+                finished = true; 
+            }
+            break;
+        }
+        case DrawAnimationPhases::Done: {
+            break;
+        }
+    }
+}
+
+void DrawAnimation::setHandPos(std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE) {
+    // Calcolo la posizione finale di card nella mano per far ciò inserisco momentaneamente la carta nella mano
+    cards.push_back(card);
+    updateHandPositions(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
+    handPos = cards.back().getPosition();
+    cards.pop_back(); // Rimuovo la carta dalla mano per non disegnarla due volte
+}
+
+void DrawAnimation::draw(sf::RenderWindow& window) {
+    card.draw(window);
+}
+
+bool DrawAnimation::isFinished() const {
+    return finished;
+}
+
+Card& DrawAnimation::getCard() const {
+    return const_cast<Card&>(card); // Ritorno una reference non costante alla carta, per poterla modificare se necessario
+}

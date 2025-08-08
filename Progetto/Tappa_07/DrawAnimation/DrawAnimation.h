@@ -1,0 +1,38 @@
+#pragma once //Ho la garanzia che questo file non venga incluso più di una volta
+#include <SFML/Graphics.hpp>
+#include <string>
+#include <iostream>
+#include "../Card/Card.h"
+#include "../../resources/GameState.h"
+#include "../auxFunc.h"
+#include <optional>
+
+
+enum class DrawAnimationPhases{
+    MovingOut,
+    MovingToPause,
+    ShowCard,
+    MovingHand,
+    Done
+};
+
+class DrawAnimation{
+    public:
+        DrawAnimation(Card drawnCard, DrawAnimationPhases phase, sf::Vector2f startPos, sf::Vector2f pausePos);
+        bool moveTowards(sf::Vector2f& current, const sf::Vector2f& target, float speed, float deltaTime, Card& card);
+        void update(float moveSpeed, float deltaTime, sf::Texture& texture, std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE);
+        void setHandPos(std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE); //Da usare nell'update
+        void draw(sf::RenderWindow& window);
+        bool isFinished() const;
+        Card& getCard() const;
+
+    private:
+        Card card;
+        DrawAnimationPhases phase = DrawAnimationPhases::MovingOut;
+        sf::Vector2f startPos;
+        sf::Vector2f pausePos; //Posizione di pausa, per mostrare la carta prima di spostarla in mano
+        sf::Vector2f handPos; //Posizione finale in mano, calcolata con updateHandPositions
+        float pauseTime = 0.f;
+        bool atPause = false; 
+        bool finished = false; 
+};

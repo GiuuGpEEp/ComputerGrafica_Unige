@@ -66,3 +66,15 @@ add_executable(mainTappa6
     Progetto/Tappa_06/auxFunc.cpp)
 target_compile_features(mainTappa6 PRIVATE cxx_std_17)
 target_link_libraries(mainTappa6 PRIVATE SFML::Graphics)
+
+#Compilazione Settima Tappa
+add_executable(mainTappa7 
+    Progetto/Tappa_07/main.cpp
+    Progetto/Tappa_07/Field/Field.cpp
+    Progetto/Tappa_07/Slot/Slot.cpp
+    Progetto/Tappa_07/Card/Card.cpp
+    Progetto/Tappa_07/Deck/Deck.cpp
+    Progetto/Tappa_07/DrawAnimation/DrawAnimation.cpp
+    Progetto/Tappa_07/auxFunc.cpp)
+target_compile_features(mainTappa7 PRIVATE cxx_std_17)
+target_link_libraries(mainTappa7 PRIVATE SFML::Graphics)
