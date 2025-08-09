@@ -1,4 +1,5 @@
 #include "DrawAnimation.h"
+#define PAUSE_DURATION 3.f
 
 DrawAnimation::DrawAnimation(Card drawnCard, DrawAnimationPhases phase, sf::Vector2f startPos, sf::Vector2f pausePos)
     : card(drawnCard), phase(phase), startPos(startPos), pausePos(pausePos) {
@@ -22,7 +23,7 @@ bool DrawAnimation::moveTowards(sf::Vector2f& current, const sf::Vector2f& targe
 }
 
 
-void DrawAnimation::update(float moveSpeed, float deltaTime, sf::Texture& texture, std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE) {
+DrawAnimationPhases DrawAnimation::update(float moveSpeed, float deltaTime, sf::Texture& texture, std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE, bool skipPause) {
     switch(phase){
         case DrawAnimationPhases::MovingOut: {
             sf::Vector2f& current = card.getPositionRef();
@@ -35,7 +36,7 @@ void DrawAnimation::update(float moveSpeed, float deltaTime, sf::Texture& textur
                 // Imposta la fase successiva
                 phase = DrawAnimationPhases::MovingToPause;
             }
-            break;
+            return phase;
         }
 
         case DrawAnimationPhases::MovingToPause: {
@@ -48,26 +49,29 @@ void DrawAnimation::update(float moveSpeed, float deltaTime, sf::Texture& textur
             if(moveTowards(current, pausePos, moveSpeed * 2.f, deltaTime, card)){
                 phase = DrawAnimationPhases::ShowCard;
             }
-            break;
+            return phase;
         }
 
         case DrawAnimationPhases::ShowCard: {
             pauseTime += deltaTime;
-            if(pauseTime >= 1.f){ 
+            if (pauseTime >= PAUSE_DURATION || skipPause) {
                 phase = DrawAnimationPhases::MovingHand;
-                setHandPos(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE); 
+                setHandPos(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
+                // resetta per la prossima animazione
+                pauseDurationSet = false;
+                pauseTime = 0.f;
             }
-            break;
+            return phase;
         }
         case DrawAnimationPhases::MovingHand: {
             if(moveTowards(card.getPositionRef(), handPos, moveSpeed * 3.f, deltaTime, card)){
                 phase = DrawAnimationPhases::Done; 
                 finished = true; 
             }
-            break;
+            return phase;
         }
         case DrawAnimationPhases::Done: {
-            break;
+            return phase;
         }
     }
 }

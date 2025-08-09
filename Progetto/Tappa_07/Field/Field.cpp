@@ -113,7 +113,7 @@ Field::Field(
     slots.emplace_back(sf::Vector2f(leftX, p2SpellY), rotatedGraveyardTexture, Slot::Type::Graveyard, slotSize);
 }
 
-void Field::draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, GameState gamestate, float fieldAlpha, float fieldOffset) const {
+void Field::draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, GameState gamestate) const {
     window.draw(background);
 
     sf::Transform transform;
@@ -211,6 +211,21 @@ void Field::setAnimationFinished() {
 
 bool Field::isAnimationFinished() const{
     return animationFinished; 
+}
+
+void Field::animate(float deltaTime){
+    float scrollSpeed = 300.f;
+    float fadeSpeed = 200.f;
+                
+    fieldOffset -= scrollSpeed * deltaTime; 
+    fieldAlpha += fadeSpeed * deltaTime;
+            
+    //Se superiamo i limiti, blocco gli offset
+    if(fieldOffset <= 0.f) fieldOffset = 0.f; 
+    if(fieldAlpha >= 255.f) fieldAlpha = 255.f;
+
+    if(fieldOffset == 0.f && fieldAlpha == 255.f) setAnimationFinished();    
+
 }
 
 

@@ -47,7 +47,7 @@ bool Deck::isEmpty() const {
     return cards.empty();
 }
 
-void Deck::draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, const sf::Font& font, sf::Vector2f slotPos, sf::Vector2f slotSize, GameState gamestate, float deckAlpha){
+void Deck::draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, const sf::Font& font, sf::Vector2f slotPos, sf::Vector2f slotSize, GameState gamestate){
 
     if(gamestate != GameState::FieldVisible && gamestate != GameState::Playing) {
         return;
@@ -83,5 +83,14 @@ void Deck::setAnimationFinished() {
 
 bool Deck::isAnimationFinished() const{
     return animationFinished; 
+}
+
+void Deck::animate(float deltaTime){
+    float fadeSpeed = 200.f;
+
+    deckAlpha += fadeSpeed * deltaTime;
+    if(deckAlpha >= 255.f) deckAlpha = 255.f;
+
+    if(deckAlpha == 255.f) setAnimationFinished();
 }
 

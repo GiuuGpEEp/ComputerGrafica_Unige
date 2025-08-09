@@ -101,3 +101,12 @@ void updateHandPositions(std::vector<Card>& cards,
                         float spacing,
                         float y,
                         int maxHandSize = 7);
+
+//-------------------------------- Funzione per calcolare la posizione finale post animazione --------------------------------//
+
+sf::Vector2f setHandPos(std::vector<Card>& cards, 
+                        Card& card, 
+                        sf::Vector2u& windowSize, 
+                        sf::Vector2f& cardSize, 
+                        float spacing, float y, 
+                        int HAND_MAXSIZE);

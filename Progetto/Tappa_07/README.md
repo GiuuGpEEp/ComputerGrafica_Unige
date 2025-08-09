@@ -5,8 +5,20 @@ L'obiettivo di questa settima tappa principalmente è quello di rifinire alcune 
 1. Spostare tutta la logica dell'animazione di pescata all'interno di una classe apposita in modo da ordinare meglio il codice. moveTowards è stata spostata come metodo di un oggetto della classe DrawAnimation
 2. Sistemare l'animazione di pescata --> nella tappa precedente ero riuscito a creare con successo un'animazione per la pescata, ma era laggosa e non fatta particolarmente bene; cerco quindi di sistemarla
 3. Dopo aver sistemato queste "piccolezze" cerco di andare a costruire una prima forma di drag & drop delle carte in modo da spostarle con successo negli slot corretti.
-4. Caricamento di texture differenti per diversi tipi di carte --> ora come ora le carte caricano tutte la stessa texture, vorrei differenziare in modo tale da far si che le carte di tipi diversi carichino texture diverse.
+4. Creazione di più deck preimpostati e scelta
+5. Caricamento di texture differenti per diversi tipi di carte --> ora come ora le carte caricano tutte la stessa texture, vorrei differenziare in modo tale da far si che le carte di tipi diversi carichino texture diverse.
 
-optional --> se il resto della settima tappa viene fatta velocemente controllare anche le altre animazioni, come "ridurre le righe"
+Ho quindi leggermente modificato il metodo moveTowards, e cambiata la logica delle animazioni. Al posto che inserirle tutte insieme ne inserisco una per volta e l'altra verrà aggiunta quando la precedente animazione termina. In questo modo al posto di animarle tutte assieme verrà animata solo una carta alla volta. Per far ciò ho creato una coda di carte da pescare. 
+Ho quindi creato la classe DrawAnimation che contiene al suo interno il metodo moveTowards modificato e tutto ciò che serve per gestire al meglio l'animazione. 
+Ho successivamente cambiato la forma, e alcuni parametri per garantire un movimento fluido: 
+ALl'interno della moveTOwards ho aggiunto dei setPosition per settare di volta in volta la posizione e avere un movimento più fluido.
+Ho tolto il parametro sf::Vector2f outOfScreenPos e usato direttamente le windowSize.
 
-Ho quindi leggermente modificato il metodo moveTowards, e cambiata la logica delle animazioni. Al posto che inserirle tutte insieme ne inserisco una per volta e l'altra verrà aggiunta quando la precedente animazione termina. In questo modo al posto di animarle tutte assieme verrà animata solo una carta alla volta. Per far ciò ho creato una coda di carte da pescare
+Dopo aver sistemato questa animazione ho spostato le parti relative al movimento del campo e deck nelle relative classi, in modo da mantenere il codice più ordinato.
+**Nota - Modifiche principali all'animazione di pescata**: L'animazione rispetto a prima è stata resa più fluida e veloce. Inoltre quando si passa nella fase in cui la carta si ferma per vederne i dettagli compare anche a lato la finestra con tutti i relativi dettagli della carta. La carta resta ferma per un totale di circa 3/4 secondi, ma se si schiaccia il tasto sinistro del mouse vanno subito in mano.
+
+---
+
+
+
+

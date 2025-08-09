@@ -241,3 +241,14 @@ void updateHandPositions(std::vector<Card>& cards,
         cards[i].setPosition(sf::Vector2f(startX + i * (currentCardWidth + currentSpacing), y));
     }
 }
+
+//-------------------------------- Funzione per calcolare la posizione finale post animazione --------------------------------//
+
+sf::Vector2f setHandPos(std::vector<Card>& cards, Card& card, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE) {
+    // Calcolo la posizione finale di card nella mano per far ciò inserisco momentaneamente la carta nella mano
+    cards.push_back(card);
+    updateHandPositions(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
+    sf::Vector2f handPos = cards.back().getPosition();
+    cards.pop_back(); // Rimuovo la carta dalla mano per non disegnarla due volte
+    return handPos;
+}

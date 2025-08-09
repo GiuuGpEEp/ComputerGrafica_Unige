@@ -16,9 +16,10 @@
 
 int main(){
     std::vector<DrawAnimation> animations;
-    std::vector<Card> cardsToDraw; // Carte da pescare (coda)
+    int cardsToDraw = 0; // Numero di carte da pescare (coda)
     GameState gamestate = GameState::Intro;
     bool mousePressed = false; 
+    bool showDrawnCardDetails = false;
 
     // Definisci le dimensioni della finestra
     sf::Vector2u windowSize(2500, 1400);
@@ -73,11 +74,10 @@ int main(){
     std::vector<Card> cards;
     cards.reserve(10); 
     const int initialCard = 5;
-    // Prepara la coda delle carte da pescare
+    // Prepara la coda delle carte da pescare (solo il numero, non togliere carte dal deck ora)
     for(int i=0; i<initialCard; ++i){
         if(!deck.isEmpty()){
-            Card drawnCard = deck.drawCard();
-            cardsToDraw.push_back(drawnCard);
+            ++cardsToDraw;
         }
     }
 
@@ -94,9 +94,8 @@ int main(){
     std::optional<size_t> selectedCardIndex; // Indice della carta selezionata
     float scrollOffset = 0.f; //Offset per lo scroll del testo dei dettagli della carta
 
-    float fieldAlpha = 0.f; // Inizialmente il campo di gioco è trasparente
-    float fieldOffset = 200.f; //Inizialmente ci troviamo verso l'alto dello schermo
-    float deckAlpha = 0.f;
+    //Variabili per gestire il dragging
+    
 
     while(window.isOpen()){
 
@@ -113,7 +112,6 @@ int main(){
                     gamestate = GameState::FieldVisible; 
                 }
             }
-
 
             if (const auto *mouseButton = event->getIf<sf::Event::MouseButtonPressed>()) {
                 sf::Mouse::Button but = mouseButton->button;
@@ -159,7 +157,8 @@ int main(){
              
             // Scroll mouse
             if (const auto* mouseScroll = event->getIf<sf::Event::MouseWheelScrolled>()) {
-                if (selectedCardIndex.has_value()) {
+                // Permetti lo scroll sia se una carta è selezionata, sia se si sta mostrando la carta pescata
+                if (selectedCardIndex.has_value() || showDrawnCardDetails) {
                     scrollOffset -= mouseScroll->delta * 20.f;
                     scrollOffset = std::max(0.f, scrollOffset); // niente scroll negativo
                 }
@@ -171,31 +170,20 @@ int main(){
         float deltaTime = clock.restart().asSeconds();
 
         if(gamestate == GameState::FieldVisible) {
-            float scrollSpeed = 300.f;
-            float fadeSpeed = 200.f;
-                
-            fieldOffset -= scrollSpeed * deltaTime; 
-            fieldAlpha += fadeSpeed * deltaTime;
-            
-            //Se superiamo i limiti, blocco gli offset
-            if(fieldOffset <= 0.f) fieldOffset = 0.f; 
-            if(fieldAlpha >= 255.f) fieldAlpha = 255.f;
 
-            if(fieldOffset == 0.f && fieldAlpha == 255.f) {
-                field.setAnimationFinished();
+            field.animate(deltaTime);
+            if(field.isAnimationFinished()) {
+                deck.animate(deltaTime);
 
-                deckAlpha += fadeSpeed * deltaTime;
-                if(deckAlpha >= 255.f) deckAlpha = 255.f;
-
-                if(deckAlpha >= 255.f) {
+                if(deck.isAnimationFinished()) {
                     deck.setAnimationFinished();
                     std::cout << "Passaggio allo stato Playing..." << std::endl;
                     gamestate = GameState::Playing; // Passa allo stato di gioco dopo 1 secondo
 
                     // Avvia la prima animazione di pescata (una alla volta)
-                    if (!cardsToDraw.empty() && animations.empty()) {
-                        Card nextCard = cardsToDraw.front();
-                        cardsToDraw.erase(cardsToDraw.begin());
+                    if (cardsToDraw > 0 && animations.empty() && !deck.isEmpty()) {
+                        Card nextCard = deck.drawCard();
+                        --cardsToDraw;
                         DrawAnimation anim(
                             nextCard, DrawAnimationPhases::MovingOut, deckSlotPos, 
                                sf::Vector2f(windowSize.x / 2.f - cardSize.x / 2.f, windowSize.y / 2.f - cardSize.y / 2.f)
@@ -206,18 +194,27 @@ int main(){
             }
         }
 
+        Card tmpcard = Card("", "", 0, 0, sf::Vector2f(0.f, 0.f), sf::Vector2f(0.f, 0.f), textureFlipped);
+
         if(gamestate == GameState::Playing){
             // Aggiorna solo la prima animazione (una alla volta)
             if (!animations.empty()) {
-                animations.front().update(MOVEMENT_SPEED, deltaTime, textureNonFlipped, cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
-                if (animations.front().isFinished()) {
+                DrawAnimationPhases actualPhase;
+                // Passa mousePressed come skipPause
+                actualPhase = animations.front().update(MOVEMENT_SPEED, deltaTime, textureNonFlipped, cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE, mousePressed);
+                if(actualPhase == DrawAnimationPhases::ShowCard){
+                    showDrawnCardDetails = true;
+                    tmpcard = animations.front().getCard();
+                }
+                if (actualPhase == DrawAnimationPhases::Done) {
+                    showDrawnCardDetails = false;
                     cards.push_back(animations.front().getCard());
                     animations.erase(animations.begin());
                     updateHandPositions(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
                     // Avvia la prossima animazione se ci sono altre carte da pescare
-                    if (!cardsToDraw.empty()) {
-                        Card nextCard = cardsToDraw.front();
-                        cardsToDraw.erase(cardsToDraw.begin());
+                    if (cardsToDraw > 0 && !deck.isEmpty()) {
+                        Card nextCard = deck.drawCard();
+                        --cardsToDraw;
                         DrawAnimation anim(
                             nextCard, DrawAnimationPhases::MovingOut, deckSlotPos,
                                sf::Vector2f(windowSize.x / 2.f - cardSize.x / 2.f, windowSize.y / 2.f - cardSize.y / 2.f)
@@ -254,7 +251,7 @@ int main(){
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
         
         // Disegna sempre il campo di gioco (che include lo sfondo)
-        field.draw(window, mousePos, gamestate, fieldAlpha, fieldOffset);
+        field.draw(window, mousePos, gamestate);
         
         // Se siamo nello stato Intro, disegna il testo sopra lo sfondo
         if(gamestate == GameState::Intro) drawStartScreen(window, detailFont, windowSize);
@@ -262,7 +259,13 @@ int main(){
         else {
             
             // Disegna il deck 
-            if(field.isAnimationFinished()) deck.draw(window, mousePos, detailFont, deckSlotPos, slotSize, gamestate, deckAlpha);
+            if(field.isAnimationFinished()) deck.draw(window, mousePos, detailFont, deckSlotPos, slotSize, gamestate);
+
+            if (showDrawnCardDetails) {
+                sf::Vector2f panelPos{400.f, 150.f};
+                sf::Vector2f panelSize{300.f, 200.f};
+                showCardDetails(window, tmpcard, detailFont, panelPos, panelSize, scrollOffset);
+            }
 
             //Disegna le animazioni delle carte
             if(deck.isAnimationFinished()) for(auto& anim : animations) anim.draw(window);

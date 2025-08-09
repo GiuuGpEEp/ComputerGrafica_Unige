@@ -20,7 +20,9 @@ class DrawAnimation{
     public:
         DrawAnimation(Card drawnCard, DrawAnimationPhases phase, sf::Vector2f startPos, sf::Vector2f pausePos);
         bool moveTowards(sf::Vector2f& current, const sf::Vector2f& target, float speed, float deltaTime, Card& card);
-        void update(float moveSpeed, float deltaTime, sf::Texture& texture, std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE);
+        DrawAnimationPhases update(float moveSpeed, float deltaTime, sf::Texture& texture, std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE, bool skipPause);
+        float pauseDuration = 0.f;
+        bool pauseDurationSet = false;
         void setHandPos(std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE); //Da usare nell'update
         void draw(sf::RenderWindow& window);
         bool isFinished() const;
