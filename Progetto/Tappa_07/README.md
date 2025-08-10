@@ -19,6 +19,11 @@ Dopo aver sistemato questa animazione ho spostato le parti relative al movimento
 
 ---
 
+**Dragging**: Inizialmente ho aggiunto unicamente le prime variabili per il dragging: 
 
+- bool isDragging; --> booleano per segnare la fase effettiva di dragging
+- std::optional<size_t> draggingCardIndex; --> indice della carta selezionata
+- sf::Vector2f dragOffset; --> Offset tra mouse e posizione carta, serve per garantire che la carta segua effettivamente il mouse in modo fluido
 
-
+Rispetto a prima adesso quando si rileva che il tasto del mouse è schiacciato oltre a mettere a true mousePressed viene messa a true anche la variabile isDragging, e si prepara la carta selezionata. 
+Tutto ciò veniva fatto nella parte di gestione eventi, nella parte di logica effettiva invece si va ad aggiornare la posizione della carta durante il dragging.

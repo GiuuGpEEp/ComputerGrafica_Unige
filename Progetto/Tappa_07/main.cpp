@@ -94,8 +94,10 @@ int main(){
     std::optional<size_t> selectedCardIndex; // Indice della carta selezionata
     float scrollOffset = 0.f; //Offset per lo scroll del testo dei dettagli della carta
 
-    //Variabili per gestire il dragging
-    
+    // Variabili per il dragging
+    bool isDragging = false;
+    std::optional<size_t> draggingCardIndex;
+    sf::Vector2f dragOffset; // Offset tra mouse e posizione carta
 
     while(window.isOpen()){
 
@@ -113,21 +115,36 @@ int main(){
                 }
             }
 
+
+            // Mouse pressed: inizia drag se clicco su una carta
             if (const auto *mouseButton = event->getIf<sf::Event::MouseButtonPressed>()) {
                 sf::Mouse::Button but = mouseButton->button;
                 if(but == sf::Mouse::Button::Left) {
                     mousePressed = true;
+                    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+                    for (size_t i = 0; i < cards.size(); ++i) {
+                        if (cards[i].isClicked(mousePos)) {
+                            isDragging = true;
+                            draggingCardIndex = i;
+                            sf::Vector2f cardPos = cards[i].getPosition();
+                            dragOffset = static_cast<sf::Vector2f>(mousePos) - cardPos;
+                            break;
+                        }
+                    }
                 }
             }
+            // Mouse released: termina drag
             if (const auto *mouseButton = event->getIf<sf::Event::MouseButtonReleased>()) {
                 sf::Mouse::Button but = mouseButton->button;
                 if(but == sf::Mouse::Button::Left) {
                     mousePressed = false;
+                    isDragging = false;
+                    draggingCardIndex.reset();
                 }
             }
 
-            // Se il mouse è premuto, aggiorna la selezione della carta sotto il mouse
-            if (mousePressed) {
+            // Se non sto trascinando, aggiorna la selezione della carta sotto il mouse (hover/click)
+            if (!isDragging && mousePressed) {
                 sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                 bool cardClicked = false;
                 for (size_t i = 0; i < cards.size(); ++i) {
@@ -249,15 +266,21 @@ int main(){
 
         // Ottieni la posizione del mouse
         sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-        
+
+        // Aggiorna la posizione della carta durante il dragging
+        if (isDragging && draggingCardIndex.has_value() && draggingCardIndex.value() < cards.size()) {
+            sf::Vector2f newCardPos = static_cast<sf::Vector2f>(mousePos) - dragOffset;
+            cards[draggingCardIndex.value()].setPosition(newCardPos);
+        }
+
         // Disegna sempre il campo di gioco (che include lo sfondo)
         field.draw(window, mousePos, gamestate);
-        
+
         // Se siamo nello stato Intro, disegna il testo sopra lo sfondo
         if(gamestate == GameState::Intro) drawStartScreen(window, detailFont, windowSize);
-        
+
         else {
-            
+
             // Disegna il deck 
             if(field.isAnimationFinished()) deck.draw(window, mousePos, detailFont, deckSlotPos, slotSize, gamestate);
 
@@ -269,14 +292,14 @@ int main(){
 
             //Disegna le animazioni delle carte
             if(deck.isAnimationFinished()) for(auto& anim : animations) anim.draw(window);
-            
-            for (auto& card : cards){
-                sf::Vector2f originalPos = card.getPosition();
-                float offset = card.getOffset();
-                card.setPosition(originalPos - sf::Vector2f(0.f, offset));
-                card.draw(window);
-                card.setPosition(originalPos); 
-            } 
+
+            for (size_t i = 0; i < cards.size(); ++i) {
+                sf::Vector2f originalPos = cards[i].getPosition();
+                float offset = cards[i].getOffset();
+                cards[i].setPosition(originalPos - sf::Vector2f(0.f, offset));
+                cards[i].draw(window);
+                cards[i].setPosition(originalPos);
+            }
 
             // Se c'è una carta selezionata, mostra i dettagli - Non influisce sullo stato del gioco, ma solo sulla visualizzazione (rendering)
             if (selectedCardIndex.has_value()) {
@@ -286,7 +309,7 @@ int main(){
                 showCardDetails(window, selectedCard, detailFont, panelPos, panelSize, scrollOffset);
             }
         }
-        
+
         window.display();
     }
     return 0;
