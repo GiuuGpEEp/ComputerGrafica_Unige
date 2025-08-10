@@ -79,15 +79,15 @@ add_executable(mainTappa7
 target_compile_features(mainTappa7 PRIVATE cxx_std_17)
 target_link_libraries(mainTappa7 PRIVATE SFML::Graphics)
 
-#Compilazione Ottava Tappa
-add_executable(mainTappa8 
-    Progetto/Tappa_08/main.cpp
-    Progetto/Tappa_08/Field/Field.cpp
-    Progetto/Tappa_08/Slot/Slot.cpp
-    Progetto/Tappa_08/Card/Card.cpp
-    Progetto/Tappa_08/Deck/Deck.cpp
-    Progetto/Tappa_08/DrawAnimation/DrawAnimation.cpp
-    Progetto/Tappa_08/auxFunc.cpp)
-target_compile_features(mainTappa8 PRIVATE cxx_std_17)
-target_link_libraries(mainTappa8 PRIVATE SFML::Graphics)
+#Compilazione Settima Tappa
+add_executable(mainTappa7 
+    Progetto/Tappa_07/main.cpp
+    Progetto/Tappa_07/Field/Field.cpp
+    Progetto/Tappa_07/Slot/Slot.cpp
+    Progetto/Tappa_07/Card/Card.cpp
+    Progetto/Tappa_07/Deck/Deck.cpp
+    Progetto/Tappa_07/DrawAnimation/DrawAnimation.cpp
+    Progetto/Tappa_07/auxFunc.cpp)
+target_compile_features(mainTappa7 PRIVATE cxx_std_17)
+target_link_libraries(mainTappa7 PRIVATE SFML::Graphics)
 
