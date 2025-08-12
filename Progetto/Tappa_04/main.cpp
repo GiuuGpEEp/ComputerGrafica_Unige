@@ -12,21 +12,21 @@ int main(){
     sf::RenderWindow window(sf::VideoMode(windowSize), "Progetto Tappa 04 - Field + Card");
 
     // Carico le texture necessarie per il campo di gioco
-    sf::Texture fieldTexture("../../Progetto/resources/backgroundTexture.jpg");
-    sf::Texture monsterTexture("../../Progetto/resources/monsterText.png");
-    sf::Texture spellTrapTexture("../../Progetto/resources/spellTrapTexture.png");
-    sf::Texture deckTexture("../../Progetto/resources/deckTexture.png");
-    sf::Texture graveyardTexture("../../Progetto/resources/graveTexture.png");
-    sf::Texture extraDeckTexture("../../Progetto/resources/ExtraDeckTexture.png");
-    sf::Texture fieldSpellTexture("../../Progetto/resources/fieldSpell.png");
+    sf::Texture fieldTexture("../../Progetto/resources/textures/backgroundTexture.jpg");
+    sf::Texture monsterTexture("../../Progetto/resources/textures/monsterText.png");
+    sf::Texture spellTrapTexture("../../Progetto/resources/textures/spellTrapTexture.png");
+    sf::Texture deckTexture("../../Progetto/resources/textures/deckTexture.png");
+    sf::Texture graveyardTexture("../../Progetto/resources/textures/graveTexture.png");
+    sf::Texture extraDeckTexture("../../Progetto/resources/textures/ExtraDeckTexture.png");
+    sf::Texture fieldSpellTexture("../../Progetto/resources/textures/fieldSpell.png");
 
     // Carico le texture necessarie per le carte
-    sf::Texture textureFlipped(("../../Progetto/resources/Texture1.png"));
-    sf::Texture textureNonFlipped(("../../Progetto/resources/CardNotSet.jpg"));
+    sf::Texture textureFlipped(("../../Progetto/resources/textures/Texture1.png"));
+    sf::Texture textureNonFlipped(("../../Progetto/resources/textures/CardNotSet.jpg"));
 
     // Carico il font per le etichette delle carte
     sf::Font detailFont;
-    if (!detailFont.openFromFile("../../Progetto/resources/ITCKabelStdDemi.TTF")) {
+    if (!detailFont.openFromFile("../../Progetto/resources/textures/ITCKabelStdDemi.TTF")) {
 
         if (!detailFont.openFromFile("C:/Windows/Fonts/calibri.ttf")) {
             std::cerr << "ERRORE: Impossibile caricare nessun font!" << std::endl;

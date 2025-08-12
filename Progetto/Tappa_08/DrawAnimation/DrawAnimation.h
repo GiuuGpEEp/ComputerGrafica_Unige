@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include "../Card/Card.h"
-#include "../../resources/GameState.h"
+#include "../../resources/data/GameState.h"
 #include "../auxFunc.h"
 #include <optional>
 

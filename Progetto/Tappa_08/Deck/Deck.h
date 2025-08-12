@@ -1,7 +1,7 @@
 #pragma once //Ho la garanzia che questo file non venga incluso più di una volta
 #include <SFML/Graphics.hpp>
 #include "../Card/Card.h"
-#include "../../resources/GameState.h"
+#include "../../resources/data/GameState.h"
 #include <vector>
 
 class Deck{

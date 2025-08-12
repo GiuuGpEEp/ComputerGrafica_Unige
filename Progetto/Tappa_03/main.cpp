@@ -7,13 +7,13 @@ int main(){
     sf::RenderWindow window(sf::VideoMode(windowSize), "Progetto Tappa 03 - Test Field");
 
     // Carico le texture necessarie
-    sf::Texture fieldTexture("../../Progetto/resources/backgroundTexture.jpg");
-    sf::Texture monsterTexture("../../Progetto/resources/monsterText.png");
-    sf::Texture spellTrapTexture("../../Progetto/resources/spellTrapTexture.png");
-    sf::Texture deckTexture("../../Progetto/resources/deckTexture.png");
-    sf::Texture graveyardTexture("../../Progetto/resources/graveTexture.png");
-    sf::Texture extraDeckTexture("../../Progetto/resources/ExtraDeckTexture.png");
-    sf::Texture fieldSpellTexture("../../Progetto/resources/fieldSpell.png");
+    sf::Texture fieldTexture("../../Progetto/resources/textures/backgroundTexture.jpg");
+    sf::Texture monsterTexture("../../Progetto/resources/textures/monsterText.png");
+    sf::Texture spellTrapTexture("../../Progetto/resources/textures/spellTrapTexture.png");
+    sf::Texture deckTexture("../../Progetto/resources/textures/deckTexture.png");
+    sf::Texture graveyardTexture("../../Progetto/resources/textures/graveTexture.png");
+    sf::Texture extraDeckTexture("../../Progetto/resources/textures/ExtraDeckTexture.png");
+    sf::Texture fieldSpellTexture("../../Progetto/resources/textures/fieldSpell.png");
 
     // Crea il campo di gioco con dimensioni dinamiche
     Field field

@@ -1,7 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "../Slot/Slot.h"
-#include "../../resources/auxFunc.h"
+#include "../../resources/data/auxFunc.h"
 #include <vector>
 
 class Field {

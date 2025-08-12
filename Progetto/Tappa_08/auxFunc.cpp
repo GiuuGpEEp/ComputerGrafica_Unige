@@ -111,8 +111,8 @@ void showCardDetails(sf::RenderWindow& window,
     sf::Vector2u winSize = window.getSize();
 
     // Dimensioni e posizione scalate in base alla risoluzione (più piccolo)
-    float panelWidth = std::max(panelSize.x, winSize.x * 0.13f); // almeno 13% larghezza
-    float panelHeight = std::max(panelSize.y, winSize.y * 0.15f); // almeno 15% altezza
+    float panelWidth = std::max(panelSize.x, winSize.x * 0.18f); // almeno 18% larghezza
+    float panelHeight = std::max(panelSize.y, winSize.y * 0.22f); // almeno 22% altezza
     sf::Vector2f scaledPanelSize(panelWidth, panelHeight);
     sf::Vector2f scaledPanelPos(
         std::max(panelPos.x, winSize.x * 0.15f),
@@ -123,57 +123,200 @@ void showCardDetails(sf::RenderWindow& window,
     unsigned int detailFontSize = std::max(12u, static_cast<unsigned int>(winSize.y * 0.012f));
     unsigned int escFontSize = std::max(10u, static_cast<unsigned int>(winSize.y * 0.009f));
 
+
     // Valori della carta
-    auto [atk, def] = card.getValues();
+    auto valuesOpt = card.getValues();
+    int atk = 0, def = 0;
+    if (valuesOpt.has_value()) {
+        atk = valuesOpt.value().first;
+        def = valuesOpt.value().second;
+    }
 
-    // Pannello dei dettagli
+    // Conversione enum in stringa
+    auto typeToString = [](Type t) {
+        switch(t) {
+            case Type::Monster: return "Mostro";
+            case Type::SpellTrap: return "Magia/Trappola";
+            case Type::Deck: return "Deck";
+            case Type::Graveyard: return "Cimitero";
+            case Type::Extra: return "Extra";
+            case Type::FieldSpell: return "Campo";
+            default: return "Sconosciuto";
+        }
+    };
+    auto attrToString = [](Attribute a) {
+        switch(a) {
+            case Attribute::None: return "Nessuno";
+            case Attribute::Luce: return "Luce";
+            case Attribute::Oscurita: return "Oscurita";
+            case Attribute::Vento: return "Vento";
+            case Attribute::Terra: return "Terra";
+            case Attribute::Acqua: return "Acqua";
+            case Attribute::Fuoco: return "Fuoco";
+            case Attribute::Magia: return "Magia";
+            case Attribute::Trappola: return "Trappola";
+            default: return "Sconosciuto";
+        }
+    };
+    auto featureToString = [](Feature f) {
+        switch(f) {
+            case Feature::Fusione: return "Fusione";
+            case Feature::Rituale: return "Rituale";
+            case Feature::Synchro: return "Synchro";
+            case Feature::Xyz: return "Xyz";
+            case Feature::Pendulum: return "Pendulum";
+            case Feature::Normale: return "Normale";
+            case Feature::Effetto: return "Effetto";
+            case Feature::Aqua: return "Aqua";
+            case Feature::Bestia: return "Bestia";
+            case Feature::BestiaAlata: return "Bestia Alata";
+            case Feature::BestiaGuerriero: return "Bestia Guerriero";
+            case Feature::Fata: return "Fata";
+            case Feature::Drago: return "Drago";
+            case Feature::Dinosauro: return "Dinosauro";
+            case Feature::DivinitaBestia: return "Divinita Bestia";
+            case Feature::Incantatore: return "Incantatore";
+            case Feature::Insetto: return "Insetto";
+            case Feature::Macchina: return "Macchina";
+            case Feature::Pesce: return "Pesce";
+            case Feature::Pianta: return "Pianta";
+            case Feature::Pyro: return "Pyro";
+            case Feature::Rettile: return "Rettile";
+            case Feature::Roccia: return "Roccia";
+            case Feature::Demone: return "Demone";
+            case Feature::SerpenteMarino: return "Serpente Marino";
+            case Feature::Tuono: return "Tuono";
+            case Feature::Guerriero: return "Guerriero";
+            case Feature::Zombie: return "Zombie";
+            case Feature::Psichico: return "Psichico";
+            default: return "Altro";
+        }
+    };
+
+    // Pannello stile carta
     sf::RectangleShape detailPanel(scaledPanelSize);
-    detailPanel.setFillColor(sf::Color(0, 0, 0, 200));
-    detailPanel.setOutlineColor(sf::Color::White);
-    detailPanel.setOutlineThickness(2.f);
+    detailPanel.setFillColor(sf::Color(230, 200, 120, 230)); // dorato chiaro
+    detailPanel.setOutlineColor(sf::Color(180, 140, 40));
+    detailPanel.setOutlineThickness(4.f);
     detailPanel.setPosition(scaledPanelPos);
-
-    // Creo la stringa con il testo principale 
-    std::string detailRaw = "DETTAGLI CARTA\n\n";
-    detailRaw += "Nome: " + card.getName() + "\n\n";
-    detailRaw += "Descrizione:\n" + card.getDescription() + "\n\n";
-    detailRaw += "ATK: " + std::to_string(atk) + "\n";
-    detailRaw += "DEF: " + std::to_string(def);
-
-    // Applica word wrapping al testo principale
-    float textMaxWidth = scaledPanelSize.x - 40.f;
-    std::string wrappedText = wrapText(detailRaw, font, detailFontSize, textMaxWidth);
-
-    // Testo dettagli
-    sf::Text detailTextObj(font, wrappedText, detailFontSize);
-    detailTextObj.setFillColor(sf::Color::White);
-    detailTextObj.setPosition(sf::Vector2f(scaledPanelPos.x + 10.f, scaledPanelPos.y + 10.f - scrollOffset));
-
-    // Testo ESC
-    sf::Text escTextObj(font, "Premi ESC per chiudere", escFontSize);
-    escTextObj.setFillColor(sf::Color::Yellow);
-    escTextObj.setPosition(sf::Vector2f(scaledPanelPos.x + 10.f, scaledPanelPos.y + scaledPanelSize.y - 25.f));
-
-    // Disegna prima il pannello 
     window.draw(detailPanel);
 
-    // Salva la view corrente
-    sf::View originalView = window.getView();
-    // View limitata al pannello per il clipping del testo scrollabile
-    sf::View textView;
-    textView.setSize(sf::Vector2f(scaledPanelSize.x - 20.f, scaledPanelSize.y - 50.f));
-    textView.setCenter(sf::Vector2f(scaledPanelPos.x + scaledPanelSize.x/2.f, scaledPanelPos.y + (scaledPanelSize.y - 50.f)/2.f + 10.f));
-    textView.setViewport(sf::FloatRect(
-        sf::Vector2f((scaledPanelPos.x + 10.f) / winSize.x, (scaledPanelPos.y + 10.f) / winSize.y),
-        sf::Vector2f((scaledPanelSize.x - 20.f) / winSize.x, (scaledPanelSize.y - 50.f) / winSize.y)
-    ));
 
-    window.setView(textView);
-    window.draw(detailTextObj);
-    window.setView(originalView);
+    // --- Layout dinamico ---
+    float y = scaledPanelPos.y + 8.f;
+    float x = scaledPanelPos.x + 18.f;
+
+    // Nome grande in alto
+    sf::Text nameText(font, card.getName(), detailFontSize + 10);
+    nameText.setFillColor(sf::Color::Black);
+    nameText.setStyle(sf::Text::Bold);
+    nameText.setPosition(sf::Vector2f(x, y));
+    window.draw(nameText);
+    y += nameText.getLocalBounds().size.y + 10.f;
+
+    // Attributo in alto a destra
+    std::string attrStr = attrToString(card.getAttribute());
+    sf::Text attrText(font, attrStr, detailFontSize);
+    attrText.setFillColor(sf::Color(80,80,80));
+    attrText.setStyle(sf::Text::Bold);
+    float attrCircleR = 22.f;
+    sf::CircleShape attrCircle(attrCircleR);
+    attrCircle.setFillColor(sf::Color(220,220,220));
+    attrCircle.setOutlineColor(sf::Color(180,180,180));
+    attrCircle.setOutlineThickness(2.f);
+    attrCircle.setPosition(sf::Vector2f(scaledPanelPos.x + scaledPanelSize.x - attrCircleR*2 - 12.f, scaledPanelPos.y + 6.f));
+    window.draw(attrCircle);
+    attrText.setPosition(sf::Vector2f(attrCircle.getPosition().x + 7.f, attrCircle.getPosition().y + 7.f));
+    window.draw(attrText);
+
+    // Stelle livello/rango (max 12, font più piccolo) + numero accanto
+    std::string stars = "";
+    int nStars = std::min(12, card.getLevelOrRank().value_or(0));
+    if(nStars > 0){
+        for(int i=0; i<nStars; ++i) stars += " * ";
+        stars += "  " + std::to_string(nStars);
+        sf::Text starText(font, stars, detailFontSize-2);
+        starText.setFillColor(sf::Color(255, 120, 0));
+        starText.setPosition(sf::Vector2f(x, y));
+        window.draw(starText);    
+        y += starText.getLocalBounds().size.y + 10.f; 
+
+    }
+     
+    // Tipo tra parentesi quadre sopra la descrizione
+    std::string typeStr = "[" + std::string(typeToString(card.getType())) + "]";
+    sf::Text typeText(font, typeStr, detailFontSize);
+    typeText.setFillColor(sf::Color::Black);
+    typeText.setStyle(sf::Text::Bold);
+    typeText.setPosition(sf::Vector2f(x, y));
+    window.draw(typeText);
+    y += typeText.getLocalBounds().size.y + 8.f;
+
+    // Features (sotto il tipo)
+    const auto& feats = card.getFeatures();
+    if (!feats.empty()) {
+        std::string featStr = "(";
+        for (size_t i = 0; i < feats.size(); ++i) {
+            featStr += featureToString(feats[i]);
+            if (i < feats.size() - 1) featStr += ", ";
+        }
+        featStr += ")";
+        sf::Text featText(font, featStr, detailFontSize-1);
+        featText.setFillColor(sf::Color(60,60,60));
+        featText.setPosition(sf::Vector2f(x, y));
+        window.draw(featText);
+    y += featText.getLocalBounds().size.y + 8.f;
+    }
+
+    // Descrizione centrale con scroll e clipping (view solo sulla zona descrizione)
+    float descX = x;
+    float descY = y;
+    float descW = scaledPanelSize.x - 36.f;
+    float spazioATKDEFESC = 34.f;
+    float descH = scaledPanelSize.y - (descY - scaledPanelPos.y) - spazioATKDEFESC;
+    std::string wrappedDesc = wrapText(card.getDescription(), font, detailFontSize, descW);
+    sf::Text descText(font, wrappedDesc, detailFontSize);
+    descText.setFillColor(sf::Color::Black);
+    float descTotalHeight = descText.getLocalBounds().size.y;
+    // Limita lo scrollOffset per non far uscire il testo sopra o sotto
+    float maxScroll = descTotalHeight - descH;
+    if (maxScroll < 0) maxScroll = 0;
+    if (scrollOffset < 0) scrollOffset = 0;
+    if (scrollOffset > maxScroll) scrollOffset = maxScroll;
+    // Clipping tramite view solo sulla descrizione (in pixel, non normalizzato)
+    sf::View oldView = window.getView();
+    sf::Vector2f descCenter(descX + descW/2.f, descY + descH/2.f);
+    sf::Vector2f descSize(descW, descH);
+    sf::View descView(descCenter, descSize);
+    descView.setViewport(sf::FloatRect(
+        sf::Vector2f((descX) / winSize.x, (descY) / winSize.y),
+        sf::Vector2f((descW) / winSize.x, (descH) / winSize.y)
+    ));
+    window.setView(descView);
+    descText.setPosition(sf::Vector2f(descX, descY - scrollOffset));
+    window.draw(descText);
+    window.setView(oldView);
+    // Aggiorna y per posizionare ATK/DEF e ESC sempre sotto la descrizione
+    y = descY + descH + 6.f;
+
+    // ATK/DEF subito sotto la descrizione, a destra
+    if (card.getValues().has_value()) {
+        auto [atk, def] = card.getValues().value();
+        std::string stats = "ATK/" + std::to_string(atk) + "  DEF/" + std::to_string(def);
+        sf::Text statsText(font, stats, detailFontSize + 1);
+        statsText.setFillColor(sf::Color(40,40,40));
+        statsText.setStyle(sf::Text::Bold);
+        float statsW = statsText.getLocalBounds().size.x;
+        statsText.setPosition(sf::Vector2f(scaledPanelPos.x + scaledPanelSize.x - statsW - 18.f, y));
+        window.draw(statsText);
+    }
+    
+    // Testo ESC subito sotto la descrizione, a sinistra
+    sf::Text escTextObj(font, "Premi ESC per chiudere", escFontSize - 1);
+    escTextObj.setFillColor(sf::Color(120, 80, 0));
+    escTextObj.setPosition(sf::Vector2f(scaledPanelPos.x + 10.f, y));
     window.draw(escTextObj);
 }
-
 //-------------------------------- Funzioni per disegnare il testo della schermata di avvio --------------------------------//
 
 void drawStartScreen(sf::RenderWindow& window, const sf::Font& font, const sf::Vector2u& windowSize) {

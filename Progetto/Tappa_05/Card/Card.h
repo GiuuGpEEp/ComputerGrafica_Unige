@@ -2,7 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <string>
 #include <iostream>
-#include "../../resources/GameState.h"
+#include "../../resources/data/GameState.h"
 #include <optional>
 
 class Card {

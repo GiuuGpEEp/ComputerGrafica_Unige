@@ -1,12 +1,12 @@
 #include "Card/Card.h"
-#include "../resources/auxFunc.cpp"
+#include "../resources/data/auxFunc.cpp"
 #include <vector>
 
 int main() {
 
     // Carico la texture della carta
-    sf::Texture textureFlipped(("../../Progetto/resources/Texture1.png"));
-    sf::Texture textureNonFlipped(("../../Progetto/resources/CardNotSet.jpg"));
+    sf::Texture textureFlipped(("../../Progetto/resources/textures/Texture1.png"));
+    sf::Texture textureNonFlipped(("../../Progetto/resources/textures/CardNotSet.jpg"));
 
     // Creo le prime carte per fare dei test
     std::vector<Card> cards;
@@ -23,7 +23,7 @@ int main() {
     
     // Carico il font per le etichette delle carte
     sf::Font detailFont;
-    if (!detailFont.openFromFile("../../Progetto/resources/ITCKabelStdDemi.TTF")) {
+    if (!detailFont.openFromFile("../../Progetto/resources/textures/ITCKabelStdDemi.TTF")) {
 
         if (!detailFont.openFromFile("C:/Windows/Fonts/calibri.ttf")) {
             std::cerr << "ERRORE: Impossibile caricare nessun font!" << std::endl;

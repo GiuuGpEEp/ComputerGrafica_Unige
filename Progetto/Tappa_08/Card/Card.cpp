@@ -2,8 +2,8 @@
 
 #include "Card.h"
 
-Card::Card(const std::string& name, const std::string& description, int atk, int def, sf::Vector2f pos, sf::Vector2f size, sf::Texture& textureRef, Type type)
-    : name(name), description(description), attack(atk), defense(def), sprite(textureRef), position(pos), type(type) //Inizializzo sprite con textureRef e position
+Card::Card(const std::string& name, const std::string& description, std::optional<int> atk, std::optional<int> def, sf::Vector2f pos, sf::Vector2f size, sf::Texture& textureRef, Type type, Attribute attribute, std::optional<int> level, std::vector<Feature> cardFeatures)
+    : name(name), description(description), attack(atk), defense(def), sprite(textureRef), position(pos), type(type), attribute(attribute), features(cardFeatures)
 {
     //Inizializzo lo sprite della carta
     sprite.setTexture(textureRef);
@@ -14,6 +14,14 @@ Card::Card(const std::string& name, const std::string& description, int atk, int
     sprite.setScale(scale);
     
     sprite.setPosition(pos);
+
+    //Le carte xyz non hanno livello ma rango 
+    if(std::find(cardFeatures.begin(), cardFeatures.end(), Feature::Xyz) != cardFeatures.end()){
+        this->rank = level;
+    }
+    else {
+        this->level = level;
+    }
 }
 
 //Distruttore
@@ -66,8 +74,8 @@ std::string Card::getDescription() const {
 }
 
 //Restituisco i valori di attacco e difesa della carta (si usa const per garantire che la funzione non modifichi lo stato dell'oggetto)
-std::pair<int, int> Card::getValues() const {
-    return {attack, defense};
+std::optional<std::pair<int, int>> Card::getValues() const {
+    return std::make_optional(std::make_pair(attack.value_or(0), defense.value_or(0)));
 }
 
 sf::Vector2f& Card::getPositionRef() {
@@ -88,4 +96,19 @@ float Card::getOffset() const {
 
 Type Card::getType() const{
     return type;
+}
+
+Attribute Card::getAttribute() const {
+    return attribute;
+}
+
+std::optional <int> Card::getLevelOrRank() const {
+    if (level.has_value()) {
+        return level.value();
+    }
+    return rank.value_or(0);
+}
+
+const std::vector<Feature>& Card::getFeatures() const {
+    return features;
 }

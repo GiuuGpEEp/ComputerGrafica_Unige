@@ -31,7 +31,7 @@ add_executable(mainTappa3
     Progetto/Tappa_03/main.cpp
     Progetto/Tappa_03/Field/Field.cpp
     Progetto/Tappa_03/Slot/Slot.cpp
-    Progetto/resources/auxFunc.cpp)
+    Progetto/resources/data/auxFunc.cpp)
 target_compile_features(mainTappa3 PRIVATE cxx_std_17)
 target_link_libraries(mainTappa3 PRIVATE SFML::Graphics)
 
@@ -41,7 +41,7 @@ add_executable(mainTappa4
     Progetto/Tappa_04/Field/Field.cpp
     Progetto/Tappa_04/Slot/Slot.cpp
     Progetto/Tappa_04/Card/Card.cpp
-    Progetto/resources/auxFunc.cpp)
+    Progetto/resources/data/auxFunc.cpp)
 target_compile_features(mainTappa4 PRIVATE cxx_std_17)
 target_link_libraries(mainTappa4 PRIVATE SFML::Graphics)
 

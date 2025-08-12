@@ -1,6 +1,6 @@
 #pragma once
-#include "../../resources/GameState.h"
-#include "../../resources/Type.h"
+#include "../../resources/data/GameState.h"
+#include "../../resources/data/Type.h"
 #include <SFML/Graphics.hpp>
 
 class Slot {
