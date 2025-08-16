@@ -86,7 +86,7 @@ void showCardDetails(sf::RenderWindow& window,
 /**
  * Disegna la schermata di avvio con le istruzioni del gioco
  */
-void drawStartScreen(sf::RenderWindow& window, const sf::Font& font, const sf::Vector2u& windowSize);
+void drawStartScreen(sf::RenderWindow& window, const sf::Font& font, const sf::Vector2u& windowSize, sf::Texture& screenTexture, float elapsedTime);
 
 //-------------------------------- Funzioni per la gestione delle carte in mano --------------------------------//
 
@@ -126,3 +126,10 @@ sf::Vector2f setHandPos(std::vector<Card>& cards,
  * @return Posizione del centro dello slot se trovato, altrimenti posizione del mouse
  */
 std::optional<sf::Vector2f> findSlotPosition(sf::Vector2f mousePos, const Card& card, Field& field, const sf::Vector2f& slotSize);
+
+//------------------------------- Funzione per la schermata Home --------------------------------//
+
+/**
+ * Disegna la schermata Home con sfondo e voci di menu
+ */
+void drawHomeScreen(sf::RenderWindow& window, const sf::Font& font, const sf::Vector2u& windowSize, sf::Texture& homeTexture, const std::string& deckName);

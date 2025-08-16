@@ -3,7 +3,6 @@ enum class Feature{
     Rituale,
     Synchro,
     Xyz,
-    Pendulum,
     Normale,
     Effetto,
     Aqua,

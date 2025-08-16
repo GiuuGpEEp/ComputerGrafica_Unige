@@ -5,6 +5,7 @@
 #include "../Card/Card.h"
 #include "../../resources/data/GameState.h"
 #include "../auxFunc.h"
+#include "../TextureManager/TextureManager.h"
 #include <optional>
 
 
@@ -18,9 +19,21 @@ enum class DrawAnimationPhases{
 
 class DrawAnimation{
     public:
-        DrawAnimation(Card drawnCard, DrawAnimationPhases phase, sf::Vector2f startPos, sf::Vector2f pausePos);
+        DrawAnimation(Card drawnCard, DrawAnimationPhases phase, sf::Vector2f startPos, sf::Vector2f pausePos, TextureManager& textureManager);
         bool moveTowards(sf::Vector2f& current, const sf::Vector2f& target, float speed, float deltaTime, Card& card);
-        DrawAnimationPhases update(float moveSpeed, float deltaTime, sf::Texture& texture, std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE, bool skipPause);
+        DrawAnimationPhases update(
+            float moveSpeed,
+            float deltaTime,
+            sf::Texture& texture,
+            std::vector<Card>& cards,
+            sf::Vector2u& windowSize,
+            sf::Vector2f& cardSize,
+            float spacing,
+            float y,
+            int HAND_MAXSIZE,
+            bool skipPause,
+            TextureManager& textureManager
+        );
         float pauseDuration = 0.f;
         bool pauseDurationSet = false;
         void setHandPos(std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE); //Da usare nell'update

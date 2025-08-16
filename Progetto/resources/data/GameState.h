@@ -1,7 +1,11 @@
 #pragma once
 
 enum class GameState{
-    Intro,
+    StartScreen,
+    HomeScreen,
+    DeckSelection,
+    FieldLoading,
     FieldVisible,
-    Playing
+    Playing,
+    EndOfGame
 };

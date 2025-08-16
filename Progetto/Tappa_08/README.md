@@ -27,3 +27,44 @@ Per fare il parsing ho quindi usato la libreria -->  nlohmann/json.hpp
 - data --> tutte le classi .h di Type, Gamestate, ...
 - texture --> tutte le immagini di texture usate finora
 - jsonData --> il file hpp per la libreria usata, e i file cards e deck .json
+
+Dopo aver creato i file cards.json e deck.json ho **modificato le due classi**:
+- Aggiunta del metodo cardFromJson() --> per creare un oggetto Card partendo dal json
+- Aggiunta del metodo deckFromJson() --> per creare un oggetto Card partendo dal json
+
+**Classe Texture Manager**: La comodità della classe texture manager è il fatto che tutte le texture vengono caricate una sola volta. La classe Texture Manager si occupa di avere una mappa che colleghi ad ogni file un oggetto sf::Texture. 
+
+**Modifica ulteriore della classe Card**: Aggiunta anche di altri metodi per gestire il parsing:
+- static Type stringToType(const std::string& str);
+- static Attribute stringToAttribute(const std::string& str);
+- static Feature stringToFeature(const std::string& str);
+- static std::vector<Feature> parseAllFeatures(const nlohmann::json& jsonData);
+
+Siccome all'interno del file decks.json sono presenti unicamente i nomi di tutte le varie carte presenti nel deck il metodo deckFromJson prende come argomento una map, che permette di fare un mapping tra i nomi delle carte e l'oggetto Card corrispondente. Quindi all'inizio del programma vengono caricate tutte le carte, e successivamente mappate. Proprio come viene fatto nel texture manager.
+
+**Modifica del costruttore di deck**: Prima le carte venivano generate all'interno di Deck, adesso Deck prende tra i parametri un vettore di carte e si occupa solo di aggiornarne posizione e centrarle rispetto allo slot deck
+
+**Debug** --> aggiunta del costruttore di default per la classe Card per risolvere problemi di compatibilità con la map. Aggiunta di optional sullo sprite per risolvere il fatto che lo sprite non abbia un costruttore di default. Modifica delle varie classi per adattarli alla nuova logica
+
+**Implementazione del metodo shuffle** --> in deck era definito il metodo shuffle per mischiare le carte, ma ancora non aveva un'implementazione effettiva. Per fare questo metodo ho sfruttato la libreria <random> e il metodo std::shuffle()
+Successivamente a ciò ho aggiunto anche una semplice animazione per il mischiaggio all'interno della classe Deck.
+Ho distinto quindi l'animazioni in 3 fasi differenti e gestite pian piano all'interno della classe ShuffleAnimation.
+
+**Modifica Deck** --> ho modificato la classe Deck per renderla compatibile con la nuova animazione, inoltre per avere la garanzia che le carte tornino in posizione corretta ho creato una nuova funzione nella classe Deck
+
+Prima di passare alla logica effettiva del gioco ho voluto migliorarne il menù di gioco --> **Modifica del GameState.h**:
+- StartScreen,
+- HomeScreen,
+- DeckSelection,
+- FieldLoading,
+- FieldVisible,
+- Playing,
+- EndOfGame
+
+In questo modo riesco a gestire meglio il passaggio da una finestra all'altra.
+
+**Generazione di una buona immagine di sfondo tramite ChatGPT**: Ho chiesto a Chat di generarmi un'immagine di "start" che io ho poi usato come base e rifinito a mano.
+
+**Modifica della funzione drawStartScreen**: Mentre prima veniva mantenuto lo stesso sfondo del field, e veniva disegnato sopra il testo, adesso questa funzione prende in input una texture, caricata nel programma dal texture menager, la applica ad uno sprite, centra tutto in base alla finestra e poi disegna queso sprite e il testo.
+
+**Aggiunta della Classe HomePage**

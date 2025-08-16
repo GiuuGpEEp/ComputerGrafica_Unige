@@ -2,11 +2,16 @@
 #include "Field/Field.h"
 #include "Deck/Deck.h"
 #include "DrawAnimation/DrawAnimation.h"
+#include "Deck/ShuffleAnimation.h"
 #include "../resources/data/GameState.h"
 #include "auxFunc.h"
+#include "HomePage/HomePage.h"
 #include <vector>
 #include <iostream>
 #include <cmath>
+#include <unordered_map>
+#include <fstream>
+
 #define P1 1 
 #define P2 2
 #define DECK_SIZE 30 // Numero di carte nel deck
@@ -14,38 +19,75 @@
 #define CARD_MAXOFFSET 50.f
 #define MOVEMENT_SPEED 2000.f
 
+// Path base per tutte le risorse
+std::string resourceBase = "../../Progetto/resources/";
+std::string texturePath = resourceBase + "textures/";
+std::string deck1Path = texturePath + "textureDeck1/";
+std::string fontPath = texturePath + "ITCKabelStdDemi.TTF";
+std::string cardsJsonPath = resourceBase + "jsonData/cards.json";
+std::string decksJsonPath = resourceBase + "jsonData/decks.json";
+
 
 int main(){
+    std::cout << "Programma avviato" << std::endl;
+
     std::vector<DrawAnimation> animations;
     int cardsToDraw = 0; // Numero di carte da pescare (coda)
-    GameState gamestate = GameState::Intro;
+    GameState gamestate = GameState::StartScreen;
     bool mousePressed = false; 
     bool showDrawnCardDetails = false;
 
     // Definisci le dimensioni della finestra
-    sf::Vector2u windowSize(2500, 1400);
-    sf::RenderWindow window(sf::VideoMode(windowSize), "Progetto Tappa 07");
+    sf::Vector2u windowSize(1920, 1080);
+    sf::RenderWindow window(sf::VideoMode(windowSize), "Progetto Tappa 08");
 
-    // Carico le texture necessarie per il campo di gioco
-    sf::Texture fieldTexture("../../Progetto/resources/textures/backgroundTexture.jpg");
-    sf::Texture monsterTexture("../../Progetto/resources/textures/monsterText.png");
-    sf::Texture spellTrapTexture("../../Progetto/resources/textures/spellTrapTexture.png");
-    sf::Texture deckTexture("../../Progetto/resources/textures/deckTexture.png");
-    sf::Texture graveyardTexture("../../Progetto/resources/textures/graveTexture.png");
-    sf::Texture extraDeckTexture("../../Progetto/resources/textures/ExtraDeckTexture.png");
-    sf::Texture fieldSpellTexture("../../Progetto/resources/textures/fieldSpell.png");
+    // TextureManager per tutte le texture
+    TextureManager textureManager;
 
-    // Carico le texture necessarie per le carte
-    sf::Texture textureFlipped(("../../Progetto/resources/textures/Texture1.png"));
-    sf::Texture textureNonFlipped(("../../Progetto/resources/textures/CardNotSet.jpg"));
+    sf::Texture& fieldTexture = textureManager.getTexture(texturePath + "backgroundTexture.jpg");
+    std::cout << "Caricata: " << texturePath + "backgroundTexture.jpg" << std::endl;
+    
+    sf::Texture& monsterTexture = textureManager.getTexture(texturePath + "monsterText.png");
+    std::cout << "Caricata: " << texturePath + "monsterText.png" << std::endl;
+    
+    sf::Texture& spellTrapTexture = textureManager.getTexture(texturePath + "SpellTrapTexture.png");
+    std::cout << "Caricata: " << texturePath + "SpellTrapTexture.png" << std::endl;
+    
+    sf::Texture& deckTexture = textureManager.getTexture(texturePath + "deckTexture.png");
+    std::cout << "Caricata: " << texturePath + "deckTexture.png" << std::endl;
+    
+    sf::Texture& graveyardTexture = textureManager.getTexture(texturePath + "graveTexture.png");
+    std::cout << "Caricata: " << texturePath + "graveTexture.png" << std::endl;
+    
+    sf::Texture& extraDeckTexture = textureManager.getTexture(texturePath + "ExtraDeckTexture.png");
+    std::cout << "Caricata: " << texturePath + "ExtraDeckTexture.png" << std::endl;
+    
+    sf::Texture& fieldSpellTexture = textureManager.getTexture(texturePath + "fieldSpell.png");
+    std::cout << "Caricata: " << texturePath + "fieldSpell.png" << std::endl;
+
+    sf::Texture& textureFlipped = textureManager.getTexture(texturePath + "Texture1.png");
+    std::cout << "Caricata: " << texturePath + "Texture1.png" << std::endl;
+    
+    sf::Texture& textureNonFlipped = textureManager.getTexture(texturePath + "CardNotSet.jpg");
+    std::cout << "Caricata: " << texturePath + "CardNotSet.jpg" << std::endl;
+
+    sf::Texture& startScreenTexture = textureManager.getTexture(texturePath + "startScreenTexture.png");
+    std::cout << "Caricata: " << texturePath + "startScreenTexture.png" << std::endl;
+
+    sf::Texture& homeScreenTexture = textureManager.getTexture(texturePath + "homeScreenTexture.png");
+    std::cout << "Caricata: " << texturePath + "homeScreenTexture.png" << std::endl;
 
     // Carico il font per le etichette delle carte
     sf::Font detailFont;
-    if (!detailFont.openFromFile("../../Progetto/resources/textures/ITCKabelStdDemi.TTF")) {
-
+    if (!detailFont.openFromFile(fontPath)) {
+        std::cerr << "ERRORE: Impossibile caricare font: " << fontPath << std::endl;
         if (!detailFont.openFromFile("C:/Windows/Fonts/calibri.ttf")) {
             std::cerr << "ERRORE: Impossibile caricare nessun font!" << std::endl;
+        } else {
+            std::cout << "Caricato font di sistema: calibri.ttf" << std::endl;
         }
+    } else {
+        std::cout << "Caricato font: " << fontPath << std::endl;
     }
 
     // Crea il campo di gioco con dimensioni dinamiche
@@ -60,6 +102,10 @@ int main(){
         windowSize
     );        
     
+    
+    //Creazione della HomePage
+    HomePage homeScreen(window, detailFont, windowSize, homeScreenTexture, "Blu-Eyes");
+
     // Calcola le dimensioni per le carte del deck (leggermente più piccole dello slot)
     sf::Vector2f slotSize = calculateSlotSize(windowSize);
     float deckScaleFactor = 0.9f; 
@@ -68,8 +114,55 @@ int main(){
     // Posizione dello slot del deck
     sf::Vector2f deckSlotPos = field.getSlotPosition(Type::Deck, P1); 
 
-    // Creo il deck
-    Deck deck(deckSlotPos, deckCardSize, slotSize, textureFlipped, DECK_SIZE);
+
+    // --- INTEGRAZIONE JSON ---
+    // Carica le carte da JSON
+    std::ifstream cardsFile(cardsJsonPath);
+    if (!cardsFile.is_open()) {
+        std::cerr << "ERRORE: Impossibile aprire il file JSON delle carte: " << cardsJsonPath << std::endl;
+    } else {
+        std::cout << "Aperto file JSON delle carte: " << cardsJsonPath << std::endl;
+    }
+    nlohmann::json cardsJson;
+    try {
+        cardsFile >> cardsJson;
+    } catch (const std::exception& e) {
+        std::cerr << "ERRORE: Parsing cards.json fallito: " << e.what() << std::endl;
+    }
+
+    std::unordered_map<std::string, Card> allCards;
+    for (const auto& cardJson : cardsJson) {
+        try {
+            Card card(textureNonFlipped);
+            card = Card::cardFromJson(cardJson, deckSlotPos, deckCardSize, textureManager);
+            allCards[card.getName()] = card;
+        } catch (const std::exception& e) {
+            std::cerr << "ERRORE nella creazione della carta: "
+                      << (cardJson.contains("name") ? cardJson["name"].get<std::string>() : "<senza nome>")
+                      << " - " << e.what() << std::endl;
+        }
+    }
+
+    // Carica il deck da JSON
+    std::ifstream deckFile(decksJsonPath);
+    if (!deckFile.is_open()) {
+        std::cerr << "ERRORE: Impossibile aprire il file JSON del deck: " << decksJsonPath << std::endl;
+    } else {
+        std::cout << "Aperto file JSON del deck: " << decksJsonPath << std::endl;
+    }
+    nlohmann::json deckJson;
+    try {
+        deckFile >> deckJson;
+    } catch (const std::exception& e) {
+        std::cerr << "ERRORE: Parsing decks.json fallito: " << e.what() << std::endl;
+    }
+
+    Deck deck(std::vector<Card>{}, deckSlotPos, deckCardSize, slotSize, textureFlipped);
+    try {
+        deck = Deck::deckFromJson(deckJson, allCards, deckSlotPos, deckCardSize, slotSize, textureFlipped);
+    } catch (const std::exception& e) {
+        std::cerr << "ERRORE nella creazione del deck: " << e.what() << std::endl;
+    }
 
     // Creo le carte in mano, inizialmente il vettore raffigurante le carte in mano è vuoto
     std::vector<Card> cards;
@@ -108,6 +201,8 @@ int main(){
     sf::Vector2f dragOffset; // Offset tra mouse e posizione carta
     sf::Vector2f initialMousePos; // Posizione iniziale del mouse al click
     const float dragThreshold = 35.0f; // Soglia in pixel per attivare il dragging
+    
+
 
     while(window.isOpen()){
 
@@ -119,9 +214,9 @@ int main(){
             }
 
             if(const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
-                if(keyPressed->code == sf::Keyboard::Key::Enter && gamestate == GameState::Intro) {
-                    std::cout << "Passaggio allo stato FieldVisible..." << std::endl;
-                    gamestate = GameState::FieldVisible; 
+                if(keyPressed->code == sf::Keyboard::Key::Enter && gamestate == GameState::StartScreen) {
+                    std::cout << "Passaggio allo stato HomeScreen..." << std::endl;
+                    gamestate = GameState::HomeScreen; 
                 }
             }
             
@@ -131,6 +226,11 @@ int main(){
                     mousePressed = true;
                     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
                     initialMousePos = static_cast<sf::Vector2f>(mousePos);
+
+                    if(homeScreen.getGiocaBounds().contains(initialMousePos)) {
+                        std::cout << "Cliccato su Gioca!" << std::endl;
+                        gamestate = GameState::FieldVisible;
+                    } 
                 }
             }
 
@@ -260,6 +360,7 @@ int main(){
         }
 
         //2. Aggiornamento della logica del gioco
+        homeScreen.update();
         static sf::Clock clock;
         float deltaTime = clock.restart().asSeconds();
 
@@ -286,28 +387,40 @@ int main(){
         }
 
         if(gamestate == GameState::FieldVisible) {
-
             field.animate(deltaTime);
             if(field.isAnimationFinished()) {
                 deck.animate(deltaTime);
-
                 if(deck.isAnimationFinished()) {
                     deck.setAnimationFinished();
-                    std::cout << "Passaggio allo stato Playing..." << std::endl;
-                    gamestate = GameState::Playing; // Passa allo stato di gioco dopo 1 secondo
-
-                    // Avvia la prima animazione di pescata (una alla volta)
-                    if (cardsToDraw > 0 && animations.empty() && !deck.isEmpty()) {
-                        Card nextCard = deck.drawCard();
-                        --cardsToDraw;
-                        DrawAnimation anim(
-                            nextCard, DrawAnimationPhases::MovingOut, deckSlotPos, 
-                               sf::Vector2f(windowSize.x / 2.f - cardSize.x / 2.f, windowSize.y / 2.f - cardSize.y / 2.f)
-                        );
-                        animations.push_back(anim);
+                    // Avvia shuffle animation avanzata una sola volta
+                    static bool shuffleStarted = false;
+                    if (!shuffleStarted) {
+                        deck.startShuffleAnimationAdvanced(deckSlotPos, deckCardSize);
+                        shuffleStarted = true;
+                    }
+                    // Aggiorna shuffle animation
+                    deck.updateShuffleAnimationAdvanced(deltaTime);
+                    // Quando l'animazione è finita, mischia effettivamente il deck e passa allo stato Playing
+                    if (deck.isShuffleAnimationAdvancedFinished()) {
+                        deck.shuffle();
+                        deck.resetDeckCardPositions(deckSlotPos, deckCardSize, slotSize, textureFlipped);
+                        std::cout << "Passaggio allo stato Playing..." << std::endl;
+                        gamestate = GameState::Playing;
                     }
                 }
             }
+        }
+
+        // Avvia la prima animazione di pescata SOLO dopo il passaggio allo stato Playing
+        if (gamestate == GameState::Playing && cardsToDraw > 0 && animations.empty() && !deck.isEmpty()) {
+            Card nextCard = deck.drawCard();
+            --cardsToDraw;
+            DrawAnimation anim(
+                nextCard, DrawAnimationPhases::MovingOut, deckSlotPos,
+                sf::Vector2f(windowSize.x / 2.f - cardSize.x / 2.f, windowSize.y / 2.f - cardSize.y / 2.f),
+                textureManager
+            );
+            animations.push_back(anim);
         }
 
         Card tmpcard = Card("", "", 0, 0, sf::Vector2f(0.f, 0.f), sf::Vector2f(0.f, 0.f), textureFlipped, Type::Monster, Attribute::None, 0, {});
@@ -317,7 +430,7 @@ int main(){
             if (!animations.empty()) {
                 DrawAnimationPhases actualPhase;
                 // Passa mousePressed come skipPause
-                actualPhase = animations.front().update(MOVEMENT_SPEED, deltaTime, textureNonFlipped, cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE, mousePressed);
+                actualPhase = animations.front().update(MOVEMENT_SPEED, deltaTime, textureNonFlipped, cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE, mousePressed, textureManager);
                 if(actualPhase == DrawAnimationPhases::ShowCard){
                     showDrawnCardDetails = true;
                     tmpcard = animations.front().getCard();
@@ -327,13 +440,15 @@ int main(){
                     cards.push_back(animations.front().getCard());
                     animations.erase(animations.begin());
                     updateHandPositions(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
+                    deck.resetDeckCardPositions(deckSlotPos, deckCardSize, slotSize, textureFlipped);
                     // Avvia la prossima animazione se ci sono altre carte da pescare
                     if (cardsToDraw > 0 && !deck.isEmpty()) {
                         Card nextCard = deck.drawCard();
                         --cardsToDraw;
                         DrawAnimation anim(
                             nextCard, DrawAnimationPhases::MovingOut, deckSlotPos,
-                               sf::Vector2f(windowSize.x / 2.f - cardSize.x / 2.f, windowSize.y / 2.f - cardSize.y / 2.f)
+                               sf::Vector2f(windowSize.x / 2.f - cardSize.x / 2.f, windowSize.y / 2.f - cardSize.y / 2.f),
+                               textureManager
                         );
                         animations.push_back(anim);
                     }
@@ -376,16 +491,27 @@ int main(){
             cards[draggingCardIndex.value()].setPosition(newCardPos);
         }
 
-        // Disegna sempre il campo di gioco (che include lo sfondo)
-        field.draw(window, mousePos, gamestate);
+        // Se siamo nello stato StartScreen, disegna il testo sopra lo sfondo con animazione fade
+        static sf::Clock startScreenClock;
+        float startScreenElapsed = startScreenClock.getElapsedTime().asSeconds();
+        if(gamestate == GameState::StartScreen) drawStartScreen(window, detailFont, windowSize, startScreenTexture, startScreenElapsed);
 
-        // Se siamo nello stato Intro, disegna il testo sopra lo sfondo
-        if(gamestate == GameState::Intro) drawStartScreen(window, detailFont, windowSize);
+        if(gamestate == GameState::HomeScreen){
+            
+            homeScreen.draw(window);
+        }   
 
-        else {
+        if(gamestate == GameState::FieldVisible && gamestate == GameState::Playing) field.draw(window, mousePos, gamestate);
 
-            // Disegna il deck 
-            if(field.isAnimationFinished()) deck.draw(window, mousePos, detailFont, deckSlotPos, slotSize, gamestate);
+        else  {
+            // Disegna il deck o la shuffle animation avanzata
+            if(field.isAnimationFinished() && deck.getSize() > 0) {
+                if (!deck.isShuffleAnimationAdvancedFinished()) {
+                    deck.drawShuffleAnimationAdvanced(window);
+                } else {
+                    deck.draw(window, mousePos, detailFont, deckSlotPos, slotSize, gamestate);
+                }
+            }
 
             if (showDrawnCardDetails) {
                 sf::Vector2f panelPos{400.f, 150.f};

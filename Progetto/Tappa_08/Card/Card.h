@@ -6,12 +6,21 @@
 #include "../../resources/data/Type.h"
 #include "../../resources/data/Attribute.h"
 #include "../../resources/data/Feature.h"
-
 #include <optional>
+#include "../../resources/jsonData/json.hpp"
+#include "../TextureManager/TextureManager.h"
 
 class Card {
 public:
+    Card(); // Costruttore di default necessario per STL
+    static Card cardFromJson(const nlohmann::json& jsonData,  sf::Vector2f pos, sf::Vector2f size, TextureManager& textureManager);
+    static Type stringToType(const std::string& str);
+    static Attribute stringToAttribute(const std::string& str);
+    static Feature stringToFeature(const std::string& str);
+    static std::vector<Feature> parseAllFeatures(const nlohmann::json& jsonData);
+
     Card(const std::string& name, const std::string& description, std::optional <int> atk, std::optional <int> def, sf::Vector2f pos, sf::Vector2f size, sf::Texture& textureRef, Type type, Attribute attribute, std::optional <int> level, std::vector<Feature> features = {});
+    Card(sf::Texture& texture); 
     ~Card(); // Distruttore esplicito della classe 
 
     void draw(sf::RenderWindow& window, sf::Color color = sf::Color::White);
@@ -27,16 +36,17 @@ public:
     sf::Vector2f getPosition() const; // Restituisce la posizione della carta
     void setOffset(float offset);
     float getOffset() const;
-
     Type getType() const;
     Attribute getAttribute() const;
     std::optional<int> getLevelOrRank() const;
     const std::vector<Feature>& getFeatures() const;
 
+public:
+    std::string originalTexturePath;
 private:
     std::string name, description;
     std::optional <int> attack, defense, level, rank;
-    sf::Sprite sprite;
+    std::optional<sf::Sprite> sprite; // ora opzionale
     sf::Vector2f position;
     float offset = 0.f;
     Type type;

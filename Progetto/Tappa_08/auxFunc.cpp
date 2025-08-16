@@ -164,7 +164,6 @@ void showCardDetails(sf::RenderWindow& window,
             case Feature::Rituale: return "Rituale";
             case Feature::Synchro: return "Synchro";
             case Feature::Xyz: return "Xyz";
-            case Feature::Pendulum: return "Pendulum";
             case Feature::Normale: return "Normale";
             case Feature::Effetto: return "Effetto";
             case Feature::Aqua: return "Aqua";
@@ -189,6 +188,11 @@ void showCardDetails(sf::RenderWindow& window,
             case Feature::Guerriero: return "Guerriero";
             case Feature::Zombie: return "Zombie";
             case Feature::Psichico: return "Psichico";
+            case Feature::Tuner: return "Tuner";
+            case Feature::Rapida: return "Rapida";
+            case Feature::Continua: return "Continua";
+            case Feature::Terreno: return "Terreno";
+            case Feature::ControTrappola: return "Contro Trappola";
             default: return "Altro";
         }
     };
@@ -300,7 +304,7 @@ void showCardDetails(sf::RenderWindow& window,
     y = descY + descH + 6.f;
 
     // ATK/DEF subito sotto la descrizione, a destra
-    if (card.getValues().has_value()) {
+    if (card.getType() == Type::Monster && card.getValues().has_value()) {
         auto [atk, def] = card.getValues().value();
         std::string stats = "ATK/" + std::to_string(atk) + "  DEF/" + std::to_string(def);
         sf::Text statsText(font, stats, detailFontSize + 1);
@@ -319,36 +323,31 @@ void showCardDetails(sf::RenderWindow& window,
 }
 //-------------------------------- Funzioni per disegnare il testo della schermata di avvio --------------------------------//
 
-void drawStartScreen(sf::RenderWindow& window, const sf::Font& font, const sf::Vector2u& windowSize) {
-    // Titolo del gioco
-    sf::Text titleText(font, "IU-GHI-WOO", 36);
-    titleText.setFillColor(sf::Color::Yellow);
+void drawStartScreen(sf::RenderWindow& window, const sf::Font& font, const sf::Vector2u& windowSize, sf::Texture& screenTexture, float elapsedTime) {
+    // Sfondo della schermata di avvio
+    sf::Sprite backgroundSprite(screenTexture);
+    sf::Vector2u textureSize = screenTexture.getSize();
+    float scaleX = static_cast<float>(windowSize.x) / static_cast<float>(textureSize.x);
+    float scaleY = static_cast<float>(windowSize.y) / static_cast<float>(textureSize.y);
+    backgroundSprite.setScale(sf::Vector2f(scaleX, scaleY));
+
+    // Testo della schermata di avvio
+    sf::Text titleText(font, "Premere il tasto INVIO per iniziare a giocare", 36);
     titleText.setStyle(sf::Text::Bold);
-    
-    // Centra il titolo orizzontalmente
+
+    // Animazione fade-in/fade-out
+    float period = 2.5f; // secondi per ciclo completo
+    float phase = std::fmod(elapsedTime, period) / period; // fmod è la stessa cosa di % ma funziona anche coi i float e double
+    float alpha = 128 + 127 * std::sin(phase * 2 * 3.14159265f); // sfrutto una sinusoide per avere un periodo. In questo modo ogni tot periodo viene modificato l'alpha del valore per gestirne la trasparenza
+    titleText.setFillColor(sf::Color(255, 255, 0, static_cast<unsigned char>(alpha)));
+
+    // Centra il titolo orizzontalmente e in basso
     sf::FloatRect titleBounds = titleText.getLocalBounds();
-    titleText.setPosition(sf::Vector2f((windowSize.x - titleBounds.size.x) / 2.0f, 50.0f));
-    
-    // Istruzioni del gioco
-    std::string instructions = 
-        "Come giocare:\n\n"
-        "- Dopo la pressione del tasto INVIO, attendi qualche secondo dopo i quali le carte verranno pescate\n"
-        "- Nel campo, clicca sulle carte per visualizzare i dettagli della carta\n"
-        "- Usa la rotella del mouse per scorrere i dettagli \n"
-        "- Premi ESC per chiudere i dettagli delle carte, oppure premi in qualsiasi altro punto\n"
-        
-        "Premi INVIO per iniziare!";
-    
-    sf::Text instructionsText(font, instructions, 25);
-    instructionsText.setFillColor(sf::Color::White);
-    
-    // Posiziona le istruzioni
-    sf::FloatRect instrBounds = instructionsText.getLocalBounds();
-    instructionsText.setPosition(sf::Vector2f((windowSize.x - instrBounds.size.x) / 2.0f, 150.0f));
-    
+    titleText.setPosition(sf::Vector2f((windowSize.x - titleBounds.size.x) / 2.0f, windowSize.y - titleBounds.size.y - 125.0f));
+
     // Disegna tutto
+    window.draw(backgroundSprite);
     window.draw(titleText);
-    window.draw(instructionsText);
 }
 
 //-------------------------------- Funzione per la gestione delle carte in mano --------------------------------//
@@ -479,4 +478,96 @@ std::optional<sf::Vector2f> findSlotPosition(sf::Vector2f mousePos, const Card& 
     }
 
     return std::nullopt; // Se non trova uno slot valido, ritorna nullopt
+}
+
+//------------------------------- Funzione per la schermata Home --------------------------------//
+
+void drawHomeScreen(sf::RenderWindow& window, const sf::Font& font, const sf::Vector2u& windowSize, sf::Texture& homeTexture, const std::string& deckName) {
+    // Sfondo
+    sf::Sprite backgroundSprite(homeTexture);
+    sf::Vector2u textureSize = homeTexture.getSize();
+    float scaleX = static_cast<float>(windowSize.x) / static_cast<float>(textureSize.x);
+    float scaleY = (static_cast<float>(windowSize.y) / static_cast<float>(textureSize.y)) * 1.20f;;
+    backgroundSprite.setScale(sf::Vector2f(scaleX, scaleY));
+    window.draw(backgroundSprite);
+
+    // Scritta nome deck selezionato in alto
+    unsigned int deckFontSize = std::max(22u, static_cast<unsigned int>(windowSize.y * 0.03f));
+    sf::Text deckText(font, "Deck: " + deckName, deckFontSize);
+    deckText.setFillColor(sf::Color(255, 255, 180));
+    deckText.setStyle(sf::Text::Bold);
+    deckText.setOutlineColor(sf::Color(120, 80, 0, 180));
+    deckText.setOutlineThickness(2.f);
+    
+    // Centra orizzontalmente, posiziona in alto
+    sf::FloatRect deckBounds = deckText.getLocalBounds();
+    deckText.setPosition(sf::Vector2f((windowSize.x - deckBounds.size.x) / 2.0f, windowSize.y * 0.04f));
+    window.draw(deckText);
+
+    // --- PARTICELLE ANIMATE ---
+    static std::vector<sf::CircleShape> particles;
+    static std::vector<float> particleAlpha;
+    static std::vector<sf::Vector2f> particleVel;
+    static sf::Clock particleClock;
+    static sf::Clock spawnClock;
+    float dt = particleClock.restart().asSeconds();
+    // Aggiorna particelle
+    for (size_t i = 0; i < particles.size(); ++i) {
+        sf::Vector2f pos = particles[i].getPosition();
+        pos += particleVel[i] * dt;
+        particles[i].setPosition(pos);
+        float alpha = particleAlpha[i];
+        alpha -= dt * 60.f; // fade out
+        if (alpha < 0) alpha = 0;
+        particleAlpha[i] = alpha;
+        sf::Color c = particles[i].getFillColor();
+    c.a = static_cast<unsigned char>(alpha);
+        particles[i].setFillColor(c);
+    }
+    // Rimuovi particelle morte
+    for (int i = (int)particles.size()-1; i >= 0; --i) {
+        if (particleAlpha[i] <= 0) {
+            particles.erase(particles.begin()+i);
+            particleAlpha.erase(particleAlpha.begin()+i);
+            particleVel.erase(particleVel.begin()+i);
+        }
+    }
+    // Spawna nuove particelle
+    if (spawnClock.getElapsedTime().asSeconds() > 0.08f) {
+        spawnClock.restart();
+        int nNew = rand()%3+1;
+        for (int i=0; i<nNew; ++i) {
+            float x = static_cast<float>(rand()%windowSize.x);
+            float y = static_cast<float>(rand()%windowSize.y);
+            float r = 1.5f + static_cast<float>(rand()%20)/10.f;
+            sf::CircleShape p(r);
+            p.setPosition(sf::Vector2f(x, y));
+            p.setFillColor(sf::Color(255, 140, 40, 255));
+            particles.push_back(p);
+            particleAlpha.push_back(255.f);
+            float vx = -20.f + static_cast<float>(rand()%41);
+            float vy = -20.f + static_cast<float>(rand()%41);
+            particleVel.push_back(sf::Vector2f(vx, vy));
+        }
+    }
+    // Disegna particelle
+    for (auto& p : particles) window.draw(p);
+
+    // Voci menu
+    std::vector<std::string> menuItems = {"Gioca", "Seleziona Deck"};
+    unsigned int fontSize = std::max(36u, static_cast<unsigned int>(windowSize.y * 0.045f));
+    float leftMargin = windowSize.x * 0.08f;
+    float topMargin = windowSize.y * 0.22f;
+    float spacing = windowSize.y * 0.08f;
+
+    for (size_t i = 0; i < menuItems.size(); ++i) {
+        sf::Text menuText(font, menuItems[i] , fontSize);
+        menuText.setFillColor(sf::Color::White);
+        menuText.setStyle(sf::Text::Bold);
+        menuText.setOutlineColor(sf::Color(0,0,0,180));
+        menuText.setOutlineThickness(3.f);
+        menuText.setPosition(sf::Vector2f(leftMargin, topMargin + i * spacing));
+        window.draw(menuText);
+    }
+
 }

@@ -87,7 +87,10 @@ add_executable(mainTappa8
     Progetto/Tappa_08/Card/Card.cpp
     Progetto/Tappa_08/Deck/Deck.cpp
     Progetto/Tappa_08/DrawAnimation/DrawAnimation.cpp
-    Progetto/Tappa_08/auxFunc.cpp)
+    Progetto/Tappa_08/auxFunc.cpp
+    Progetto/Tappa_08/TextureManager/TextureManager.cpp
+    Progetto/Tappa_08/Deck/ShuffleAnimation.cpp
+    Progetto/Tappa_08/HomePage/HomePage.cpp)
 target_compile_features(mainTappa8 PRIVATE cxx_std_17)
 target_link_libraries(mainTappa8 PRIVATE SFML::Graphics)
 

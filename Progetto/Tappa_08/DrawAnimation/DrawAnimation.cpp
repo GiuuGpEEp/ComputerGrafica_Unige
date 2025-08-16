@@ -1,9 +1,9 @@
 #include "DrawAnimation.h"
 #define PAUSE_DURATION 3.f
 
-DrawAnimation::DrawAnimation(Card drawnCard, DrawAnimationPhases phase, sf::Vector2f startPos, sf::Vector2f pausePos)
+DrawAnimation::DrawAnimation(Card drawnCard, DrawAnimationPhases phase, sf::Vector2f startPos, sf::Vector2f pausePos, TextureManager& textureManager)
     : card(drawnCard), phase(phase), startPos(startPos), pausePos(pausePos) {
-
+    // TextureManager reference can be used if needed for initialization
 }
 
 bool DrawAnimation::moveTowards(sf::Vector2f& current, const sf::Vector2f& target, float speed, float deltaTime, Card& card) {
@@ -23,7 +23,7 @@ bool DrawAnimation::moveTowards(sf::Vector2f& current, const sf::Vector2f& targe
 }
 
 
-DrawAnimationPhases DrawAnimation::update(float moveSpeed, float deltaTime, sf::Texture& texture, std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE, bool skipPause) {
+DrawAnimationPhases DrawAnimation::update(float moveSpeed, float deltaTime, sf::Texture& texture, std::vector<Card>& cards, sf::Vector2u& windowSize, sf::Vector2f& cardSize, float spacing, float y, int HAND_MAXSIZE, bool skipPause, TextureManager& textureManager) {
     switch(phase){
         case DrawAnimationPhases::MovingOut: {
             sf::Vector2f& current = card.getPositionRef();
@@ -41,8 +41,10 @@ DrawAnimationPhases DrawAnimation::update(float moveSpeed, float deltaTime, sf::
 
         case DrawAnimationPhases::MovingToPause: {
             card.setSize(cardSize);
-            card.setTexture(texture);
-            sf::Vector2u texSize = texture.getSize();
+            // Usa la texture originale della carta
+            sf::Texture& originalTex = textureManager.getDeck1Texture(card.originalTexturePath);
+            card.setTexture(originalTex);
+            sf::Vector2u texSize = originalTex.getSize();
             card.setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
 
             sf::Vector2f& current = card.getPositionRef();

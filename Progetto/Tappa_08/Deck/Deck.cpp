@@ -1,37 +1,55 @@
- #include "Deck.h"
+#include "Deck.h"
 
-Deck::Deck(sf::Vector2f pos, sf::Vector2f deckCardSize, sf::Vector2f slotSize, sf::Texture& texture, int numberDeckCards)
-    : cardsSize(numberDeckCards), animationFinished(false){
 
-        cards.reserve(numberDeckCards + 5);
-
-        sf::Vector2f lastPos;
-
-        for(int i = 0; i < numberDeckCards-1; ++i) {
-            // Calcola il centro dello slot con un leggero aggiustamento verso il basso
-            sf::Vector2f slotCenter = pos + sf::Vector2f(slotSize.x / 2.f, slotSize.y / 2.f + 5.f);
-
-            // Applica l'offset di volta in volta per ogni carta per l'effetto di impilamento (carta 0 = top, carta 24 = bottom)
-            sf::Vector2f offset(0.f, -1.f * (24 - i));
-
-            // Centra la carta scalata rispetto al centro dello slot con offset
-            sf::Vector2f centeredPos = slotCenter - sf::Vector2f(deckCardSize.x / 2.f, deckCardSize.y / 2.f) + offset;
-
-            cards.emplace_back(
-                "Carta " + std::to_string(i + 1),
-                "Descrizione della carta " + std::to_string(i + 1),
-                1000, 800, centeredPos, deckCardSize, texture,
-                Type::Monster, Attribute::None, 4, std::vector<Feature>{}
-            );
-            lastPos = centeredPos;
+Deck Deck::deckFromJson(const nlohmann::json& deckJson,
+                        const std::unordered_map<std::string, Card>& allCards,
+                     sf::Vector2f pos, sf::Vector2f deckCardSize, sf::Vector2f slotSize,
+                        sf::Texture& textureFlipped)
+{
+    std::vector<Card> deckCards;
+    // Assumi che deckJson sia un array di deck, prendi il primo
+    if (!deckJson.is_array() || deckJson.empty()) {
+        throw std::runtime_error("Il JSON del deck non contiene alcun deck.");
+    }
+    const auto& deckObj = deckJson[0];
+    if (!deckObj.contains("cards")) {
+        throw std::runtime_error("Il JSON del deck non contiene la chiave 'cards'.");
+    }
+    for (const auto& cardName : deckObj["cards"]) {
+        auto it = allCards.find(cardName);
+        if (it != allCards.end()) {
+            deckCards.push_back(it->second);
         }
-        cards.emplace_back(
-            "Drago Bianco",
-            "Questo drago leggendario e' una potente macchina distruttrice. Virtualmente invincibile, sono in pochi ad aver fronteggiato questa creatura ed essere sopravvissuti per raccontarlo.",
-            3000, 2500, lastPos, deckCardSize, texture,
-            Type::Monster, Attribute::Luce, 8, std::vector<Feature>{Feature::Drago, Feature::Normale}
-        );
+    }
+    return Deck(deckCards, pos, deckCardSize, slotSize, textureFlipped);
+}
 
+
+
+Deck::Deck(const std::vector<Card>& cards, sf::Vector2f pos, sf::Vector2f deckCardSize, sf::Vector2f slotSize, sf::Texture& textureFlipped)
+    : cards(cards), cardsSize(static_cast<int>(cards.size())), animationFinished(false)
+{
+    sf::Vector2f lastPos;
+    int numberDeckCards = static_cast<int>(this->cards.size());
+    for (int i = 0; i < numberDeckCards - 1; ++i) {
+        sf::Vector2f slotCenter = pos + sf::Vector2f(slotSize.x / 2.f, slotSize.y / 2.f + 5.f);
+        sf::Vector2f offset(0.f, -1.f * (numberDeckCards - 1 - i));
+        sf::Vector2f centeredPos = slotCenter - sf::Vector2f(deckCardSize.x / 2.f, deckCardSize.y / 2.f) + offset;
+        this->cards[i].setPosition(centeredPos);
+        this->cards[i].setTexture(textureFlipped);
+        sf::Vector2u texSize = textureFlipped.getSize();
+        this->cards[i].setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+        this->cards[i].setSize(deckCardSize);
+        lastPos = centeredPos;
+    }
+    // Ultima carta
+    if (numberDeckCards > 0) {
+        this->cards[numberDeckCards - 1].setPosition(lastPos);
+        this->cards[numberDeckCards - 1].setTexture(textureFlipped);
+        sf::Vector2u texSize = textureFlipped.getSize();
+        this->cards[numberDeckCards - 1].setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+        this->cards[numberDeckCards - 1].setSize(deckCardSize);
+    }
 }
 
 Card Deck::drawCard() {
@@ -100,5 +118,65 @@ void Deck::animate(float deltaTime){
     if(deckAlpha >= 255.f) deckAlpha = 255.f;
 
     if(deckAlpha == 255.f) setAnimationFinished();
+}
+
+void Deck::shuffle(){
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(cards.begin(), cards.end(), g);
+}
+
+// Animazione avanzata: inizializza ShuffleAnimation
+void Deck::startShuffleAnimationAdvanced(sf::Vector2f deckPos, sf::Vector2f deckCardSize) {
+    if (!shuffleAnimation) shuffleAnimation = std::make_unique<ShuffleAnimation>();
+    shuffleAnimation->start(cards, deckPos, cards.size());
+}
+
+// Animazione avanzata: aggiorna ShuffleAnimation
+void Deck::updateShuffleAnimationAdvanced(float deltaTime) {
+    if (shuffleAnimation && !shuffleAnimation->isFinished()) {
+        shuffleAnimation->update(deltaTime);
+    }
+}
+
+// Animazione avanzata: disegna ShuffleAnimation
+void Deck::drawShuffleAnimationAdvanced(sf::RenderWindow& window) {
+    if (shuffleAnimation && !shuffleAnimation->isFinished()) {
+        shuffleAnimation->draw(window);
+    }
+}
+
+// Animazione avanzata: verifica se finita
+bool Deck::isShuffleAnimationAdvancedFinished() const {
+    return shuffleAnimation ? shuffleAnimation->isFinished() : true;
+}
+
+// Animazione avanzata: pulisci ShuffleAnimation
+void Deck::clearShuffleAnimationAdvanced() {
+    if (shuffleAnimation) shuffleAnimation->clear();
+}
+
+// Riallinea le carte del deck secondo la visualizzazione standard
+void Deck::resetDeckCardPositions(sf::Vector2f deckPos, sf::Vector2f deckCardSize, sf::Vector2f slotSize, sf::Texture& textureFlipped) {
+    sf::Vector2f lastPos;
+    int numberDeckCards = static_cast<int>(cards.size());
+    for (int i = 0; i < numberDeckCards - 1; ++i) {
+        sf::Vector2f slotCenter = deckPos + sf::Vector2f(slotSize.x / 2.f, slotSize.y / 2.f + 5.f);
+        sf::Vector2f offset(0.f, -1.f * (numberDeckCards - 1 - i));
+        sf::Vector2f centeredPos = slotCenter - sf::Vector2f(deckCardSize.x / 2.f, deckCardSize.y / 2.f) + offset;
+        cards[i].setPosition(centeredPos);
+        cards[i].setTexture(textureFlipped);
+        sf::Vector2u texSize = textureFlipped.getSize();
+        cards[i].setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+        cards[i].setSize(deckCardSize);
+        lastPos = centeredPos;
+    }
+    if (numberDeckCards > 0) {
+        cards[numberDeckCards - 1].setPosition(lastPos);
+        cards[numberDeckCards - 1].setTexture(textureFlipped);
+        sf::Vector2u texSize = textureFlipped.getSize();
+        cards[numberDeckCards - 1].setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+        cards[numberDeckCards - 1].setSize(deckCardSize);
+    }
 }
 
