@@ -1,0 +1,184 @@
+#include "Deck.h"
+
+
+Deck Deck::deckFromJson(const nlohmann::json& deckJson,
+                        const std::unordered_map<std::string, Card>& allCards,
+                     sf::Vector2f pos, sf::Vector2f deckCardSize, sf::Vector2f slotSize,
+                        sf::Texture& textureFlipped)
+{
+    std::vector<Card> deckCards;
+    // Assumi che deckJson sia un array di deck, prendi il primo
+    if (!deckJson.is_array() || deckJson.empty()) {
+        throw std::runtime_error("Il JSON del deck non contiene alcun deck.");
+    }
+    const auto& deckObj = deckJson[0];
+    if (!deckObj.contains("cards")) {
+        throw std::runtime_error("Il JSON del deck non contiene la chiave 'cards'.");
+    }
+    for (const auto& cardName : deckObj["cards"]) {
+        auto it = allCards.find(cardName);
+        if (it != allCards.end()) {
+            deckCards.push_back(it->second);
+        }
+    }
+    return Deck(deckCards, pos, deckCardSize, slotSize, textureFlipped);
+}
+
+
+
+Deck::Deck(const std::vector<Card>& cards, sf::Vector2f pos, sf::Vector2f deckCardSize, sf::Vector2f slotSize, sf::Texture& textureFlipped)
+    : cards(cards), cardsSize(static_cast<int>(cards.size())), animationFinished(false)
+{
+    sf::Vector2f lastPos;
+    int numberDeckCards = static_cast<int>(this->cards.size());
+    for (int i = 0; i < numberDeckCards - 1; ++i) {
+        sf::Vector2f slotCenter = pos + sf::Vector2f(slotSize.x / 2.f, slotSize.y / 2.f + 5.f);
+        sf::Vector2f offset(0.f, -1.f * (numberDeckCards - 1 - i));
+        sf::Vector2f centeredPos = slotCenter - sf::Vector2f(deckCardSize.x / 2.f, deckCardSize.y / 2.f) + offset;
+        this->cards[i].setPosition(centeredPos);
+        this->cards[i].setTexture(textureFlipped);
+        sf::Vector2u texSize = textureFlipped.getSize();
+        this->cards[i].setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+        this->cards[i].setSize(deckCardSize);
+        lastPos = centeredPos;
+    }
+    // Ultima carta
+    if (numberDeckCards > 0) {
+        this->cards[numberDeckCards - 1].setPosition(lastPos);
+        this->cards[numberDeckCards - 1].setTexture(textureFlipped);
+        sf::Vector2u texSize = textureFlipped.getSize();
+        this->cards[numberDeckCards - 1].setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+        this->cards[numberDeckCards - 1].setSize(deckCardSize);
+    }
+}
+
+Card Deck::drawCard() {
+    if(cardsSize <= 0) {
+        throw std::out_of_range("Deck is empty, cannot draw a card.");
+    }
+
+    Card drawnCard = cards.back();
+    cards.pop_back();
+    --cardsSize;
+
+    return drawnCard;
+}
+
+
+int Deck::getSize() const {
+    return static_cast<int>(cards.size());
+}
+
+bool Deck::isEmpty() const {
+    return cards.empty();
+}
+
+void Deck::draw(sf::RenderWindow& window, const sf::Vector2i& mousePos, const sf::Font& font, sf::Vector2f slotPos, sf::Vector2f slotSize, GameState gamestate){
+
+    if(gamestate != GameState::FieldVisible && gamestate != GameState::Playing) {
+        return;
+    }
+
+    sf::Color alphaColor(255, 255, 255, static_cast<uint8_t>(deckAlpha));
+
+    // Disegna le carte del deck
+    for(int i = 0; i < static_cast<int>(cards.size()); ++i) 
+        cards[cards.size() - 1 - i].draw(window, alphaColor);
+    
+    // Disegna il testo con il numero di carte solo se il mouse è sopra l'area del deck
+    sf::Vector2f mouseFloat(static_cast<float>(mousePos.x), static_cast<float>(mousePos.y));
+    sf::FloatRect deckArea(slotPos, slotSize);
+    
+    if (deckArea.contains(mouseFloat) && gamestate == GameState::Playing) {
+        sf::Text deckLabel(font, "", 16);
+        deckLabel.setFillColor(sf::Color::White);
+        deckLabel.setStyle(sf::Text::Bold);
+        deckLabel.setString(std::to_string(getSize()));
+        
+        // Calcola il centro del deck per posizionare il testo
+        sf::Vector2f deckCenter = slotPos + sf::Vector2f(slotSize.x / 2.f, slotSize.y / 2.f + 5.f);
+        sf::FloatRect textBounds = deckLabel.getLocalBounds();
+        deckLabel.setPosition(deckCenter - sf::Vector2f(textBounds.size.x / 2.f, textBounds.size.y / 0.5f));
+        window.draw(deckLabel);
+    }
+}
+
+void Deck::setAnimationFinished() {
+    animationFinished = true; 
+}
+
+bool Deck::isAnimationFinished() const{
+    return animationFinished; 
+}
+
+void Deck::animate(float deltaTime){
+    float fadeSpeed = 200.f;
+
+    deckAlpha += fadeSpeed * deltaTime;
+    if(deckAlpha >= 255.f) deckAlpha = 255.f;
+
+    if(deckAlpha == 255.f) setAnimationFinished();
+}
+
+void Deck::shuffle(){
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(cards.begin(), cards.end(), g);
+}
+
+// Animazione avanzata: inizializza ShuffleAnimation
+void Deck::startShuffleAnimationAdvanced(sf::Vector2f deckPos, sf::Vector2f deckCardSize) {
+    if (!shuffleAnimation) shuffleAnimation = std::make_unique<ShuffleAnimation>();
+    shuffleAnimation->start(cards, deckPos, cards.size());
+}
+
+// Animazione avanzata: aggiorna ShuffleAnimation
+void Deck::updateShuffleAnimationAdvanced(float deltaTime) {
+    if (shuffleAnimation && !shuffleAnimation->isFinished()) {
+        shuffleAnimation->update(deltaTime);
+    }
+}
+
+// Animazione avanzata: disegna ShuffleAnimation
+void Deck::drawShuffleAnimationAdvanced(sf::RenderWindow& window) {
+    if (shuffleAnimation && !shuffleAnimation->isFinished()) {
+        shuffleAnimation->draw(window);
+    }
+}
+
+// Animazione avanzata: verifica se finita
+bool Deck::isShuffleAnimationAdvancedFinished() const {
+    return shuffleAnimation ? shuffleAnimation->isFinished() : true;
+}
+
+// Animazione avanzata: pulisci ShuffleAnimation
+void Deck::clearShuffleAnimationAdvanced() {
+    if (shuffleAnimation) shuffleAnimation->clear();
+}
+
+// Riallinea le carte del deck secondo la visualizzazione standard
+void Deck::resetDeckCardPositions(sf::Vector2f deckPos, sf::Vector2f deckCardSize, sf::Vector2f slotSize, sf::Texture& textureFlipped) {
+    sf::Vector2f lastPos;
+    int numberDeckCards = static_cast<int>(cards.size());
+    for (int i = 0; i < numberDeckCards - 1; ++i) {
+        sf::Vector2f slotCenter = deckPos + sf::Vector2f(slotSize.x / 2.f, slotSize.y / 2.f + 5.f);
+        sf::Vector2f offset(0.f, -1.f * (numberDeckCards - 1 - i));
+        sf::Vector2f centeredPos = slotCenter - sf::Vector2f(deckCardSize.x / 2.f, deckCardSize.y / 2.f) + offset;
+        cards[i].setPosition(centeredPos);
+        cards[i].setTexture(textureFlipped);
+        sf::Vector2u texSize = textureFlipped.getSize();
+        cards[i].setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+        cards[i].setSize(deckCardSize);
+        lastPos = centeredPos;
+    }
+    if (numberDeckCards > 0) {
+        cards[numberDeckCards - 1].setPosition(lastPos);
+        cards[numberDeckCards - 1].setTexture(textureFlipped);
+        sf::Vector2u texSize = textureFlipped.getSize();
+        cards[numberDeckCards - 1].setTextureRect(sf::IntRect(sf::Vector2i(0, 0), sf::Vector2i(texSize.x, texSize.y)));
+        cards[numberDeckCards - 1].setSize(deckCardSize);
+    }
+}
+
+std
+
