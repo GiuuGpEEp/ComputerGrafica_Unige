@@ -137,30 +137,37 @@ void DeckSelectionScreen::draw(sf::RenderWindow& window) {
     for (auto& p : particles) window.draw(p);
 
      sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-    for (int i = 0; i < deckRects.size(); ++i) {
+    for (int i = 0; i < static_cast<int>(deckRects.size()); ++i) {
         window.draw(deckRects[i]);
-        
-        // Effetto zoom su hover
+
+        // Copia locale dello sprite per applicare effetti hover senza modificare l'originale
         sf::Sprite sprite = deckSprites[i];
+    const sf::Texture& tex = sprite.getTexture();
+    sf::Vector2u texSize = tex.getSize();
+        if (texSize.x == 0 || texSize.y == 0) {
+            // Texture non ancora valida / caricata male
+            continue;
+        }
+
         sf::FloatRect bounds = deckRects[i].getGlobalBounds();
         bool isHovered = bounds.contains(static_cast<sf::Vector2f>(mousePos));
-        if (isHovered) {
-            sf::Texture deckTex = sprite.getTexture();
-            sf::Vector2u texSize = deckTex.getSize();
-            float boxWidth = deckRects[i].getSize().x;
-            float boxHeight = deckRects[i].getSize().y;
-            float baseScale = std::min((boxWidth-20) / float(texSize.x), (boxHeight-80) / float(texSize.y));
-            float spriteScale = baseScale * 1.18f;
-            float boxX = deckRects[i].getPosition().x;
-            float boxY = deckRects[i].getPosition().y;
-            float spriteX = boxX + (boxWidth - texSize.x * spriteScale) / 2.f;
-            float spriteY = boxY + 15.f - 10.f;
-            sprite.setScale(sf::Vector2f(spriteScale, spriteScale));
-            sprite.setPosition(sf::Vector2f(spriteX, spriteY));
-        }
+
+        float boxWidth = deckRects[i].getSize().x;
+        float boxHeight = deckRects[i].getSize().y;
+        float baseScale = std::min((boxWidth - 20.f) / float(texSize.x), (boxHeight - 80.f) / float(texSize.y));
+        if (baseScale <= 0.f || !std::isfinite(baseScale)) baseScale = 1.f; // fallback sicuro
+        float spriteScale = isHovered ? baseScale * 1.18f : baseScale;
+        float extraYOffset = isHovered ? -10.f : 0.f;
+
+        float boxX = deckRects[i].getPosition().x;
+        float boxY = deckRects[i].getPosition().y;
+        float spriteX = boxX + (boxWidth - texSize.x * spriteScale) / 2.f;
+        float spriteY = boxY + 15.f + extraYOffset;
+        sprite.setScale(sf::Vector2f(spriteScale, spriteScale));
+        sprite.setPosition(sf::Vector2f(spriteX, spriteY));
+
         window.draw(sprite);
         window.draw(deckLabelsText[i]);
-        
     }
 
     // Disegna testo conferma selezione (in basso al centro) se presente
