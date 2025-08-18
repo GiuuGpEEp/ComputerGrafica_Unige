@@ -1,0 +1,483 @@
+[
+    {
+        "name": "Drago Bianco Occhi Blu",
+        "description": "Questo drago leggendario è una potente macchina distruttrice. Virtualmente invincibile, sono in pochi ad aver fronteggiato questa creatura ed essere sopravvissuti per raccontarlo.",
+        "attack": 3000,
+        "defense": 2500,
+        "level": 8,
+        "type": "Mostro", 
+        "attribute": "Luce",
+        "features": ["Drago", "Normale"],
+        "texture": "dragoBiancoOcchiBluTex.png"          
+    },
+
+    {
+        "name": "Saggio con gli Occhi Blu",
+        "description": "Quando questa carta viene Evocata Normalmente o Specialmente: puoi aggiungere 1 mostro di Tipo Drago di Livello 1 dalla tua mano, Deck o Cimitero alla tua mano. \n Puoi scartare questa carta, poi scegliere come bersaglio 1 mostro a terra che controlli: manda quella carta al Cimitero, poi Evoca Specialmente 1 \"Drago Bianco Occhi Blu\" o 1 \"Drago Spirito Occhi Blu\" dalla tua mano, Deck o Cimitero. \n Puoi utilizzare l'effetto di saggio con gli occhi blu una sola volta per turno." ,
+        "attack": 0,
+        "defense": 0,
+        "level": 1,
+        "type": "Mostro",
+        "attribute": "Luce",
+        "features": ["Incantatore", "Tuner", "Effetto"],
+        "texture": "saggioConGliOcchiBluTex.png" 
+    },
+
+    {
+        "name": "Fanciulla con gli Occhi di Blu",
+        "description": "Quando questa carta viene scelta come bersaglio di un attacco: puoi Evocare Specialmente 1 \"Drago Bianco Occhi Blu\" dalla tua mano, Deck o Cimitero. \n Quando questa carta viene scelta come bersaglio da una carta, o dall'effetto di una carta Magia o Trappola: puoi Evocare Specialmente 1 \"Drago Bianco Occhi Blu\" dalla tua mano, Deck o Cimitero. \n Puoi utilizzare questo effetto di \"Donzella con gli Occhi di Blu\" una sola volta per turno." ,
+        "attack": 0,
+        "defense": 0,
+        "level": 1,
+        "type": "Mostro",
+        "attribute": "Luce",
+        "features": ["Incantatore", "Effetto"],
+        "texture": "fanciullaConGliOcchiBluTex.png"
+    },
+
+    {
+        "name": "Pietra Bianca degli Antichi",
+        "description": "Se questa carta viene distrutta in battaglia o da un effetto di una carta: puoi Evocare Specialmente 1 \"Drago Bianco Occhi Blu\" dal tuo Deck. \n Puoi bandire questa carta dal tuo Cimitero, poi scegliere come bersaglio 1 \"Drago Bianco Occhi Blu\" nel tuo Cimitero; aggiungilo alla tua mano. \n Puoi utilizzare questo effetto di \"Pietra Bianca degli Antichi\" una sola volta per turno." ,
+        "attack": 600,
+        "defense": 500,
+        "level": 1,
+        "type": "Mostro",
+        "attribute": "Luce",
+        "features": ["Drago", "Tuner", "Effetto"],
+        "texture": "pietraBiancaDegliAntichiTex.png"
+    },
+
+    {
+        "name": "Pietra Bianca della Leggenda",
+        "description": "Se questa carta viene mandata al Cimitero: puoi aggiungere 1 \"Drago Bianco Occhi Blu\" dal tuo Deck alla tua mano.",
+        "attack": 300,
+        "defense": 250,
+        "level": 1,
+        "type": "Mostro",
+        "attribute": "Luce",
+        "features": ["Drago", "Tuner", "Effetto"],
+        "texture": "pietraBiancaDellaLeggendaTex.png"
+    },
+
+    {
+        "name": "Drago Spirito del Bianco",
+        "description": "Questa carta è sempre trattata come una carta \"Drago Bianco Occhi Blu\" in mano o nel cimitero. \n Questa carta può essere Evocata Specialmente dalla mano o dal Cimitero. \n Una volta per turno, puoi bandire 1 Magia/Trappola dal Cimitero dell'avversario. Se questa carta viene distrutta in battaglia, puoi Evocare Specialmente 1 \"Drago Bianco Occhi Blu\" dal tuo Deck.",
+        "attack": 2500,
+        "defense": 2000,
+        "level": 8,
+        "type": "Mostro",
+        "attribute": "Luce",
+        "features": ["Drago", "Effetto"],
+        "texture": "dragoSpiritoDelBiancoTex.png"
+    },
+
+    {
+        "name": "La Melodia del Drago che si Risveglia",
+        "description": "Scarta 1 carta; aggiungi fino a 2 mostri di tipo Drago con ATK 3000 o superiore e DEF 2500 o inferiore dalla tua mano.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Rapida"],
+        "texture": "laMelodiaDelDragoCheSiRisvegliaTex.png"
+    },
+
+    {
+        "name": "Reliquario del Drago",
+        "description": "Manda 1 mostro di Tipo Drago dal tuo Deck al Cimitero. Se il mostro è un mostro di Tipo Normale, puoi mandare 1 mostro aggiuntivo di Tipo Drago dal tuo Deck al Cimitero.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Normale"],
+        "texture": "reliquarioDelDragoTex.png"
+    },
+
+    {
+        "name": "Anima Succeditrice",
+        "description": "Offri come Tributo 1 Mostro con Effetto, poi scegli come bersaglio 1 Mostro con Effetto controllato dal tuo avversario; mandalo al Cimitero, poi Evoca Specialmente 1 Mostro Normale di Livello 7 o superiore dalla tua mano o Deck. \n Puoi attivare solo 1 \"Anima Succeditrice\" per turno. \n Puoi attaccare solo con 1 mostro durante il turno in cui attivi questa carta.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Rapida"],
+        "texture": "animaSucceditriceTex.png"
+    },
+
+    {
+        "name": "Mausoleo del Bianco",
+        "description": "Offri come Tributo 1 Mostro con Effetto, poi scegli come bersaglio 1 Mostro con Effetto controllato dal tuo avversario; mandalo al Cimitero, poi Evoca Specialmente 1 Mostro Normale di Livello 7 o superiore dalla tua mano o Deck. \n Puoi attivare solo 1 \"Anima Succeditrice\" per turno. \n Puoi attaccare solo con 1 mostro durante il turno in cui attivi questa carta.",
+        "type": "Terreno",
+        "attribute": "Magia",
+        "features": ["Terreno"],
+        "texture": "mausoleoDelBiancoTex.png"
+    },
+
+    {
+        "name": "Pianto di Argento",
+        "description": "Scegli come bersaglio 1 Mostro Normale Drago nel tuo Cimitero; Evoca Specialmente quel bersaglio. \n Puoi attivare solo 1 \"Pianto di Argento\" per turno.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Rapida"],
+        "texture": "piantoDiArgentoTex.png"
+    },
+    
+    {
+        "name": "Richiamo del Posseduto",
+        "description": "(Questa carta non viene considerata come una carta \"Posseduto\".) \n Attiva questa carta scegliendo come bersaglio 1 mostro nel tuo Cimitero; Evoca Specialmente quel bersaglio in Posizione di Attacco. Quando questa carta lascia il Terreno, distruggi quel mostro. Quando quel mostro viene distrutto, distruggi questa carta.",
+        "type": "Trappola",
+        "attribute": "Trappola",
+        "features": ["Continua"],
+        "texture": "richiamoDelPossedutoTex.png"
+    },
+
+    {
+        "name": "Rivali Predestinati",
+        "description": "Se controlli \"Drago Bianco Occhi Blu\" o \"Mago Nero\": annulla gli effetti di tutti i mostri scoperti attualmente controllati dal tuo avversario, fino alla fine di questo turno. Puoi attivare solo 1 \"Rivali Predestinati\" per turno.",
+        "type": "Trappola",
+        "attribute": "Trappola",
+        "features": ["Normale"],
+        "texture": "rivaliPredestinatiTex.png"
+    },
+
+    {
+        "name": "Drago Spirito Occhi Blu",
+        "description": "1 Tuner + 1+ mostri \"Occhi Blu\" non-Tuner \n Nessun giocatore può Evocare Specialmente 2 o più mostri allo stesso tempo. Una volta per turno, quando viene attivato un effetto di una carta nel Cimitero (Effetto Rapido): puoi annullare l'attivazione. (Effetto Rapido): puoi offrire come Tributo questa carta Synchro Evocata; Evoca Specialmente 1 Mostro Synchro LUCE Drago dal tuo Extra Deck in Posizione di Difesa, eccetto \"Drago Spirito Occhi Blu\", ma distruggilo durante la End Phase di questo turno.",
+        "attack": 2500,
+        "defense": 3000,
+        "level": 9,
+        "type": "Mostro",
+        "attribute": "Luce",
+        "features": ["Drago", "Synchro", "Effetto"],
+        "texture": "dragoSpiritoOcchiBluTex.png"
+    },
+
+    {
+        "name": "Drago argento occhi azzurri",
+        "description": "1 Tuner + 1+ Mostri Normali non-Tuner \n Se questa carta viene Evocata Specialmente: fino alla fine del prossimo turno, nessun giocatore può scegliere i mostri Drago che controlli attualmente come bersaglio con gli effetti delle carte, inoltre essi non possono essere distrutti dagli effetti delle carte. Una volta per turno, durante la tua Standby Phase: puoi scegliere come bersaglio 1 Mostro Normale nel tuo Cimitero; Evocalo Specialmente.",
+        "attack": 2500,
+        "defense": 3000,
+        "level": 9,
+        "type": "Mostro",
+        "attribute": "Luce",
+        "features": ["Drago", "Synchro", "Effetto"],
+        "texture": "dragoArgentoOcchiAzzurriTex.png"
+    },
+
+    {
+        "name": "Mago Nero",
+        "description": "Il più potente tra i maghi per abilità offensive e difensive.",
+        "attack": 2500,
+        "defense": 2100,
+        "level": 7,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Incantatore", "Normale"],
+        "texture": "magoNeroTex.png"
+    },
+
+    {
+        "name": "Mago Del Chaos",
+        "description": "Puoi Evocare tramite Rituale questa carta con \"Forma del Chaos\". Il nome di questa carta diventa \"Mago Nero\" mentre è sul Terreno o nel Cimitero. Una volta per turno, quando viene attivata una Carta Magia/Trappola o un suo effetto (Effetto Rapido): puoi scegliere come bersaglio 1 carta sul Terreno; distruggila. Se questa carta Evocata tramite Rituale viene distrutta in battaglia o dall'effetto di una carta: puoi Evocare Specialmente 1 Mostro Rituale \"Chaos\" o \"Glorioso Soldato Nero\" dalla tua mano, eccetto \"Mago del Chaos\", ignorando le sue condizioni di Evocazione.",
+        "attack": 2500,
+        "defense": 2100,
+        "level": 7,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Incantatore", "Rituale", "Effetto"],
+        "texture": "magoDelChaosTex.png"
+    },
+
+    {
+        "name": "Maga Illusione Apprendista",
+        "description": "Puoi Evocare Specialmente questa carta (dalla tua mano) scartando 1 carta. Se questa carta viene Evocata Normalmente o Specialmente: puoi aggiungere 1 \"Mago Nero\" dal tuo Deck alla tua mano. Durante il calcolo dei danni, se un tuo altro mostro OSCURITÀ Incantatore combatte con un mostro dell'avversario (Effetto Rapido): puoi mandare questa carta dalla tua mano o Terreno scoperto al Cimitero; quel mostro che controlli guadagna 2000 ATK/DEF solamente durante quel calcolo dei danni.",
+        "attack": 2000,
+        "defense": 1700,
+        "level": 6,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Incantatore", "Effetto"],
+        "texture": "magaIllusioneApprendistaTex.png"
+    },
+
+    {
+        "name": "Mago dell'Illusione Nera",
+        "description": "Il nome di questa carta diventa \"Mago Nero\" mentre è sul Terreno. Puoi utilizzare ognuno di questi effetti di \"Mago dell'Illusione Nera\" una sola volta per turno \n. - Durante il turno del tuo avversario, se attivi una Carta Magia/Trappola o un suo effetto (eccetto durante il Damage Step): puoi Evocare Specialmente questa carta dalla tua mano. - Se attivi una Carta Magia/Trappola o un suo effetto (eccetto durante il Damage Step) mentre questa carta è scoperta sul tuo Terreno: puoi scegliere come bersaglio 1 \"Mago Nero\" nel tuo Cimitero; Evocalo Specialmente. Questo effetto può essere utilizzato una sola volta mentre questa carta è scoperta sul Terreno.",
+        "attack": 2100,
+        "defense": 2500,
+        "level": 7,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Incantatore", "Effetto"],
+        "texture": "magoIllusioneNeraTex.png"
+    },
+
+    {
+        "name": "Verga del Mago",
+        "description": "Quando questa carta viene Evocata Normalmente: puoi aggiungere dal tuo Deck alla tua mano 1 Magia/Trappola che menziona \"Mago Nero\". Durante il turno del tuo avversario, se attivi una Carta Magia/Trappola o un suo effetto mentre questa carta è nel tuo Cimitero (eccetto durante il Damage Step): puoi offrire come Tributo 1 mostro Incantatore; aggiungi questa carta alla tua mano. Puoi utilizzare ogni effetto di \"Verga del Mago\" una sola volta per turno.",
+        "attack": 1600,
+        "defense": 100,
+        "level": 3,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Incantatore", "Effetto"],
+        "texture": "vergaDelMagoTex.png"
+    },
+
+    {
+        "name": "Fusione Magicalizzata",
+        "description": "Evoca tramite Fusione 1 Mostro Fusione Incantatore dal tuo Extra Deck, bandendo i Materiali da Fusione menzionati su di esso dal tuo Terreno o Cimitero. Puoi attivare solo 1 \"Fusione Magicalizzata\" per turno.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Normale"],
+        "texture": "fusioneMagicalizzataTex.png"
+    },
+
+    {
+        "name": "Occhio di Timaeus",
+        "description": "(Questa carta viene anche sempre considerata come \"Leggendario Drago Timaeus\".)\nScegli come bersaglio 1 mostro \"Mago Nero\" che controlli; Evoca tramite Fusione dal tuo Extra Deck 1 Mostro Fusione che menziona quel mostro sul Terreno come materiale, utilizzandolo come Materiale da Fusione. Puoi attivare solo 1 \"L'Occhio di Timaeus\" per turno.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Normale"],
+        "texture": "occhioDiTimaeusTex.png"
+    },
+
+    {
+        "name": "Forma del Chaos",
+        "description": "Questa carta può essere utilizzata per Evocare tramite Rituale qualsiasi Mostro Rituale \"Chaos\" o \"Glorioso Soldato Nero\". Devi anche offrire come Tributo mostri dalla tua mano o Terreno, e/o bandire \"Drago Bianco Occhi Blu\" o \"Mago Nero\" dal tuo Cimitero, il cui Livello totale sia esattamente pari al Livello del Mostro Rituale \"Chaos\" o \"Glorioso Soldato Nero\" che stai Evocando tramite Rituale.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Rituale"],
+        "texture": "formaDelChaosTex.png"
+    },
+
+    {
+        "name": "Circolo Magico Nero",
+        "description": "Quando questa carta viene attivata: guarda le prime 3 carte del tuo Deck, poi puoi rivelare 1 di esse che è \"Mago Nero\" o una Magia/Trappola che menziona \"Mago Nero\", e aggiungila alla tua mano, inoltre metti le carte rimanenti in cima al tuo Deck in qualsiasi ordine. Se \"Mago Nero\" viene Evocato Normalmente o Specialmente sul tuo Terreno (eccetto durante il Damage Step): puoi scegliere come bersaglio 1 carta controllata dal tuo avversario; bandiscila. Puoi utilizzare ogni effetto di \"Circolo Magico Nero\" una sola volta per turno.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Continua"],
+        "texture": "circoloMagicoNeroTex.png"
+    },
+
+    {
+        "name": "Navigazione Magica",
+        "description": "Evoca Specialmente 1 \"Mago Nero\" dalla tua mano, poi Evoca Specialmente 1 mostro OSCURITÀ Incantatore di Livello 7 o inferiore dal tuo Deck. Se controlli \"Mago Nero\", eccetto nel turno in cui questa carta è stata mandata al Cimitero: puoi bandire questa carta dal tuo Cimitero, poi scegliere come bersaglio 1 Magia/Trappola scoperta controllata dal tuo avversario; annulla i suoi effetti fino alla fine di questo turno.",
+        "type": "Trappola",
+        "attribute": "Trappola",
+        "features": ["Normale"],
+        "texture": "navigazioneMagicaTex.png"
+    },
+
+    {
+        "name": "Anima Immortale",
+        "description": "Ogni \"Mago Nero\" nella tua Zona Mostri è immune agli effetti delle carte del tuo avversario. Se questa carta scoperta lascia il Terreno: distruggi tutti i mostri che controlli. Puoi utilizzare il seguente effetto di \"Anima Immortale\" una sola volta per turno. Puoi attivare 1 di questi effetti; \n - Evoca Specialmente 1 \"Mago Nero\" dalla tua mano o Cimitero. \n - Aggiungi 1 \"Attacco Mago Nero\" o \"Mille Coltelli\" dal tuo Deck alla tua mano.",
+        "type": "Trappola",
+        "attribute": "Trappola",
+        "features": ["Continua"],
+        "texture": "animaImmortaleTex.png"
+    },
+
+    {
+        "name": "Paladino Oscuro",
+        "description": "\"Mago Nero\" + \"Combattente delle Lame\" \n Deve essere Evocato tramite Fusione. Quando viene attivata una Carta Magia (Effetto Rapido): puoi scartare 1 carta; annulla l'attivazione e, se lo fai, distruggila. Questa carta deve essere scoperta sul Terreno per attivare e risolvere questo effetto. Guadagna 500 ATK per ogni mostro Drago sul Terreno e nel Cimitero.",
+        "attack": 2900,
+        "defense": 2400,
+        "level": 8,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Incantatore", "Fusione", "Effetto"],
+        "texture": "paladinoOscuroTex.png"
+    },
+
+    {
+        "name": "Cavalleria Oscura",
+        "description": "\"Mago Nero\" + 1 mostro Guerriero \n Guadagna 100 ATK per ogni Magia/Trappola sul Terreno e nei Cimiteri. Se questa carta attacca un mostro in Posizione di Difesa, infliggi danno da combattimento perforante. Quando viene attivata una carta o un effetto che sceglie come bersaglio una carta sul Terreno (Effetto Rapido): puoi scartare 1 carta; annulla l'attivazione e, se lo fai, distruggila.",
+        "attack": 2800,
+        "defense": 2300,
+        "level": 8,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Incantatore", "Fusione", "Effetto"],
+        "texture": "cavalleriaOscuraTex.png"
+    },
+
+    {
+        "name": "Mago Illusione d'Ebano",
+        "description": "2 mostri di Livello 7 \n Puoi anche Evocare Xyz questa carta utilizzando un Mostro Xyz Incantatore di Rango 6 che controlli come materiale. (Trasferisci i suoi materiali su questa carta.) Una volta per turno: puoi staccare 1 materiale da questa carta; Evoca Specialmente 1 Mostro Normale Incantatore dalla tua mano o Deck. Quando un Mostro Normale Incantatore dichiara un attacco: puoi scegliere come bersaglio 1 carta controllata dal tuo avversario; bandiscila. Puoi utilizzare questo effetto di \"Mago Illusione d'Ebano\" una sola volta per turno.",
+        "attack": 2500,
+        "defense": 2100,
+        "rank": 7,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Incantatore", "Xyz", "Effetto"],
+        "texture": "magoIllusioneEbanoTex.png"
+    },
+
+    {
+        "name": "Mago Nero Cavaliere del Drago",
+        "description": "\"Mago Nero\" + 1 mostro Drago \n Il nome di questa carta diventa \"Mago Nero\" mentre è sul Terreno o nel Cimitero. Il tuo avversario non può scegliere come bersaglio Magie/Trappole che controlli con gli effetti delle carte, inoltre esse non possono essere distrutte dagli effetti delle carte del tuo avversario.",
+        "attack": 3000,
+        "defense": 2500,
+        "rank": 8,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Drago", "Fusione", "Effetto"],
+        "texture": "magoNeroCavaliereDelDragoTex.png"
+    },
+
+    {
+        "name": "Drago Metallico Nero",
+        "description": "Puoi scegliere come bersaglio 1 mostro \"Occhi Rossi\" che controlli; equipaggia questo mostro dalla tua mano o Terreno a quel bersaglio. Esso guadagna 600 ATK. Se questa carta viene mandata dal Terreno al Cimitero: puoi aggiungere 1 carta \"Occhi Rossi\" dal tuo Deck alla tua mano.",
+        "attack": 600,
+        "defense": 600,
+        "level": 1,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Drago", "Effetto"],
+        "texture": "dragoMetallicoNeroTex.png"
+    },
+
+    {
+        "name": "Gearfried il Cavaliere di Ferro Occhi Rossi",
+        "description": "Una volta per turno, se qualsiasi giocatore equipaggia una o più Carte Equipaggiamento a questa carta: puoi distruggere quelle Carte Equipaggiamento, poi puoi distruggere 1 Magia/Trappola controllata dal tuo avversario. Una volta per turno: puoi mandare al Cimitero 1 Carta Equipaggiamento che controlli equipaggiata a questa carta, poi scegliere come bersaglio 1 mostro \"Occhi Rossi\" di Livello 7 o inferiore nel tuo Cimitero; Evocalo Specialmente.",
+        "attack": 1800,
+        "defense": 1600,
+        "level": 4,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Guerriero", "Effetto"],
+        "texture": "gearfriedCavaliereFerroOcchiRossiTex.png"
+    },
+
+    {
+        "name": "Arcidemone Occhi Rossi Del Fulmine",
+        "description": "Questa carta viene considerata come un Mostro Normale mentre è scoperta sul Terreno o nel Cimitero. Mentre questa carta è un Mostro Normale sul Terreno, puoi Evocarla Normalmente per farla diventare un Mostro con Effetto con questo effetto. \n - Una volta per turno: puoi distruggere tutti i mostri scoperti controllati dal tuo avversario con DEF inferiore all'ATK di questa carta.",
+        "attack": 2500,
+        "defense": 1200,
+        "level": 6,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Demone", "Gemello", "Effetto"],
+        "texture": "arcidemoneOcchiRossiDelFulmineTex.png"
+    },
+
+    {
+        "name": "Cucciolo di Occhi-Rossi",
+        "description": "Puoi mandare questa carta scoperta che controlli al Cimitero; Evoca Specialmente 1 \"Drago Nero Occhi Rossi\" dalla tua mano.",
+        "attack": 800,
+        "defense": 500,
+        "level": 1,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Drago", "Effetto"],
+        "texture": "cuccioloOcchiRossiTex.png"
+    },
+
+    {
+        "name": "Drago Nero Occhi Rossi",
+        "description": "Un feroce drago dotato di un attacco mortale.",
+        "attack": 2400,
+        "defense": 2000,
+        "level": 7,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Drago", "Normale"],
+        "texture": "dragoNeroOcchiRossiTex.png"
+    },
+
+    {
+        "name": "Viverna Occhi Rossi",
+        "description": "Una volta per turno, durante la tua End Phase: puoi bandire questa carta dal tuo Cimitero, poi scegliere come bersaglio 1 mostro \"Occhi Rossi\" nel tuo Cimitero; Evoca Specialmente quel bersaglio. Non puoi Evocare Normalmente/Posizionare durante il turno in cui attivi questo effetto.",
+        "attack": 1800,
+        "defense": 1600,
+        "level": 4,
+        "type": "Mostro",
+        "attribute": "Vento",
+        "features": ["Drago", "Effetto"],
+        "texture": "vivernaOcchiRossiTex.png"
+    },
+
+    {
+        "name": "Fusione Occhi Rossi",
+        "description": "Evoca tramite Fusione 1 Mostro Fusione che indica un mostro \"Occhi Rossi\" come materiale dal tuo Extra Deck, utilizzando mostri dalla tua mano, Deck o Terreno come Materiale da Fusione e, se lo fai, il suo nome diventa \"Drago Nero Occhi Rossi\". Non puoi Evocare Normalmente o Specialmente altri mostri nel turno in cui attivi questa carta. Puoi attivare solo 1 \"Fusione Occhi Rossi\" per turno.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Normale"],
+        "texture": "fusioneOcchiRossiTex.png"
+    },
+
+    {
+        "name": "Intuizione Occhi Rossi",
+        "description": "Manda 1 mostro \"Occhi Rossi\" dalla tua mano o Deck al Cimitero; aggiungi 1 Magia/Trappola \"Occhi Rossi\" dal tuo Deck alla tua mano, eccetto \"Intuizione Occhi Rossi\". Puoi attivare solo 1 \"Intuizione Occhi Rossi\" per turno.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Normale"],
+        "texture": "intuizioneOcchiRossiTex.png"
+    },
+
+    {
+        "name": "Artiglio di Hermos",
+        "description": "(Questa carta viene anche sempre considerata come \"Leggendario Drago Hermos\".)\nManda, dalla tua mano o Terreno al Cimitero, 1 mostro del Tipo indicato su un Mostro Fusione che può essere Evocato Specialmente solo con \"Artiglio di Hermos\" (se quella carta è Posizionata, rivelala), poi Evoca Specialmente quel Mostro Fusione dal tuo Extra Deck. Puoi attivare solo 1 \"Artiglio di Hermos\" per turno.",
+        "type": "Magia",
+        "attribute": "Magia",
+        "features": ["Normale"],
+        "texture": "artiglioHermosTex.png"
+    },
+
+    {
+        "name": "Spirito Occhi Rossi",
+        "description": "Scegli come bersaglio 1 mostro \"Occhi Rossi\" nel tuo Cimitero; Evocalo Specialmente.",
+        "type": "Trappola",
+        "attribute": "Trappola",
+        "features": ["Normale"],
+        "texture": "spiritoOcchiRossiTex.png"
+    },
+
+    {
+        "name": "Zanna Occhi Rossi con Catena",
+        "description": "Scegli come bersaglio 1 mostro \"Occhi Rossi\" che controlli; equipaggia questa carta ad esso. Esso può effettuare fino a 2 attacchi su mostri durante ogni Battle Phase. Puoi mandare questa Carta Equipaggiamento al Cimitero, poi scegliere come bersaglio 1 Mostro con Effetto sul Terreno; equipaggia quel bersaglio al mostro a cui questa carta era equipaggiata e, se lo fai, mentre un mostro è equipaggiato ad esso da questo effetto, i suoi ATK/DEF diventano pari agli ATK/DEF originali di quel mostro equipaggiato.",
+        "type": "Trappola",
+        "attribute": "Trappola",
+        "features": ["Normale"],
+        "texture": "zannaOcchiRossiConCatenaTex.png"
+    },
+
+    {
+        "name": "Arcidemone Drago Teschio Nero",
+        "description": "1 Mostro Normale \"Arcidemone\" di Livello 6 + 1 Mostro Normale \"Occhi Rossi\"\nPuoi Evocare Specialmente uno o più \"Arcidemone Drago Teschio Nero\" una sola volta per turno. Se questa carta combatte, le carte e gli effetti del tuo avversario non possono essere attivati fino alla fine del Damage Step. Se viene effettuato un calcolo dei danni che coinvolge questa carta Evocata tramite Fusione, alla fine della Battle Phase: puoi scegliere come bersaglio 1 Mostro Normale \"Occhi Rossi\" nel tuo Cimitero; infliggi al tuo avversario danno pari al suo ATK nel Cimitero, poi mischialo nel Deck",
+        "attack": 3200,
+        "defense": 2500,
+        "level": 9,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Drago", "Fusione", "Effetto"],
+        "texture": "arcidemoneDragoTeschioNeroTex.png"
+    },
+
+    {
+        "name": "Spada Nera del Drago Occhi Rossi",
+        "description": "Deve essere Evocato Specialmente con \"Artiglio di Hermos\", utilizzando un mostro Drago. Se questa carta viene Evocata Specialmente: scegli come bersaglio 1 altro mostro scoperto sul Terreno; equipaggia questa carta ad esso. Esso guadagna 1000 ATK, e 500 ATK/DEF per ogni mostro Drago sul Terreno e nei Cimiteri.",
+        "attack": 2400,
+        "defense": 2000,
+        "level": 7,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Drago", "Fusione", "Effetto"],
+        "texture": "spadaNeraDragoOcchiRossiTex.png"
+    },
+
+    {
+        "name": "Drago Metallico Fiamma Occhi Rossi",
+        "description": "2 mostri di Livello 7 \nNon può essere distrutto dagli effetti delle carte mentre ha materiale. Mentre questa carta ha materiale, ogni volta che il tuo avversario attiva una carta o un effetto, infliggi 500 danni al tuo avversario immediatamente dopo che si è risolto. Una volta per turno (Effetto Rapido): puoi staccare 1 materiale da questa carta, poi scegliere come bersaglio 1 Mostro Normale \"Occhi Rossi\" nel tuo Cimitero; Evocalo Specialmente.",
+        "attack": 2800,
+        "defense": 2400,
+        "rank": 7,
+        "type": "Mostro",
+        "attribute": "Oscurita",
+        "features": ["Drago", "Xyz", "Effetto"],
+        "texture": "dragoMetallicoFiammaOcchiRossiTex.png"
+    },
+
+    {
+        "name": "Drago Colpo Occhi Rossi",
+        
+    }
+
+
+
+]
