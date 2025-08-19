@@ -221,10 +221,7 @@ int main(){
 
     while(window.isOpen()){
 
-        ///////////////////////////
-        // Gestione Degli Eventi //
-        ///////////////////////////
-
+        //1. Gestione degli eventi
         while (const std::optional event = window.pollEvent()){
             if (event->is<sf::Event::Closed>()) {
                 std::cout << "Richiesta di chiusura..." << std::endl;

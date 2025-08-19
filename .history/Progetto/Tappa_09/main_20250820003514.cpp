@@ -144,6 +144,13 @@ int main(){
     // Variabili per la gestione della selezione
     std::optional<size_t> selectedCardIndex;
     bool selectedCardIsOnField = false; // Traccia se la carta selezionata è sul campo
+    
+    // Prepara la coda delle carte da pescare (solo il numero, non togliere carte dal deck ora)
+    //for(int i=0; i<initialCard; ++i){
+    //    if(!deck.isEmpty()){
+    //        ++cardsToDraw;
+    //    }
+    //}
 
     //Calcolo la dimensione della carta rendendola un po' più grande delle dimensioni degli slot e prendo i parametri di posizione e spaziatura
     float scaleFactor = 1.1f;
@@ -204,6 +211,9 @@ int main(){
         }
     };
     
+    // Ritorno automatico alla home dopo selezione deck
+    // (Rimossi flag di ritorno automatico: gestione ora tramite fade)
+    
     // Avviso se si tenta di giocare senza aver selezionato un deck
     bool showNoDeckWarning = false;
     sf::Clock noDeckWarningClock;
@@ -221,10 +231,7 @@ int main(){
 
     while(window.isOpen()){
 
-        ///////////////////////////
-        // Gestione Degli Eventi //
-        ///////////////////////////
-
+        //1. Gestione degli eventi
         while (const std::optional event = window.pollEvent()){
             if (event->is<sf::Event::Closed>()) {
                 std::cout << "Richiesta di chiusura..." << std::endl;
@@ -293,7 +300,6 @@ int main(){
                     std::cout << "Right click -> Fade out DeckSelection" << std::endl;
                     if(!deckSelectionScreen.isFading()) deckSelectionScreen.startFadeOut(0.4f);
                 }
-
                 if(but == sf::Mouse::Button::Left) {
                     mousePressed = true;
                     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
@@ -449,7 +455,6 @@ int main(){
                             
                             // Riorganizza le carte rimaste in mano
                             updateHandPositions(cards, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
-                        
                         } else {
                             // Posizione non valida: calcola la posizione originale nella mano e riposiziona
                             Card tempCard = cards[draggingCardIndex.value()];
@@ -494,16 +499,13 @@ int main(){
             }
         }
 
-        /////////////////////////////////
-        // Update dello stato del gioco//
-        /////////////////////////////////
-        
+        //2. Aggiornamento della logica del gioco
         homeScreen.update();
         deckSelectionScreen.update(window);
         static sf::Clock clock;
         float deltaTime = clock.restart().asSeconds();
-        // Pausa logica/animazioni se popup attivo (deltaTime annullato)
-        if(returnPopupActive) deltaTime = 0.f;
+    // Pausa logica/animazioni se popup attivo (deltaTime annullato)
+    if(returnPopupActive) deltaTime = 0.f;
         
         // Se è stato selezionato un deck, caricalo e re-inizializza lo stato della mano/pescate
         if(deckSelected){
@@ -582,7 +584,7 @@ int main(){
         }
 
         // Avvia la prima animazione di pescata SOLO dopo il passaggio allo stato Playing
-        if (!returnPopupActive && gamestate == GameState::Playing && cardsToDraw > 0 && animations.empty() && !deck.isEmpty()) {
+    if (!returnPopupActive && gamestate == GameState::Playing && cardsToDraw > 0 && animations.empty() && !deck.isEmpty()) {
             Card nextCard = deck.drawCard();
             --cardsToDraw;
             DrawAnimation anim(
@@ -595,7 +597,7 @@ int main(){
 
         Card tmpcard = Card("", "", 0, 0, sf::Vector2f(0.f, 0.f), sf::Vector2f(0.f, 0.f), textureFlipped, Type::Monster, Attribute::None, 0, {});
 
-        if(gamestate == GameState::Playing && !returnPopupActive){
+    if(gamestate == GameState::Playing && !returnPopupActive){
             // Aggiorna solo la prima animazione (una alla volta)
             if (!animations.empty()) {
                 DrawAnimationPhases actualPhase;
@@ -651,10 +653,7 @@ int main(){
             }
         }
 
-        ///////////////
-        // Rendering //
-        ///////////////
-
+        //3. Blocco Rendering
         window.clear(sf::Color::Black);
 
         // Ottieni la posizione del mouse
@@ -700,7 +699,8 @@ int main(){
             fieldLoadingAnim.draw(window);
             window.display();
             continue;
-        } else  {
+        }
+        else  {
             // Disegna il campo di gioco
             if(gamestate == GameState::FieldVisible || gamestate == GameState::Playing ) {
                 bool enableHover = !extraOverlay.isOverlayVisible() && !returnPopupActive;

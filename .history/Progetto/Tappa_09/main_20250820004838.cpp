@@ -221,10 +221,7 @@ int main(){
 
     while(window.isOpen()){
 
-        ///////////////////////////
-        // Gestione Degli Eventi //
-        ///////////////////////////
-
+        //1. Gestione degli eventi
         while (const std::optional event = window.pollEvent()){
             if (event->is<sf::Event::Closed>()) {
                 std::cout << "Richiesta di chiusura..." << std::endl;
@@ -595,7 +592,7 @@ int main(){
 
         Card tmpcard = Card("", "", 0, 0, sf::Vector2f(0.f, 0.f), sf::Vector2f(0.f, 0.f), textureFlipped, Type::Monster, Attribute::None, 0, {});
 
-        if(gamestate == GameState::Playing && !returnPopupActive){
+     if(gamestate == GameState::Playing && !returnPopupActive){
             // Aggiorna solo la prima animazione (una alla volta)
             if (!animations.empty()) {
                 DrawAnimationPhases actualPhase;
@@ -651,10 +648,7 @@ int main(){
             }
         }
 
-        ///////////////
-        // Rendering //
-        ///////////////
-
+        //3. Blocco Rendering
         window.clear(sf::Color::Black);
 
         // Ottieni la posizione del mouse
@@ -700,7 +694,8 @@ int main(){
             fieldLoadingAnim.draw(window);
             window.display();
             continue;
-        } else  {
+        }
+        else  {
             // Disegna il campo di gioco
             if(gamestate == GameState::FieldVisible || gamestate == GameState::Playing ) {
                 bool enableHover = !extraOverlay.isOverlayVisible() && !returnPopupActive;

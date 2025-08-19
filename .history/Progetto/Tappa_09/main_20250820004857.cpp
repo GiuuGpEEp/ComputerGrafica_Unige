@@ -221,10 +221,7 @@ int main(){
 
     while(window.isOpen()){
 
-        ///////////////////////////
-        // Gestione Degli Eventi //
-        ///////////////////////////
-
+        //1. Gestione degli eventi
         while (const std::optional event = window.pollEvent()){
             if (event->is<sf::Event::Closed>()) {
                 std::cout << "Richiesta di chiusura..." << std::endl;
@@ -651,10 +648,8 @@ int main(){
             }
         }
 
-        ///////////////
-        // Rendering //
-        ///////////////
-
+        //3. Blocco Rendering
+        
         window.clear(sf::Color::Black);
 
         // Ottieni la posizione del mouse
@@ -700,7 +695,8 @@ int main(){
             fieldLoadingAnim.draw(window);
             window.display();
             continue;
-        } else  {
+        }
+        else  {
             // Disegna il campo di gioco
             if(gamestate == GameState::FieldVisible || gamestate == GameState::Playing ) {
                 bool enableHover = !extraOverlay.isOverlayVisible() && !returnPopupActive;
