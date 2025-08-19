@@ -115,4 +115,3 @@ add_executable(mainTappa9
     Progetto/Tappa_09/ExtraDeckOverlay/ExtraDeckOverlay.cpp)
 target_compile_features(mainTappa9 PRIVATE cxx_std_17)
 target_link_libraries(mainTappa9 PRIVATE SFML::Graphics)
-
