@@ -132,8 +132,6 @@ add_executable(mainTappa10
     Progetto/Tappa_10/DeckSelectionScreen/DeckSelectionScreen.cpp
     Progetto/Tappa_10/FieldLoadingAnimation/FieldLoadingAnimation.cpp
     Progetto/Tappa_10/ExtraDeckOverlay/ExtraDeckOverlay.cpp
-    Progetto/Tappa_10/GameLogic/Player/Player.cpp
-    Progetto/Tappa_10/GameLogic/TurnManager/TurnManager.cpp
-    Progetto/Tappa_10/GameLogic/Game/Game.cpp)
+    )
 target_compile_features(mainTappa10 PRIVATE cxx_std_17)
 target_link_libraries(mainTappa10 PRIVATE SFML::Graphics)

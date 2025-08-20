@@ -127,13 +127,10 @@ add_executable(mainTappa10
     Progetto/Tappa_10/auxFunc.cpp
     Progetto/Tappa_10/TextureManager/TextureManager.cpp
     Progetto/Tappa_10/Deck/ShuffleAnimation.cpp
-    Progetto/Tappa_10/HomePage/HomePage.cpp
-    Progetto/Tappa_10/ResourceManager/ResourceManager.cpp
-    Progetto/Tappa_10/DeckSelectionScreen/DeckSelectionScreen.cpp
-    Progetto/Tappa_10/FieldLoadingAnimation/FieldLoadingAnimation.cpp
-    Progetto/Tappa_10/ExtraDeckOverlay/ExtraDeckOverlay.cpp
-    Progetto/Tappa_10/GameLogic/Player/Player.cpp
-    Progetto/Tappa_10/GameLogic/TurnManager/TurnManager.cpp
-    Progetto/Tappa_10/GameLogic/Game/Game.cpp)
-target_compile_features(mainTappa10 PRIVATE cxx_std_17)
-target_link_libraries(mainTappa10 PRIVATE SFML::Graphics)
+    Progetto/Tappa_09/HomePage/HomePage.cpp
+    Progetto/Tappa_09/ResourceManager/ResourceManager.cpp
+    Progetto/Tappa_09/DeckSelectionScreen/DeckSelectionScreen.cpp
+    Progetto/Tappa_09/FieldLoadingAnimation/FieldLoadingAnimation.cpp
+    Progetto/Tappa_09/ExtraDeckOverlay/ExtraDeckOverlay.cpp)
+target_compile_features(mainTappa9 PRIVATE cxx_std_17)
+target_link_libraries(mainTappa9 PRIVATE SFML::Graphics)
