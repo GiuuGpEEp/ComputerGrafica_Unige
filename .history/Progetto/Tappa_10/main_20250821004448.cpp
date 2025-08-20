@@ -435,17 +435,7 @@ int main(){
                 sf::Mouse::Button but = mouseButton->button;
                 if(but == sf::Mouse::Button::Left) {
                     extraOverlay.handleMouseRelease();
-
-                    //funzione per far tornare la carta in mano in caso di posizione errata
-                    auto cardBackToHand = [&](){
-                        Card tempCard = (*handPtr)[draggingCardIndex.value()];
-                        handPtr->erase(handPtr->begin() + draggingCardIndex.value());
-                        sf::Vector2f originalPos = setHandPos(*handPtr, tempCard, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
-                        handPtr->insert(handPtr->begin() + draggingCardIndex.value(), tempCard);
-                        (*handPtr)[draggingCardIndex.value()].setPosition(originalPos);
-                        updateHandPositions(*handPtr, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
-                    };
-
+                    
                     if (isDragging && draggingCardIndex.has_value()) {
                         
                         sf::Vector2f mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
@@ -469,14 +459,28 @@ int main(){
                                 updateHandPositions(*handPtr, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
                             } else {
                                 std::cout << "Normal Summon non consentita (fase errata, mano vuota, zona piena o già usata)." << std::endl;
+                                auto cardBackToHand [&](){
+                                    
+                                }
+
                                 if(handPtr){
-                                    cardBackToHand();
+                                    Card tempCard = (*handPtr)[draggingCardIndex.value()];
+                                    handPtr->erase(handPtr->begin() + draggingCardIndex.value());
+                                    sf::Vector2f originalPos = setHandPos(*handPtr, tempCard, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
+                                    handPtr->insert(handPtr->begin() + draggingCardIndex.value(), tempCard);
+                                    (*handPtr)[draggingCardIndex.value()].setPosition(originalPos);
+                                    updateHandPositions(*handPtr, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
                                 }
                             }
                         } else {
                             // Posizione non valida: calcola la posizione originale nella mano e riposiziona
                             if(handPtr){
-                                cardBackToHand();
+                                Card tempCard = (*handPtr)[draggingCardIndex.value()];
+                                handPtr->erase(handPtr->begin() + draggingCardIndex.value());
+                                sf::Vector2f originalPos = setHandPos(*handPtr, tempCard, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
+                                handPtr->insert(handPtr->begin() + draggingCardIndex.value(), tempCard);
+                                (*handPtr)[draggingCardIndex.value()].setPosition(originalPos);
+                                updateHandPositions(*handPtr, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
                             }
                             std::cout << "Posizione non valida! Carta torna in mano." << std::endl;
                         }

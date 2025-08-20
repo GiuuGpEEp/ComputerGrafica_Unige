@@ -436,16 +436,8 @@ int main(){
                 if(but == sf::Mouse::Button::Left) {
                     extraOverlay.handleMouseRelease();
 
-                    //funzione per far tornare la carta in mano in caso di posizione errata
-                    auto cardBackToHand = [&](){
-                        Card tempCard = (*handPtr)[draggingCardIndex.value()];
-                        handPtr->erase(handPtr->begin() + draggingCardIndex.value());
-                        sf::Vector2f originalPos = setHandPos(*handPtr, tempCard, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
-                        handPtr->insert(handPtr->begin() + draggingCardIndex.value(), tempCard);
-                        (*handPtr)[draggingCardIndex.value()].setPosition(originalPos);
-                        updateHandPositions(*handPtr, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
-                    };
-
+                    //funzione per fa
+                    
                     if (isDragging && draggingCardIndex.has_value()) {
                         
                         sf::Vector2f mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));

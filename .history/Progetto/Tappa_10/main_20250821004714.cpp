@@ -436,7 +436,7 @@ int main(){
                 if(but == sf::Mouse::Button::Left) {
                     extraOverlay.handleMouseRelease();
 
-                    //funzione per far tornare la carta in mano in caso di posizione errata
+                    //funzione per far tornare la carta in mano
                     auto cardBackToHand = [&](){
                         Card tempCard = (*handPtr)[draggingCardIndex.value()];
                         handPtr->erase(handPtr->begin() + draggingCardIndex.value());
