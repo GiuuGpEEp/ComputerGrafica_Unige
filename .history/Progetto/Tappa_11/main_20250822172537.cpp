@@ -363,7 +363,7 @@ int main(){
                     if(!attackSelectionActive){ selectedAttackerIndex.reset(); }
                 }
                 // Forza fine turno (debug)
-                if(keyPressed->code == sf::Keyboard::Key::T && gamestate == GameState::Playing && game && !selectingTributes){
+                if(keyPressed->code == sf::Keyboard::Key::T && gamestate == GameState::Playing && game){
                     if(game->getTurn().getPhase() != GamePhase::End){
                         game->fastForwardToEndPhase();
                     } else if(!discardController.active() && !game->shouldAutoEndTurn()) {
@@ -666,11 +666,6 @@ int main(){
                             battleFeedbackMsg.clear();
                             // Resync render
                             syncMonsterZoneToField();
-                        }
-                        if(attackSelectionActive){
-                            attackSelectionActive = false;
-                            selectedAttackerIndex.reset();
-                            battleFeedbackMsg.clear();
                         }
                     }
                 }

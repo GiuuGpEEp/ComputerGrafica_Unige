@@ -351,7 +351,7 @@ int main(){
                     gamestate = GameState::HomeScreen; 
                 }
                 // Avanzamento fase (debug) durante Playing
-                if(keyPressed->code == sf::Keyboard::Key::N && gamestate == GameState::Playing && game && !selectingTributes){
+                if(keyPressed->code == sf::Keyboard::Key::N && gamestate == GameState::Playing && game &&  ){
                     game->advancePhase();
                     std::cout << "Fase -> " << phaseToString(game->getTurn().getPhase()) << std::endl;
                     // Reset tribute selection outside Main phases
@@ -363,7 +363,7 @@ int main(){
                     if(!attackSelectionActive){ selectedAttackerIndex.reset(); }
                 }
                 // Forza fine turno (debug)
-                if(keyPressed->code == sf::Keyboard::Key::T && gamestate == GameState::Playing && game && !selectingTributes){
+                if(keyPressed->code == sf::Keyboard::Key::T && gamestate == GameState::Playing && game){
                     if(game->getTurn().getPhase() != GamePhase::End){
                         game->fastForwardToEndPhase();
                     } else if(!discardController.active() && !game->shouldAutoEndTurn()) {
@@ -666,11 +666,6 @@ int main(){
                             battleFeedbackMsg.clear();
                             // Resync render
                             syncMonsterZoneToField();
-                        }
-                        if(attackSelectionActive){
-                            attackSelectionActive = false;
-                            selectedAttackerIndex.reset();
-                            battleFeedbackMsg.clear();
                         }
                     }
                 }

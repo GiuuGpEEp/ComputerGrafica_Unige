@@ -668,7 +668,7 @@ int main(){
                             syncMonsterZoneToField();
                         }
                         if(attackSelectionActive){
-                            attackSelectionActive = false;
+                                    attackSelectionActive = false;
                             selectedAttackerIndex.reset();
                             battleFeedbackMsg.clear();
                         }

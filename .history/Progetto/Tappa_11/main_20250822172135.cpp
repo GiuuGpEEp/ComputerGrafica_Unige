@@ -351,7 +351,7 @@ int main(){
                     gamestate = GameState::HomeScreen; 
                 }
                 // Avanzamento fase (debug) durante Playing
-                if(keyPressed->code == sf::Keyboard::Key::N && gamestate == GameState::Playing && game && !selectingTributes){
+                if(keyPressed->code == sf::Keyboard::Key::N && gamestate == GameState::Playing && game){
                     game->advancePhase();
                     std::cout << "Fase -> " << phaseToString(game->getTurn().getPhase()) << std::endl;
                     // Reset tribute selection outside Main phases
@@ -363,7 +363,7 @@ int main(){
                     if(!attackSelectionActive){ selectedAttackerIndex.reset(); }
                 }
                 // Forza fine turno (debug)
-                if(keyPressed->code == sf::Keyboard::Key::T && gamestate == GameState::Playing && game && !selectingTributes){
+                if(keyPressed->code == sf::Keyboard::Key::T && gamestate == GameState::Playing && game){
                     if(game->getTurn().getPhase() != GamePhase::End){
                         game->fastForwardToEndPhase();
                     } else if(!discardController.active() && !game->shouldAutoEndTurn()) {
@@ -667,11 +667,6 @@ int main(){
                             // Resync render
                             syncMonsterZoneToField();
                         }
-                        if(attackSelectionActive){
-                            attackSelectionActive = false;
-                            selectedAttackerIndex.reset();
-                            battleFeedbackMsg.clear();
-                        }
                     }
                 }
             }    
@@ -734,8 +729,8 @@ int main(){
             }
         }
 
-    // Controlla se il mouse si è mosso abbastanza e nella direzione corretta per attivare il dragging (bloccato durante selezione tributi)
-    if (isPotentialDrag && potentialDragCardIndex.has_value() && !selectingTributes) {
+        // Controlla se il mouse si è mosso abbastanza e nella direzione corretta per attivare il dragging
+        if (isPotentialDrag && potentialDragCardIndex.has_value()) {
             sf::Vector2f currentMousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
             float distance = std::sqrt(std::pow(currentMousePos.x - initialMousePos.x, 2) + std::pow(currentMousePos.y - initialMousePos.y, 2));
             

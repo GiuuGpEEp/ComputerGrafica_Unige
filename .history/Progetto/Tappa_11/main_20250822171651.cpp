@@ -351,7 +351,7 @@ int main(){
                     gamestate = GameState::HomeScreen; 
                 }
                 // Avanzamento fase (debug) durante Playing
-                if(keyPressed->code == sf::Keyboard::Key::N && gamestate == GameState::Playing && game && !selectingTributes){
+                if(keyPressed->code == sf::Keyboard::Key::N && gamestate == GameState::Playing && game){
                     game->advancePhase();
                     std::cout << "Fase -> " << phaseToString(game->getTurn().getPhase()) << std::endl;
                     // Reset tribute selection outside Main phases
@@ -363,7 +363,7 @@ int main(){
                     if(!attackSelectionActive){ selectedAttackerIndex.reset(); }
                 }
                 // Forza fine turno (debug)
-                if(keyPressed->code == sf::Keyboard::Key::T && gamestate == GameState::Playing && game && !selectingTributes){
+                if(keyPressed->code == sf::Keyboard::Key::T && gamestate == GameState::Playing && game){
                     if(game->getTurn().getPhase() != GamePhase::End){
                         game->fastForwardToEndPhase();
                     } else if(!discardController.active() && !game->shouldAutoEndTurn()) {
@@ -384,9 +384,9 @@ int main(){
                     game->debugAddMonsterToOpponent(dbg);
                     syncMonsterZoneToField();
                 }
-                // Direct attack hotkey (disabilitato durante selezione tributi)
+                // Direct attack hotkey
                 if(keyPressed->code == sf::Keyboard::Key::A && gamestate == GameState::Playing && game){
-                    if(game->getTurn().getPhase() == GamePhase::Battle && !selectingTributes && selectedAttackerIndex.has_value()){
+                    if(game->getTurn().getPhase() == GamePhase::Battle && selectedAttackerIndex.has_value()){
                         if(game->canDeclareAttack(selectedAttackerIndex.value(), std::nullopt)){
                             if(game->declareAttack(selectedAttackerIndex.value(), std::nullopt)){
                                 battleFeedbackMsg = "Attacco diretto"; battleFeedbackClock.restart();
@@ -410,8 +410,8 @@ int main(){
                     std::cout << "Right click -> Fade out DeckSelection" << std::endl;
                     if(!deckSelectionScreen.isFading()) deckSelectionScreen.startFadeOut(0.4f);
                 }
-                    // Battle targeting: right-click on opponent monster to target (disabilitato durante selezione tributi)
-                    if(but == sf::Mouse::Button::Right && gamestate == GameState::Playing && game && !selectingTributes && game->getTurn().getPhase() == GamePhase::Battle){
+                    // Battle targeting: right-click on opponent monster to target
+                    if(but == sf::Mouse::Button::Right && gamestate == GameState::Playing && game && game->getTurn().getPhase() == GamePhase::Battle){
                         if(selectedAttackerIndex.has_value()){
                             sf::Vector2i mpos = sf::Mouse::getPosition(window);
                             for(size_t i=0;i<oppFieldCards.size();++i){
@@ -571,8 +571,8 @@ int main(){
                                     }
                                 }
                             }
-                            // Battle: select attacker on click (disabilitato durante selezione tributi)
-                            if(game && !selectingTributes && game->getTurn().getPhase() == GamePhase::Battle){
+                            // Battle: select attacker on click
+                            if(game && game->getTurn().getPhase() == GamePhase::Battle){
                                 attackSelectionActive = true;
                                 selectedAttackerIndex = i;
                                 battleFeedbackMsg = "Attaccante selezionato";
@@ -667,11 +667,6 @@ int main(){
                             // Resync render
                             syncMonsterZoneToField();
                         }
-                        if(attackSelectionActive){
-                            attackSelectionActive = false;
-                            selectedAttackerIndex.reset();
-                            battleFeedbackMsg.clear();
-                        }
                     }
                 }
             }    
@@ -734,8 +729,8 @@ int main(){
             }
         }
 
-    // Controlla se il mouse si è mosso abbastanza e nella direzione corretta per attivare il dragging (bloccato durante selezione tributi)
-    if (isPotentialDrag && potentialDragCardIndex.has_value() && !selectingTributes) {
+        // Controlla se il mouse si è mosso abbastanza e nella direzione corretta per attivare il dragging
+        if (isPotentialDrag && potentialDragCardIndex.has_value()) {
             sf::Vector2f currentMousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
             float distance = std::sqrt(std::pow(currentMousePos.x - initialMousePos.x, 2) + std::pow(currentMousePos.y - initialMousePos.y, 2));
             

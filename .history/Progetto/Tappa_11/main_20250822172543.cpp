@@ -667,11 +667,6 @@ int main(){
                             // Resync render
                             syncMonsterZoneToField();
                         }
-                        if(attackSelectionActive){
-                            attackSelectionActive = false;
-                            selectedAttackerIndex.reset();
-                            battleFeedbackMsg.clear();
-                        }
                     }
                 }
             }    

@@ -669,7 +669,6 @@ int main(){
                         }
                         if(attackSelectionActive){
                             attackSelectionActive = false;
-                            selectedAttackerIndex.reset();
                             battleFeedbackMsg.clear();
                         }
                     }
