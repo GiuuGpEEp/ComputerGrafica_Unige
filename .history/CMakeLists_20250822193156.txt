@@ -180,11 +180,11 @@ add_executable(mainTappa12
     Progetto/Tappa_12/DeckSelectionScreen/DeckSelectionScreen.cpp
     Progetto/Tappa_12/FieldLoadingAnimation/FieldLoadingAnimation.cpp
     Progetto/Tappa_12/ExtraDeckOverlay/ExtraDeckOverlay.cpp
-    Progetto/Tappa_12/GameLogic/Player/Player.cpp
-    Progetto/Tappa_12/GameLogic/TurnManager/TurnManager.cpp
-    Progetto/Tappa_12/GameLogic/Game/Game.cpp
-    Progetto/Tappa_12/GameLogic/DrawController/DrawController.cpp
-    Progetto/Tappa_12/GameLogic/DiscardController/DiscardController.cpp
-    Progetto/Tappa_12/GraveyardOverlay/GraveyardOverlay.cpp)
-target_compile_features(mainTappa12 PRIVATE cxx_std_17)
-target_link_libraries(mainTappa12 PRIVATE SFML::Graphics)
+    Progetto/Tappa_11/GameLogic/Player/Player.cpp
+    Progetto/Tappa_11/GameLogic/TurnManager/TurnManager.cpp
+    Progetto/Tappa_11/GameLogic/Game/Game.cpp
+    Progetto/Tappa_11/GameLogic/DrawController/DrawController.cpp
+    Progetto/Tappa_11/GameLogic/DiscardController/DiscardController.cpp
+    Progetto/Tappa_11/GraveyardOverlay/GraveyardOverlay.cpp)
+target_compile_features(mainTappa11 PRIVATE cxx_std_17)
+target_link_libraries(mainTappa11 PRIVATE SFML::Graphics)

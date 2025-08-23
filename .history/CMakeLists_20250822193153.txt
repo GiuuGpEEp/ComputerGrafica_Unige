@@ -170,21 +170,21 @@ add_executable(mainTappa12
     Progetto/Tappa_12/Field/Field.cpp
     Progetto/Tappa_12/Slot/Slot.cpp
     Progetto/Tappa_12/Card/Card.cpp
-    Progetto/Tappa_12/Deck/Deck.cpp
-    Progetto/Tappa_12/DrawAnimation/DrawAnimation.cpp
-    Progetto/Tappa_12/auxFunc.cpp
-    Progetto/Tappa_12/TextureManager/TextureManager.cpp
-    Progetto/Tappa_12/Deck/ShuffleAnimation.cpp
-    Progetto/Tappa_12/HomePage/HomePage.cpp
-    Progetto/Tappa_12/ResourceManager/ResourceManager.cpp
-    Progetto/Tappa_12/DeckSelectionScreen/DeckSelectionScreen.cpp
-    Progetto/Tappa_12/FieldLoadingAnimation/FieldLoadingAnimation.cpp
-    Progetto/Tappa_12/ExtraDeckOverlay/ExtraDeckOverlay.cpp
-    Progetto/Tappa_12/GameLogic/Player/Player.cpp
-    Progetto/Tappa_12/GameLogic/TurnManager/TurnManager.cpp
-    Progetto/Tappa_12/GameLogic/Game/Game.cpp
-    Progetto/Tappa_12/GameLogic/DrawController/DrawController.cpp
-    Progetto/Tappa_12/GameLogic/DiscardController/DiscardController.cpp
-    Progetto/Tappa_12/GraveyardOverlay/GraveyardOverlay.cpp)
-target_compile_features(mainTappa12 PRIVATE cxx_std_17)
-target_link_libraries(mainTappa12 PRIVATE SFML::Graphics)
+    Progetto/Tappa_11/Deck/Deck.cpp
+    Progetto/Tappa_11/DrawAnimation/DrawAnimation.cpp
+    Progetto/Tappa_11/auxFunc.cpp
+    Progetto/Tappa_11/TextureManager/TextureManager.cpp
+    Progetto/Tappa_11/Deck/ShuffleAnimation.cpp
+    Progetto/Tappa_11/HomePage/HomePage.cpp
+    Progetto/Tappa_11/ResourceManager/ResourceManager.cpp
+    Progetto/Tappa_11/DeckSelectionScreen/DeckSelectionScreen.cpp
+    Progetto/Tappa_11/FieldLoadingAnimation/FieldLoadingAnimation.cpp
+    Progetto/Tappa_11/ExtraDeckOverlay/ExtraDeckOverlay.cpp
+    Progetto/Tappa_11/GameLogic/Player/Player.cpp
+    Progetto/Tappa_11/GameLogic/TurnManager/TurnManager.cpp
+    Progetto/Tappa_11/GameLogic/Game/Game.cpp
+    Progetto/Tappa_11/GameLogic/DrawController/DrawController.cpp
+    Progetto/Tappa_11/GameLogic/DiscardController/DiscardController.cpp
+    Progetto/Tappa_11/GraveyardOverlay/GraveyardOverlay.cpp)
+target_compile_features(mainTappa11 PRIVATE cxx_std_17)
+target_link_libraries(mainTappa11 PRIVATE SFML::Graphics)
