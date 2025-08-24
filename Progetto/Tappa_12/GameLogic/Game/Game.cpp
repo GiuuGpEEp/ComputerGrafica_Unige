@@ -1,26 +1,30 @@
 #include "Game.h"
 #include "../DrawController/DrawController.h"
+#include "Effects/ICardEffect.h"
+#include "Effects/EffectSystem.h"
 
 Game::Game(const Player& p1, const Player& p2)
     : players{p1, p2} {
         for(auto& mz : monsterZones) mz.reserve(MONSTER_ZONE_SIZE);
-        // Nessun listener interno al TurnManager: tutta la propagazione passa da EventDispatcher
+    // Nessun listener interno al TurnManager: tutta la propagazione passa da EventDispatcher
     monsterHasAttacked[0].clear();
     monsterHasAttacked[1].clear();
+        banished[0].clear();
+        banished[1].clear();
     }
     
 void Game::start() {
     if (started) return;
-    // Reset stato partita senza effettuare pescate (delegate a DrawController)
+    // Reset dello stato partita senza effettuare pescate (delegato al DrawController)
     // Svuota le mani dei giocatori per sicurezza
     for(auto& p : players){
         p.clearHand();
     }
     started = true;
-    // Distribuzione mano iniziale: 5 carte al primo giocatore, 5 al secondo (senza animazione: queue nel draw controller)
+    // Distribuzione mano iniziale: 5 carte al primo giocatore, 5 al secondo (senza animazione: messa in coda nel DrawController)
     if(drawCtrl){
         drawCtrl->queueDraw(5); // starting player hand
-        // opzionale: dare anche al secondo giocatore già 5 carte: per ora NO, verranno pescate all'inizio del suo primo turno se necessario.
+    // Opzionale: dare anche al secondo giocatore già 5 carte. Per ora NO: verranno pescate all'inizio del suo primo turno se necessario.
     }
     startTurn(); 
 
@@ -56,23 +60,23 @@ bool Game::tryNormalSummon(size_t handIndex){
     Player& p = current();
     auto& hand = p.getHand();
     if(handIndex >= hand.size()) return false;
-    // Controlli di fase e uso summon
+    // Controlli di fase e uso della Normal Summon
     if(normalSummonUsed) return false;
     if(turn.getPhase() != GamePhase::Main1 && turn.getPhase() != GamePhase::Main2) return false;
-    // Calcola tributi richiesti PRIMA del controllo capacità zona
+    // Calcola i tributi richiesti PRIMA del controllo della capacità della zona mostri
     int tributesNeeded = 0;
     if(auto lvl = hand[handIndex].getLevelOrRank(); lvl.has_value()){
         tributesNeeded = requiredTributesFor(hand[handIndex]);
     }
     if(tributesNeeded > 0){
-        // Anche con zona piena, i tributi liberano spazio: consenti l'avvio se ci sono abbastanza mostri da tributare
+    // Anche con zona piena i tributi liberano spazio: consenti l'avvio se ci sono abbastanza mostri da tributare
         return beginNormalSummonWithTributes(handIndex);
     }
-    // Nessun tributo richiesto: serve spazio libero in zona mostri
+    // Nessun tributo richiesto: serve spazio libero nella zona mostri
     if(monsterZones[turn.getCurrentPlayerIndex()].size() >= MONSTER_ZONE_SIZE) return false;
     if(!moveCard(CardZone::Hand, CardZone::MonsterZone, handIndex)) return false;
     normalSummonUsed = true;
-    dispatcher.emit(GameEventType::NormalSummon); // evento specifico summon
+    dispatcher.emit(GameEventType::NormalSummon); // evento specifico per la summon
     return true;
 }
 
@@ -89,14 +93,18 @@ const std::vector<Card>& Game::getOpponentMonsterZone() const {
 }
 
 std::vector<Card>& Game::getGraveyard(){
-    return graveyard;
+    return graveyard[0];
+}
+
+std::vector<Card>& Game::getOpponentGraveyard(){
+    return graveyard[1];
 }
 
 void Game::discardExcess(size_t handLimit){
     Player& p = current();
     auto &hand = p.getHand();
     while(hand.size() > handLimit){
-        // sposta ultima carta (hand.size()-1) nel cimitero tramite API (emette eventi)
+        // Sposta l'ultima carta (hand.size()-1) nel Cimitero tramite API (emette eventi)
         moveCard(CardZone::Hand, CardZone::Graveyard, hand.size()-1);
     }
 }
@@ -109,26 +117,35 @@ std::vector<Card> Game::extractExcessCards(size_t handLimit){
         extracted.push_back(hand.back());
         hand.pop_back();
     }
-    return extracted; // il chiamante deciderà quando inserirle nel graveyard (post animazione)
+    return extracted; // il chiamante deciderà quando inserirle nel Cimitero (post animazione)
 }
 
 void Game::advancePhase(){
     GamePhase before = turn.getPhase();
     turn.nextPhase();
     if(turn.getPhase() != before){
-        // Reset normal summon at entry of Draw or Standby
+    // Reset della Normal Summon quando si entra in Draw o Standby
         if(turn.getPhase() == GamePhase::Draw || turn.getPhase() == GamePhase::Standby){
             resetNormalSummon();
         }
-        dispatcher.emit(GameEventType::PhaseChange); // generic phase change
-        // Auto draw quando si entra in Draw Phase
+    dispatcher.emit(GameEventType::PhaseChange); // cambio fase generico
+    dispatchEffects(GameEventType::PhaseChange);
+    // Pescata automatica quando si entra nella Draw Phase
         if(turn.getPhase() == GamePhase::Draw && drawCtrl){
             startTurn();
         }
         if(turn.getPhase() == GamePhase::Standby){
             processEnterStandby();
         }
-        if(turn.getPhase() == GamePhase::End){
+            if(turn.getPhase() == GamePhase::Battle){
+                dispatcher.emit(GameEventType::BattleStart);
+        dispatchEffects(GameEventType::BattleStart);
+            }
+            if(turn.getPhase() == GamePhase::Main2 && before == GamePhase::Battle){
+                dispatcher.emit(GameEventType::BattleEnd);
+        dispatchEffects(GameEventType::BattleEnd);
+            }
+            if(turn.getPhase() == GamePhase::End){
             processEnterEndPhase();
         }
     }
@@ -161,34 +178,34 @@ void Game::fastForwardToEndPhase(){
 bool Game::shouldAutoEndTurn() const { return pendingAutoTurnEnd; }
 
 void Game::onDiscardAnimationFinished(){
-    // Chiamato dal layer esterno quando animazione scarto termina -> fine turno immediata
+    // Chiamato dal layer esterno quando l'animazione di scarto termina -> fine turno immediata
     pendingAutoTurnEnd = false;
     endTurn();
 }
 
 void Game::processEnterEndPhase(){
-    // Se mano eccede limite, estrai e delega animazione
+    // Se la mano eccede il limite, estrai e delega l'animazione
     Player& p = current();
     auto &hand = p.getHand();
     if(hand.size() > handLimit){
         if(discardCallback){
             discardCallback(handleEndPhase(handLimit));
         } else {
-            // fallback immediato: scarta direttamente nel graveyard senza animazione
+            // Fallback immediato: scarta direttamente nel Cimitero senza animazione
             discardExcess(handLimit);
         }
     } else {
-        // nessun eccesso -> programma auto end turno (consumato dal main o immediatamente se si vuole)
+    // Nessun eccesso -> programma auto end turno (consumato dal main o immediato se si vuole)
         pendingAutoTurnEnd = true;
     }
 }
 
 void Game::processEnterStandby(){
-    // Auto-skip Standby se nessun effetto (placeholder: sempre skip per ora)
+    // Auto-skip della Standby se nessun effetto (placeholder: sempre skip per ora)
     bool shouldSkip = true; // TODO: interrogare effect system
     if(shouldSkip){
         dispatcher.emit(GameEventType::StandbySkip);
-        // Avanza direttamente a Main1 (internal state change)
+    // Avanza direttamente a Main1 (cambio di stato interno)
         turn.nextPhase();
         dispatcher.emit(GameEventType::PhaseChange);
     }
@@ -197,14 +214,15 @@ void Game::processEnterStandby(){
 void Game::startTurn(){
     resetNormalSummon();
     dispatcher.emit(GameEventType::TurnStart);
-    // Siamo nella Draw Phase appena impostata da TurnManager::endTurn() oppure dall'inizio partita
+    dispatchEffects(GameEventType::TurnStart);
+    // Siamo nella Draw Phase impostata da TurnManager::endTurn() oppure all'inizio partita
     // Reset dei flag "ha attaccato" per il giocatore corrente
     {
         auto &flags = monsterHasAttacked[turn.getCurrentPlayerIndex()];
         std::fill(flags.begin(), flags.end(), false);
     }
     if(drawCtrl){
-        // Il primissimo turno del giocatore iniziale non prevede pescata
+    // Il primissimo turno del giocatore iniziale non prevede la pescata
         bool mustDraw = !(firstTurn && turn.getCurrentPlayerIndex() == startingPlayerIndex);
         if(mustDraw){
             handleDeckOutIfAny();
@@ -221,8 +239,10 @@ bool Game::moveCard(CardZone from, CardZone to, size_t indexFrom){
     std::vector<Card>* dest = nullptr;
     switch(from){
         case CardZone::Hand: source = &p.getHand(); break;
-    case CardZone::MonsterZone: source = &monsterZones[turn.getCurrentPlayerIndex()]; break;
-        case CardZone::Graveyard: source = &graveyard; break;
+        case CardZone::MonsterZone: source = &monsterZones[turn.getCurrentPlayerIndex()]; break;
+        case CardZone::Graveyard: source = &graveyard[turn.getCurrentPlayerIndex()]; break;
+            case CardZone::Banished: source = &banished[turn.getCurrentPlayerIndex()]; break;
+            case CardZone::Extra: /* gestito nel Deck/UI, non spostiamo qui per indice */ return false;
         case CardZone::Deck: /* non supportato estrarre per indice diretto */ return false;
     }
     if(!source) return false;
@@ -232,16 +252,18 @@ bool Game::moveCard(CardZone from, CardZone to, size_t indexFrom){
     // destinazione
     switch(to){
         case CardZone::Hand: dest = &p.getHand(); break;
-        case CardZone::MonsterZone:
+    case CardZone::MonsterZone:
             dest = &monsterZones[turn.getCurrentPlayerIndex()];
             if(dest->size() >= MONSTER_ZONE_SIZE){ return false; }
             break;
-        case CardZone::Graveyard: dest = &graveyard; break;
-        case CardZone::Deck: return false; // no reinsert deck for now
+        case CardZone::Graveyard: dest = &graveyard[turn.getCurrentPlayerIndex()]; break;
+            case CardZone::Banished: dest = &banished[turn.getCurrentPlayerIndex()]; break;
+            case CardZone::Extra: return false; // Extra non gestito qui
+            case CardZone::Deck: return false; // no reinsert deck for now
     }
     if(!dest) return false;
     dest->push_back(card);
-    // Mantieni vettori flag allineati quando aggiungi un mostro del current
+    // Mantieni i vettori dei flag allineati quando aggiungi un mostro del giocatore corrente
     if(to == CardZone::MonsterZone){
         auto cur = turn.getCurrentPlayerIndex();
         monsterHasAttacked[cur].push_back(false);
@@ -277,7 +299,7 @@ bool Game::tributeMonsters(const std::vector<size_t>& zoneIndices){
         // sposta carta nel graveyard
         Card moved = zone[*it];
         zone.erase(zone.begin()+*it);
-        graveyard.push_back(moved);
+        graveyard[idx].push_back(moved);
         // allinea flags
         if(*it < monsterHasAttacked[idx].size()){
             monsterHasAttacked[idx].erase(monsterHasAttacked[idx].begin()+*it);
@@ -343,7 +365,7 @@ bool Game::canDeclareAttack(size_t attackerIndex, std::optional<size_t> targetIn
 void Game::destroyMonster(int playerIdx, size_t zoneIndex){
     if(playerIdx < 0 || playerIdx > 1) return;
     if(zoneIndex >= monsterZones[playerIdx].size()) return;
-    graveyard.push_back(monsterZones[playerIdx][zoneIndex]);
+    graveyard[playerIdx].push_back(monsterZones[playerIdx][zoneIndex]);
     monsterZones[playerIdx].erase(monsterZones[playerIdx].begin()+zoneIndex);
     if(zoneIndex < monsterHasAttacked[playerIdx].size()){
         monsterHasAttacked[playerIdx].erase(monsterHasAttacked[playerIdx].begin()+zoneIndex);
@@ -365,6 +387,7 @@ bool Game::declareAttack(size_t attackerIndex, std::optional<size_t> maybeTarget
     int cur = turn.getCurrentPlayerIndex();
     int opp = 1 - cur;
     dispatcher.emit(GameEventType::AttackDeclared);
+    dispatchEffects(GameEventType::AttackDeclared);
 
     if(attackerIndex >= monsterZones[cur].size()) return false;
     int atkA = 0;
@@ -404,6 +427,7 @@ bool Game::declareAttack(size_t attackerIndex, std::optional<size_t> maybeTarget
         dispatcher.emit(GameEventType::DirectAttack);
     }
     dispatcher.emit(GameEventType::AttackResolved);
+    dispatchEffects(GameEventType::AttackResolved);
     return true;
 }
 
@@ -447,4 +471,17 @@ bool Game::hasMonsterAlreadyAttacked(size_t zoneIndex) const{
     int cur = turn.getCurrentPlayerIndex();
     if(zoneIndex >= monsterHasAttacked[cur].size()) return false;
     return monsterHasAttacked[cur][zoneIndex];
+}
+
+bool Game::banishFrom(CardZone from, size_t indexFrom){
+        return moveCard(from, CardZone::Banished, indexFrom);
+}        
+
+// Propagazione effetti tramite sistema dedicato
+void Game::dispatchEffects(GameEventType type){
+    effects.dispatch(type, *this);
+}
+
+void Game::registerEffectForCardName(const std::string& cardName, std::unique_ptr<ICardEffect> effect){
+    effects.registerEffectForCardName(cardName, std::move(effect));
 }

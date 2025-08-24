@@ -16,6 +16,8 @@ enum class GameEventType{
     CardSentToGrave,
     MonstersTributed,
     NormalSummonTributeRequired,
+    BattleStart,
+    BattleEnd,
     AttackDeclared,
     AttackResolved,
     MonsterDestroyed,

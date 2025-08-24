@@ -204,7 +204,7 @@ int main(){
     int monsterDestroyedSubId = -1;
     int directAttackSubId = -1;
     
-    // Sincronizza la rappresentazione grafica delle monster zone (Player1) con lo stato logico del Game
+    // Sincronizza la rappresentazione grafica della zona mostri (Player1) con lo stato logico del Game
     auto syncMonsterZoneToField = [&](){
         if(!game) return;
         const auto &zone = game->getMonsterZone();
@@ -220,7 +220,7 @@ int main(){
             c.setPosition(centeredPos);
             fieldCards.push_back(c);
         }
-        // Opponent zone (P2 top side). We mirror sizes and use P2 slot positions.
+    // Zona avversario (P2 lato alto). Si mantengono le stesse dimensioni e si usano le posizioni degli slot di P2.
         oppFieldCards.clear();
         const auto &oppZone = game->getOpponentMonsterZone();
         for(size_t i=0;i<oppZone.size();++i){
@@ -232,7 +232,7 @@ int main(){
             c.setPosition(centeredPos);
             oppFieldCards.push_back(c);
         }
-        // Corregge eventuale indice selezionato non più valido
+    // Corregge un eventuale indice selezionato non più valido
         if(selectedCardIsOnField && selectedCardIndex.has_value() && selectedCardIndex.value() >= fieldCards.size()){
             selectedCardIndex.reset();
             selectedCardIsOnField = false;
@@ -369,11 +369,11 @@ int main(){
                 if(keyPressed->code == sf::Keyboard::Key::N && gamestate == GameState::Playing && game && !selectingTributes){
                     game->advancePhase();
                     std::cout << "Fase -> " << phaseToString(game->getTurn().getPhase()) << std::endl;
-                    // Reset tribute selection outside Main phases
+                    // Reset della selezione tributi fuori dalle fasi Main
                     if(game->getTurn().getPhase() != GamePhase::Main1 && game->getTurn().getPhase() != GamePhase::Main2){
                         selectingTributes = false; selectedTributes.clear(); tributesNeeded = 0;
                     }
-                    // Enable battle UI only in Battle
+                    // Abilita la UI di battaglia solo in Battle
                     attackSelectionActive = (game->getTurn().getPhase() == GamePhase::Battle);
                     if(!attackSelectionActive){ selectedAttackerIndex.reset(); }
                 }
@@ -393,13 +393,13 @@ int main(){
                 }
                 // DEBUG: O -> aggiungi un mostro al campo avversario
                 if(keyPressed->code == sf::Keyboard::Key::O && gamestate == GameState::Playing && game){
-                    // Crea una carta mostro base usando texture flipped (placeholder)
+                    // Crea una carta mostro base usando la texture flipped (segnaposto)
                     Card dbg("Enemy Dummy", "Test", 1000, 1000,
                         sf::Vector2f(0.f,0.f), sf::Vector2f(0.f,0.f), textureFlipped, Type::Monster, Attribute::None, 4, {});
                     game->debugAddMonsterToOpponent(dbg);
                     syncMonsterZoneToField();
                 }
-                // Direct attack hotkey (disabilitato durante selezione tributi)
+                // Tasto rapido per attacco diretto (disabilitato durante selezione tributi)
                 if(keyPressed->code == sf::Keyboard::Key::A && gamestate == GameState::Playing && game){
                     if(game->getTurn().getPhase() == GamePhase::Battle && !selectingTributes && selectedAttackerIndex.has_value()){
                         if(game->canDeclareAttack(selectedAttackerIndex.value(), std::nullopt)){
@@ -425,7 +425,7 @@ int main(){
                     std::cout << "Right click -> Fade out DeckSelection" << std::endl;
                     if(!deckSelectionScreen.isFading()) deckSelectionScreen.startFadeOut(0.4f);
                 }
-                    // Battle targeting: right-click on opponent monster to target (disabilitato durante selezione tributi)
+                    // Targeting in battaglia: click destro su un mostro avversario per selezionarlo (disabilitato durante selezione tributi)
                     if(but == sf::Mouse::Button::Right && gamestate == GameState::Playing && game && !selectingTributes && game->getTurn().getPhase() == GamePhase::Battle){
                         if(selectedAttackerIndex.has_value()){
                             sf::Vector2i mpos = sf::Mouse::getPosition(window);
@@ -488,7 +488,7 @@ int main(){
                             game->attachDrawController(&drawController);
                             handPtr = &game->current().getHand();
                             if(handPtr) handPtr->clear();
-                            // (event subscription will be set after game start)
+                            // Le sottoscrizioni agli eventi verranno impostate dopo l'avvio del game
                             gamestate = GameState::FieldLoading; // Stato intermedio con animazione
                         }
                     } 
@@ -559,7 +559,7 @@ int main(){
                             selectedCardIsOnField = true; // Carta sul campo
                             scrollOffset = 0.f;
                             if(selectingTributes){
-                                // toggle selezione tributo
+                                // Toggle della selezione tributo
                                 auto it = std::find(selectedTributes.begin(), selectedTributes.end(), i);
                                 if(it == selectedTributes.end()){
                                     if(static_cast<int>(selectedTributes.size()) < tributesNeeded){
@@ -570,13 +570,13 @@ int main(){
                                     selectedTributes.erase(it);
                                     std::cout << "[Tribute] Rimosso mostro indice zona " << i << std::endl;
                                 }
-                                // Se raggiunto numero richiesto prova a completare
+                                // Se è stato raggiunto il numero richiesto prova a completare
                                 if(game && tributesNeeded>0 && static_cast<int>(selectedTributes.size()) == tributesNeeded){
                                     if(game->completePendingNormalSummon(selectedTributes)){
                                         selectingTributes = false;
                                         selectedTributes.clear();
                                         tributesNeeded = 0;
-                                        // Aggiorna il render dopo completamento tributi
+                                        // Aggiorna il render dopo il completamento dei tributi
                                         syncMonsterZoneToField();
                                         if(handPtr){
                                             updateHandPositions(*handPtr, windowSize, cardSize, spacing, y, HAND_MAXSIZE);
@@ -587,7 +587,7 @@ int main(){
                                     }
                                 }
                             }
-                            // Battle: select attacker on click (disabilitato durante selezione tributi)
+                            // Battaglia: seleziona l'attaccante con il click (disabilitato durante selezione tributi)
                             if(game && !selectingTributes && game->getTurn().getPhase() == GamePhase::Battle){
                                 // Evita di selezionare mostri che hanno già attaccato
                                 if(!game->hasMonsterAlreadyAttacked(i)){
@@ -723,7 +723,7 @@ int main(){
         if(deckSelected){
             deck = resourceManager.getDeckByName(selectedDeckName);
 
-            // Reimposta stato di gioco relativo alla mano e alle animazioni di pescata
+            // Reimposta lo stato di gioco relativo alla mano e alle animazioni di pescata
             if(handPtr) handPtr->clear();
             fieldCards.clear();
             drawController.reset();
@@ -733,7 +733,7 @@ int main(){
             // Assicura che il nome sia aggiornato (già fatto nell'handler ma nel dubbio)
             homeScreen.setDeckName(selectedDeckName);
 
-            // Crea due player: P1 = deck selezionato, P2 = dummy (deck vuoto per ora)
+            // Crea due player: P1 = deck selezionato, P2 = dummy (per test locali)
             Player p1("Player1", deck);
             // Usa lo stesso deck anche per Player 2 per test locali (evita deck-out)
             Player p2("Player2", deck);
@@ -745,7 +745,7 @@ int main(){
             deckSelected = false; // Evita di rieseguire ogni frame    
         }
         
-        // Gestione animazione FieldLoading
+    // Gestione dell'animazione FieldLoading
         if(gamestate == GameState::FieldLoading && !fieldLoadingAnim.hasStarted()){
             fieldLoadingAnim.start(homeScreenTexture, fieldTexture, windowSize);
         }
@@ -758,7 +758,7 @@ int main(){
             }    
         }
 
-        // Controlla se il mouse si è mosso abbastanza e nella direzione corretta per attivare il dragging (bloccato durante selezione tributi)
+    // Controlla se il mouse si è mosso abbastanza e nella direzione corretta per attivare il dragging (bloccato durante la selezione tributi)
         if (isPotentialDrag && potentialDragCardIndex.has_value() && !selectingTributes) {
             sf::Vector2f currentMousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
             float distance = std::sqrt(std::pow(currentMousePos.x - initialMousePos.x, 2) + std::pow(currentMousePos.y - initialMousePos.y, 2));
@@ -786,12 +786,12 @@ int main(){
                 if(deck.isAnimationFinished()) {
                     deck.setAnimationFinished();
 
-                    // Avvia shuffle animation avanzata una sola volta
+                    // Avvia la shuffle animation avanzata una sola volta
                     if (!shuffleStarted) {
                         deck.startShuffleAnimationAdvanced(deckSlotPos, deckCardSize);
                         shuffleStarted = true;
                     }
-                    // Aggiorna shuffle animation
+                    // Aggiorna la shuffle animation
                     deck.updateShuffleAnimationAdvanced(deltaTime);
                     // Quando l'animazione è finita, mischia effettivamente il deck e passa allo stato Playing
                     if (deck.isShuffleAnimationAdvancedFinished()) {
@@ -824,7 +824,7 @@ int main(){
                                 std::cout << "[Event] NormalSummon" << std::endl;
                                 syncMonsterZoneToField();
                             });
-                            // Battle events
+                            // Eventi di battaglia
                             attackDeclaredSubId = game->events().subscribe(GameEventType::AttackDeclared, [&](){
                                 std::cout << "[Event] AttackDeclared" << std::endl;
                             });
@@ -844,7 +844,7 @@ int main(){
                             directAttackSubId = game->events().subscribe(GameEventType::DirectAttack, [&](){
                                 std::cout << "[Event] DirectAttack" << std::endl;
                             });
-                            // Vittoria/Sconfitta -> attiva overlay
+                            // Vittoria/Sconfitta -> attiva l'overlay
                             game->events().subscribe(GameEventType::Win, [&](){
                                 if(!gameOverActive){
                                     gameOverActive = true;
@@ -855,7 +855,7 @@ int main(){
                                     gameOverActive = true;
                                 }
                             });
-                            // Listener PhaseChange per scarto automatico quando si entra in End Phase
+                            // Listener per lo scarto automatico quando si entra in End Phase
                             game->setHandLimit(HAND_MAXSIZE);
                             game->setDiscardCallback([&](std::vector<Card>&& excess){
                                 if(!handPtr) return;
@@ -873,7 +873,7 @@ int main(){
         }
 
         // Avvia la prima animazione di pescata SOLO dopo il passaggio allo stato Playing
-        // (Legacy pescata iniziale sostituita da DrawController nella fase Draw)
+    // (La pescata iniziale legacy è sostituita dal DrawController nella fase Draw)
 
         Card tmpcard = Card("", "", 0, 0, sf::Vector2f(0.f, 0.f), sf::Vector2f(0.f, 0.f), textureFlipped, Type::Monster, Attribute::None, 0, {});
 
@@ -904,13 +904,13 @@ int main(){
         }
     
 
-        // Gestione hold extra deck (attiva preview dopo soglia se non sto trascinando carte)
+    // Gestione dell'hold dell'Extra Deck (attiva la preview dopo una soglia se non si stanno trascinando carte)
         if(!returnPopupActive){
             extraOverlay.update(deltaTime, isDragging, gamestate);
             graveyardOverlay.update(deltaTime, isDragging, gamestate);
         }
 
-        //Gestione del sollevamento delle carte in mano
+    // Gestione del sollevamento delle carte in mano
         float targetCardOffset = 0.f;
         float offsetSpeed = 200.f; 
         if(!returnPopupActive){
@@ -989,7 +989,7 @@ int main(){
                 field.draw(window, mousePos, gamestate, enableHover);
             }
 
-            // Disegna il deck principale (o la shuffle animation) e l'extra deck sopra il relativo slot
+            // Disegna il Deck principale (o la shuffle animation) e l'Extra Deck sopra il relativo slot
             if(field.isAnimationFinished()) {
                 if (deck.getSize() > 0) {
                     if (!deck.isShuffleAnimationAdvancedFinished()) {
@@ -998,7 +998,7 @@ int main(){
                         deck.draw(window, mousePos, detailFont, deckSlotPos, slotSize, gamestate);
                     }
                 }
-                // Extra deck: disegna sempre lo stack se ha carte
+                // Extra Deck: disegna sempre lo stack se ha carte
                 if (deck.getExtraSize() > 0) {
                     deck.drawExtra(window, detailFont, extraDeckSlotPos, slotSize, gamestate);
                 }
@@ -1029,12 +1029,12 @@ int main(){
                     window.draw(dot);
                 }
             }
-            // Disegna carte avversario (P2)
+            // Disegna le carte dell'avversario (P2)
             for (size_t i=0;i<oppFieldCards.size();++i) {
                 oppFieldCards[i].draw(window);
             }
 
-            // Disegna pila graveyard (semplice: ultima carta)
+            // Disegna la pila Cimitero (semplice: ultima carta)
             if(game && !game->getGraveyard().empty()){
                 const Card &top = game->getGraveyard().back();
                 Card copy = top; // draw copy at slot center scaled (senza leggere size originale)
@@ -1046,7 +1046,19 @@ int main(){
                 copy.draw(window);
             }
 
-            // Disegna animazioni di scarto in volo (controller)
+            // Disegna la pila Cimitero dell'avversario (semplice: ultima carta)
+            if(game && !game->getOpponentGraveyard().empty()){
+                const Card &top = game->getOpponentGraveyard().back();
+                Card copy = top; // draw copy at slot center scaled (senza leggere size originale)
+                sf::Vector2f gyPos = field.getSlotPosition(Type::Graveyard, P2);
+                float scale = 0.75f;
+                sf::Vector2f gySize(slotSize.x*scale, slotSize.y*scale);
+                copy.setSize(gySize);
+                copy.setPosition(gyPos + sf::Vector2f((slotSize.x-gySize.x)/2.f, (slotSize.y-gySize.y)/2.f));
+                copy.draw(window);
+            }
+
+            // Disegna le animazioni di scarto in volo (controller)
             discardController.draw(window);
             
             //Disegna le animazioni delle carte
@@ -1082,8 +1094,8 @@ int main(){
                 }
             }
 
-            // Overlay preview extra deck (mostra tutte le carte) - sopra tutto il resto ma sotto eventuali pannelli dettagli
-            // Overlay extra deck
+            // Overlay preview Extra Deck (mostra tutte le carte) - sopra tutto il resto ma sotto eventuali pannelli dettagli
+            // Overlay Extra Deck
             extraOverlay.draw(window, detailFont, deck.getExtraCards(), scrollOffset);
             if(game){
                 graveyardOverlay.draw(window, detailFont, game->getGraveyard(), scrollOffset);
@@ -1133,16 +1145,16 @@ int main(){
                     window.draw(trib);
                 }
                 if(over>0){
-                    sf::Text warn(detailFont, "Hand limit exceeded: discard at End Phase", 20);
+                    sf::Text warn(detailFont, "Limite mano superato: scarterai in End Phase", 20);
                     warn.setFillColor(sf::Color(255,80,80,240));
                     warn.setOutlineColor(sf::Color(0,0,0,200));
                     warn.setOutlineThickness(2.f);
                     warn.setPosition(sf::Vector2f(15.f, 38.f));
                     window.draw(warn);
                 }
-                // Battle hints and feedback
+                // Suggerimenti e feedback per la fase Battle
                 if(game->getTurn().getPhase() == GamePhase::Battle){
-                    sf::Text hint(detailFont, "Battle: clicca un tuo mostro (rossi = gia' usati), poi A per attacco diretto", 20);
+                    sf::Text hint(detailFont, "Battle: clicca un tuo mostro (rossi = gia' usati), tasto A = attacco diretto", 20);
                     hint.setFillColor(sf::Color(200,230,255,235));
                     hint.setOutlineColor(sf::Color(0,0,0,180));
                     hint.setOutlineThickness(2.f);

@@ -15,3 +15,19 @@ Nel main gestisco la GUI:
 - Se il gameOver è active le animazioni sono in pausa --> `deltaTime` = 0
 - Ho aggiunto i subscribers che gestiscono gli eventi di Win e Lose, in modo che quando viene rilevato uno dei due viene messo a true gameOver
 - Aggiunto il rendering effettivo all'interno del main (da spostare successivamente)
+
+Ho fatto successivamente alcune modifiche alla GUI aggiungendo un pallino rosso per simboleggiare i mostri che hanno già attaccato. Inoltre ho modificato Game aggiungendo lo spostamento per le carte bandite, e sistemando il cimitero -> prima vi era un solo cimitero ora ve ne sono due, come anche le monsterZone
+
+**Bozze Per gli Effetti**
+All'interno del gioco vi sono alcuni mostri che posseggono degli effetti, così come le carte magia e trappola, anche loro posseggono gli effetti. 
+Per far ciò (per il momento) ho aggiunto l'interfaccia minimale --> `ICardEffect.h`
+
+Un oggetto che implementa quest'interfaccia ha a disposizione un metodo `onEvent()`.
+All'interno di game ho inserito un nuovo metodo `dispatchEffects`, che solleva eventi di un determinato tipo tra quelli già presenti (TurnStart, TurnEnd, ...).
+L'idea è che quando dispatchEffects emette un determinato evento, un oggetto che implementa ICardEffect reagisce a quell'evento tramite il metodo `onEvent`.
+
+Ho poi creato una classe dedicata `EffectSystem` che si occupa di fare `dispatchEffects` (Game delega a EffectSystem) e di registrare gli effetti --> creo una map che associa al nome di una carta il suo effetto. 
+
+L'idea è quindi che:
+- Game emette eventi (enum GameEventType) nei punti chiave; in parallelo chiama effects.dispatch(evento, game).
+- EffectSystem: scansiona il campo, trova le carte i cui nomi hanno un ICardEffect registrato e invoca onEvent(evento, game) su quell’effetto.

@@ -5,15 +5,21 @@
 #include <optional>
 #include "../Events/EventDispatcher.h"
 #include <functional>
+#include <unordered_map>
+#include <memory>
+#include "Effects/EffectSystem.h"
 
 // Forward declarations per evitare dipendenze circolari
 class DrawController;
+class ICardEffect;
 
 enum class CardZone{ 
     Deck, 
     Hand, 
     MonsterZone, 
-    Graveyard 
+    Graveyard,
+    Extra,
+    Banished
 };
 
 class Game {
@@ -48,6 +54,8 @@ public:
     // Movimento generico carte (per ora solo del giocatore corrente)
     // Ritorna true se spostamento riuscito
     bool moveCard(CardZone from, CardZone to, size_t indexFrom);
+    // Banishing helper: rimuove carta da una zona e la mette nella zona Banished del giocatore corrente
+    bool banishFrom(CardZone from, size_t indexFrom);
     // Tribute logic
     int requiredTributesFor(const Card& c) const; // 0/1/2 in base al livello
     // Indici dei mostri da tributare (rispetto alla monster zone corrente). Ritorna true se ok.
@@ -67,6 +75,7 @@ public:
     const std::vector<Card>& getMonsterZone() const; // accesso read-only
     const std::vector<Card>& getOpponentMonsterZone() const; // zona mostri dell'avversario (read-only)
     std::vector<Card>& getGraveyard();
+    std::vector<Card>& getOpponentGraveyard();
     void discardExcess(size_t handLimit);
     // Estrae le carte oltre il limite (le rimuove dalla mano ma non le mette ancora nel graveyard)
     std::vector<Card> extractExcessCards(size_t handLimit);
@@ -80,8 +89,12 @@ public:
     // UI helper: true se il mostro nella zona indicata (giocatore corrente) ha già attaccato questo turno
     bool hasMonsterAlreadyAttacked(size_t zoneIndex) const;
 
-    // Debug helpers
+    // Helper di debug
     void debugAddMonsterToOpponent(const Card& c);
+
+    // Sistema effetti (minimale)
+    // Registra un'implementazione per un nome carta; quando tale carta è sul campo, verrà invocato onEvent
+    void registerEffectForCardName(const std::string& cardName, std::unique_ptr<ICardEffect> effect);
 
 private:
     void checkVictoryByLP();
@@ -96,7 +109,10 @@ private:
     bool normalSummonUsed = false;
     static constexpr size_t MONSTER_ZONE_SIZE = 3;
     std::array<std::vector<Card>,2> monsterZones; // una per player
-    std::vector<Card> graveyard;
+    // Placeholder per Banished; Extra non gestito qui (UI lo tiene separato nel Deck)
+    std::array<std::vector<Card>,2> banished;
+    std::array<std::vector<Card>,2> graveyard; 
+    
     EventDispatcher dispatcher;
     DrawController* drawCtrl = nullptr; // non-owning
     size_t handLimit = 7; // default
@@ -106,17 +122,22 @@ private:
     std::optional<size_t> pendingSummonHandIndex; // indice carta in mano da evocare dopo scelta tributi
     int pendingTributesNeeded = 0;
 
-    // Battle state: flag "ha attaccato" per ciascun mostro in zona, per giocatore
+    // Stato battaglia: flag "ha attaccato" per ciascun mostro in zona, per giocatore
     std::array<std::vector<bool>,2> monsterHasAttacked;
 
-    // Victory state
+    // Stato vittoria
     bool gameOver = false;
-    std::optional<int> winnerIndex; // 0/1
+    std::optional<int> winnerIndex; // indice del vincitore: 0/1
 
     // Puntatore al Deck usato dal DrawController/UI per il giocatore corrente
     Deck* externalDeck = nullptr; // non-owning
 
-    // Helpers battle
+    // Helper per la battaglia
     void destroyMonster(int playerIdx, size_t zoneIndex);
     void dealDamageTo(int playerIdx, int amount);
+
+    // Helper per la propagazione degli effetti
+    void dispatchEffects(GameEventType type);
+    // Sistema effetti dedicato
+    EffectSystem effects;
 };
