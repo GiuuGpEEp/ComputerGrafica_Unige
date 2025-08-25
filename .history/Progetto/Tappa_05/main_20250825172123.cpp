@@ -94,7 +94,7 @@ int main(){
             }
 
             if(const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()){
-                if(keyPressed->code == sf::Keyboard::Key::Enter && gamestate == GameState::StartScreen) {
+                if(keyPressed->code == sf::Keyboard::Key::Enter && gamestate == GameState::Intro) {
                     std::cout << "Passaggio allo stato FieldVisible..." << std::endl;
                     gamestate = GameState::FieldVisible; 
                     clock.restart(); // 
@@ -178,9 +178,9 @@ int main(){
         
         // Disegna sempre il campo di gioco (che include lo sfondo)
         field.draw(window, mousePos, gamestate);
-
-        // Se siamo nello stato StartScreen, disegna il testo sopra lo sfondo
-        if(gamestate == GameState::StartScreen) {
+        
+        // Se siamo nello stato Intro, disegna il testo sopra lo sfondo
+        if(gamestate == GameState::Intro) {
             drawStartScreen(window, detailFont, windowSize);
         } else {
             // Negli altri stati, disegna anche carte e deck

@@ -54,7 +54,7 @@ int main(){
     bool mousePressed = false; 
 
     // Definisci le dimensioni della finestra
-    sf::Vector2u windowSize(1920, 1080);
+    sf::Vector2u windowSize(2500, 1400);
     sf::RenderWindow window(sf::VideoMode(windowSize), "Progetto Tappa 06 - Animationz");
 
     // Carico le texture necessarie per il campo di gioco
@@ -326,8 +326,8 @@ int main(){
         
         // Disegna sempre il campo di gioco (che include lo sfondo)
         field.draw(window, mousePos, gamestate, fieldAlpha, fieldOffset);
-
-        // Se siamo nello stato StartScreen, disegna il testo sopra lo sfondo
+        
+        // Se siamo nello stato Intro, disegna il testo sopra lo sfondo
         if(gamestate == GameState::StartScreen) drawStartScreen(window, detailFont, windowSize);
         
         else {

@@ -380,7 +380,7 @@ int main(){
         field.draw(window, mousePos, gamestate);
 
         // Se siamo nello stato Intro, disegna il testo sopra lo sfondo
-        if(gamestate == GameState::StartScreen) drawStartScreen(window, detailFont, windowSize);
+        if(gamestate == GameState::Intro) drawStartScreen(window, detailFont, windowSize);
 
         else {
 

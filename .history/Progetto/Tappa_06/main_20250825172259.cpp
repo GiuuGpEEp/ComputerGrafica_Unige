@@ -54,7 +54,7 @@ int main(){
     bool mousePressed = false; 
 
     // Definisci le dimensioni della finestra
-    sf::Vector2u windowSize(1920, 1080);
+    sf::Vector2u windowSize(1920, 1400);
     sf::RenderWindow window(sf::VideoMode(windowSize), "Progetto Tappa 06 - Animationz");
 
     // Carico le texture necessarie per il campo di gioco
