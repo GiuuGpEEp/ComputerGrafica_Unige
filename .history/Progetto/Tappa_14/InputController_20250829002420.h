@@ -1,0 +1,140 @@
+#pragma once
+
+#include <SFML/Graphics.hpp>
+#include <functional>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "../resources/data/GameState.h"
+#include "DeckSelectionScreen/DeckSelectionScreen.h"
+#include "ExtraDeckOverlay/ExtraDeckOverlay.h"
+#include "GraveyardOverlay/GraveyardOverlay.h"
+#include "Card/Card.h"
+#include "HomePage/HomePage.h"
+#include "Config.h"
+#include "RenderUtils.h"
+#include "GameLogic/Game/Game.h"
+#include "GameLogic/GamePhases.h"
+#include "IInputHost.h"
+
+namespace Input {
+
+struct Context {
+    // Elementi base finestra/stato
+    sf::RenderWindow& window;
+    sf::Vector2u& windowSize;
+    GameState& gamestate;
+
+    // Popup/overlay globali
+    bool& returnPopupActive;
+    bool& gameOverActive;
+
+    // Callback di reset partita (main possiede la logica)
+    std::function<void()> resetMatch;
+
+    // Predicato per sapere se l'input è bloccato (overlay/prompt attivi)
+    std::function<bool()> inputBlocked;
+
+    // Selezione mazzo
+    DeckSelectionScreen& deckSelectionScreen;
+    HomePage& homeScreen;
+
+    // Overlay: Extra/Graveyard gestione hold/click
+    ExtraDeckOverlay& extraOverlay;
+    GraveyardOverlay& graveyardOverlay;
+    sf::Vector2f extraDeckSlotPos;   // posizione slot Extra (P1)
+    sf::Vector2f graveyardSlotPos;   // posizione slot Cimitero (P1)
+    std::function<std::vector<Card>()> getExtraCards;       // sorgente carte Extra
+    std::function<std::vector<Card>()> getGraveyardCards;   // sorgente Cimitero corrente
+
+    // Overlay: scelta invio dal Deck
+    bool& deckSendChoiceActive;
+    size_t& deckSendSelected;
+    std::vector<Card>& deckSendCandidates;
+    sf::Vector2f slotSize;
+    int& deckSendOwner;
+    std::function<void(size_t)> confirmDeckSend;
+
+    // Prompt di risposta
+    bool& responsePromptActive;
+    size_t& responseSelected;
+    std::function<size_t()> responseOptionsCount;
+    std::function<void()> closeResponsePrompt;
+    std::function<void(size_t)> confirmResponsePrompt;
+    std::function<void()> openResponsePromptIfAny; // facoltativa: apertura prompt dopo avanzamento fase
+
+    // Stato selezioni/overlay da gestire con ESC
+    std::optional<size_t>& selectedCardIndex;
+    bool& selectedCardIsOnField;
+    float& scrollOffset;
+    std::function<void()> extraOnEscape; // chiude overlay extra deck
+    std::function<void()> graveOnEscape; // chiude overlay cimitero
+    bool& selectingTributes;
+    std::vector<size_t>& selectedTributes;
+    int& tributesNeeded;
+    bool& chooseSummonOrSet;
+    bool& chooseActivateOrSetST;
+    std::optional<size_t>& pendingHandIndexForPlay;
+    bool& pendingIsSpellTrap;
+    std::function<void(size_t)> restoreCardAtHandIndex; // ripristina carta nella mano
+    std::function<void()> syncMonsterZoneToField;       // resync grafico
+
+    // Battle targeting (click destro su mostri avversari)
+    bool& attackSelectionActive;
+    std::optional<size_t>& selectedAttackerIndex;
+    std::vector<Card>& oppFieldCards;
+    std::string& battleFeedbackMsg;
+    sf::Clock& battleFeedbackClock;
+
+    // Riferimento alla lista ST del player 1 (necessario per hit-test con X)
+    std::vector<Card>& p1STCards;
+
+    // Permette al controller di richiedere il sync delle ST dopo attivazioni
+    std::function<void()> syncSpellTrapZones;
+
+    // Callback per aggiornare il layout della mano (definita in main)
+    std::function<void()> updateHandLayout;
+
+    // Funzione ausiliaria fornita da main per mappare la posizione del mouse su uno slot mostro
+    std::function<std::optional<int>(sf::Vector2f)> findMonsterSlotIndexUnderMouse;
+
+    // Accesso al Game corrente tramite getter (evita dangling pointer)
+    std::function<Game*()> getGame;
+
+    // Risorsa necessaria per creare carte di debug (per tasto O)
+    sf::Texture* cardBackTexture;
+
+    // Mouse / dragging shared state (moved here so Controller can manage input state while
+    // main continues to read some flags each frame)
+    bool& mousePressed;
+    std::vector<Card>*& handPtr; // pointer to the visible hand vector
+    std::vector<Card>& fieldCards; // cards currently on the player's field (rendered)
+    std::function<std::optional<sf::Vector2f>(sf::Vector2f,const Card&)> findSlotPosition; // helper for drop resolution
+    bool& isDragging;
+    bool& isPotentialDrag;
+    std::optional<size_t>& draggingCardIndex;
+    std::optional<size_t>& potentialDragCardIndex;
+    sf::Vector2f& dragOffset;
+    sf::Vector2f& initialMousePos;
+
+    // Callbacks provided by main to perform higher-level actions without moving ownership here
+    std::function<void()> onPlayClicked; // invoked when "Gioca!" is clicked on Home
+    std::function<void()> onStartDeckSelection; // invoked when opening deck selection
+    std::function<void(int)> onSelectDeckIndex; // choose a deck index from selection screen
+    // Optional host: if provided, Controller will call host methods in preference to individual callbacks
+    IInputHost* host = nullptr;
+};
+
+class Controller {
+public:
+    explicit Controller(Context state) : state(state) {}
+
+    // Ritorna true se l'evento è stato gestito e non va propagato oltre
+    bool handleEvent(const sf::Event& e);
+
+private:
+    Context state;
+};
+
+} // namespace Input
