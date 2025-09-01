@@ -320,9 +320,9 @@ add_executable(mainTappa16
     Progetto/Tappa_16/GameLogic/Game/Effects/cards/BluEyes/WhiteStoneLegends/WhiteStoneLegendEffect.cpp
     Progetto/Tappa_16/GameLogic/Game/Effects/cards/BluEyes/WhiteStoneAncients/WhiteStoneAncientsEffect.cpp
     Progetto/Tappa_16/GameLogic/Game/Effects/cards/BluEyes/ReliquarioDelDrago/ReliquarioDelDragoEffect.cpp
-    Progetto/Tappa_16/GameLogic/Game/Effects/cards/BluEyes/PiantoDiArgento/PiantoDiArgentoEffect.cpp
-    Progetto/Tappa_16/GraveyardOverlay/GraveyardOverlay.cpp
-    Progetto/Tappa_16/AppHandlers/AppHandlers.cpp
-    Progetto/Tappa_16/GameWiring/GameWiring.cpp)
-target_compile_features(mainTappa16 PRIVATE cxx_std_17)
-target_link_libraries(mainTappa16 PRIVATE SFML::Graphics)
+    Progetto/Tappa_15/GameLogic/Game/Effects/cards/BluEyes/PiantoDiArgento/PiantoDiArgentoEffect.cpp
+    Progetto/Tappa_15/GraveyardOverlay/GraveyardOverlay.cpp
+    Progetto/Tappa_15/AppHandlers/AppHandlers.cpp
+    Progetto/Tappa_15/GameWiring/GameWiring.cpp)
+target_compile_features(mainTappa15 PRIVATE cxx_std_17)
+target_link_libraries(mainTappa15 PRIVATE SFML::Graphics)

@@ -1,0 +1,1 @@
+## Tappa 16 — Implementazione degli effetti mancanti
