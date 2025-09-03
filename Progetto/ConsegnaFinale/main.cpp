@@ -192,6 +192,10 @@ int main(){
     // Mappatura opzionale dagli indici mostrati (candidati) agli indici reali nella sorgente (es. Cimitero)
     std::vector<size_t> deckSendIndexMap;
     
+    // Popup/overlay globali (spostati qui sopra per uso in inputBlocked)
+    bool returnPopupActive = false; // conferma ritorno alla Home
+    bool gameOverActive = false;    // overlay Game Over
+    
     auto rebuildResponseActivables = [&](){
         responseActivables.clear();
         if (!game) return;
@@ -217,10 +221,15 @@ int main(){
         responsePromptActive = false; responseActivables.clear(); responseSelected = 0; responseOwner = -1;
     };
 
+    // Helper per sapere se l'input utente va bloccato (modale attivo, popup, ecc.)
+    auto inputBlocked = [&](){
+        return selectingTributes || ssChoiceActive || responsePromptActive || deckSendChoiceActive || returnPopupActive || gameOverActive;
+    };
+
     auto openResponsePromptIfAny = [&](){
-    if (!game) return;
-    // Non aprire il prompt di risposta quando c'è un overlay/modale attivo (es. scelte Deck/GY/SS)
-    if(inputBlocked()) return;
+        if (!game) return;
+        // Non aprire il prompt di risposta quando c'è un overlay/modale attivo (es. scelte Deck/GY/SS)
+        if(inputBlocked()) return;
         // Apri il prompt se ci sono carte attivabili in risposta all'evento corrente.
         // Non dipendiamo più esclusivamente da "chainActive": il prompt deve comparire
         // anche quando viene emesso un evento rilevante (evocazione, attacco, fine turno, ecc.)
@@ -393,15 +402,9 @@ int main(){
         AppConfig::findTextureInMap(tex, AppConfig::TextureKey::FieldBackground),
         windowSize);
 
-    // Popup conferma ritorno alla Home
-    bool returnPopupActive = false;
-    // Overlay Game Over (vittoria/sconfitta)
-    bool gameOverActive = false;
+    // (le variabili returnPopupActive/gameOverActive sono definite sopra)
 
-    // Helper per sapere se l'input utente va bloccato (modale attivo, popup, ecc.)
-    auto inputBlocked = [&](){
-        return selectingTributes || ssChoiceActive || responsePromptActive || deckSendChoiceActive || returnPopupActive || gameOverActive;
-    };
+    
 
     // Setup dello stato --> preparo in una struct le variabili da passare poi al controller
     Input::Context state{
@@ -411,7 +414,7 @@ int main(){
         /*returnPopupActive*/returnPopupActive,
         /*gameOverActive*/gameOverActive,
         /*resetMatch*/resetMatch,
-        /*inputBlocked*/[&](){ return inputBlocked(); },
+    /*inputBlocked*/inputBlocked,
         /*deckSelectionScreen*/deckSelectionScreen,
         /*extraOverlay*/extraOverlay,
         /*graveyardOverlay*/graveyardOverlay,
