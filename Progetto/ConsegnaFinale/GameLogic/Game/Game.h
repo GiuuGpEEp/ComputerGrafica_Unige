@@ -283,7 +283,11 @@ public:
     std::optional<PendingSS> pendingSS;
 
     // Stato pending per selezione invio dal Deck al Cimitero
-    struct PendingSendDeck { int ownerIdx; };
+    struct PendingSendDeck {
+        int ownerIdx;
+        // Snapshot dei nomi candidati (draghi) al momento della richiesta, per stabilizzare l'indice mostrato in UI
+        std::vector<std::string> candidateNames;
+    };
     std::optional<PendingSendDeck> pendingSend;
 
     // Stato pending per scelta scarto dalla mano

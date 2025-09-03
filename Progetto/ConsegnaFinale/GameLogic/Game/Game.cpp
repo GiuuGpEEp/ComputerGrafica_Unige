@@ -484,7 +484,18 @@ bool Game::moveCard(CardZone from, CardZone to, size_t indexFrom){
 bool Game::requestSendFromDeck(int playerIdx){
     if(pendingSend.has_value() || pendingDiscard.has_value() || pendingAdd.has_value()) return false;
     if(playerIdx < 0 || playerIdx > 1) return false;
-    pendingSend = PendingSendDeck{ playerIdx };
+    // Precalcola e salva la snapshot dei candidati (draghi) per stabilizzare gli indici mostrati in UI
+    const Deck &d = getDeckOf(playerIdx);
+    auto candidates = d.collectWhere([](const Card& c){
+        const auto &feats = c.getFeatures();
+        return std::find(feats.begin(), feats.end(), Feature::Drago) != feats.end();
+    });
+    // Se non ci sono candidati, non aprire la richiesta
+    if(candidates.empty()) return false;
+    PendingSendDeck snap{ playerIdx };
+    snap.candidateNames.reserve(candidates.size());
+    for(const auto &c : candidates) snap.candidateNames.push_back(c.getName());
+    pendingSend = std::move(snap);
     dispatcher.emit(GameEventType::DeckSendChoiceRequested);
     return true;
 }
@@ -498,13 +509,9 @@ bool Game::resolvePendingSendFromDeck(size_t indexInFiltered){
     if(!pendingSend.has_value()) return false;
     int owner = pendingSend->ownerIdx;
     Deck &d = getDeckOf(owner);
-    // Ricostruisci la lista filtrata (Drago) come fa la UI
-    auto candidates = d.collectWhere([](const Card& c){
-        const auto &feats = c.getFeatures();
-        return std::find(feats.begin(), feats.end(), Feature::Drago) != feats.end();
-    });
-    if(indexInFiltered >= candidates.size()) return false;
-    const std::string pickName = candidates[indexInFiltered].getName();
+    // Usa la snapshot salvata per mappare l'indice alla carta scelta
+    if(indexInFiltered >= pendingSend->candidateNames.size()) return false;
+    const std::string &pickName = pendingSend->candidateNames[indexInFiltered];
     auto picked = d.removeFirstByName(pickName);
     if(!picked.has_value()) return false;
     // Invia al Cimitero del proprietario

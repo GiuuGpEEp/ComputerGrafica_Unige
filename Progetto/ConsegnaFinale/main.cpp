@@ -218,7 +218,9 @@ int main(){
     };
 
     auto openResponsePromptIfAny = [&](){
-        if (!game) return;
+    if (!game) return;
+    // Non aprire il prompt di risposta quando c'è un overlay/modale attivo (es. scelte Deck/GY/SS)
+    if(inputBlocked()) return;
         // Apri il prompt se ci sono carte attivabili in risposta all'evento corrente.
         // Non dipendiamo più esclusivamente da "chainActive": il prompt deve comparire
         // anche quando viene emesso un evento rilevante (evocazione, attacco, fine turno, ecc.)

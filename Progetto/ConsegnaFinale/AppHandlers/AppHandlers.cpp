@@ -152,6 +152,7 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
         // Determina l'owner della richiesta di invio; preferisci l'owner pendingSend del Game se presente
         auto pendingOwnerOpt = g.getPendingSendOwner();
         int owner = pendingOwnerOpt.has_value() ? *pendingOwnerOpt : g.getTurn().getCurrentPlayerIndex();
+    if(ctx.setDeckSendOwner) ctx.setDeckSendOwner(owner);
         
         // Se l'owner è l'AI (1), risolvi automaticamente scegliendo un drago casuale senza aprire la UI
         if(owner == 1){
