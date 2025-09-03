@@ -1611,11 +1611,6 @@ bool Game::specialSummonToMonsterZone(int playerIdx, Card&& c, bool defense, boo
     // assegna primo slot libero disponibile
     auto freeSlot = firstFreeMonsterSlot(playerIdx);
     monsterSlotIndex[playerIdx].push_back(freeSlot.has_value()? static_cast<int>(*freeSlot) : -1);
-    // Registra ultimo mostro evocato (Special)
-    if(!monsterZones[playerIdx].empty()){
-        const auto &just = monsterZones[playerIdx].back();
-        lastSummonedMonster = LastSummonedMonster{ just.getName(), playerIdx };
-    }
     dispatcher.emit(GameEventType::CardMoved);
     dispatcher.emit(GameEventType::MonsterSpecialSummoned);
     return true;

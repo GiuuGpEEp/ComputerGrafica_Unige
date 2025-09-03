@@ -717,13 +717,9 @@ int main(){
                                     std::string nm = (*handPtr)[handIdxForPlay].getName();
                                     // Riporta la carta in mano immediatamente per non lasciarla fluttuare al centro
                                     cancelActiveDrag();
-                                    // Se il mostro ha un effetto attivabile dalla mano (Saggio), mostra "A per Attivare" solo in Main1/Main2
+                                    // Se il mostro ha un effetto attivabile dalla mano (Saggio), mostra anche "A per Attivare"
                                     if(nm == "Saggio con Occhi di Blu" || nm == "Saggio con gli Occhi Blu"){
-                                        if(game->getTurn().getPhase() == GamePhase::Main1 || game->getTurn().getPhase() == GamePhase::Main2){
-                                            battleFeedbackMsg = "Premi A per Attivare, E per Evocare, P per Posizionare";
-                                        } else {
-                                            battleFeedbackMsg = "Premi E per Evocare, P per Posizionare";
-                                        }
+                                        battleFeedbackMsg = "Premi A per Attivare, E per Evocare, P per Posizionare";
                                     } else {
                                         battleFeedbackMsg = "Premi E per Evocare, P per Posizionare";
                                     }

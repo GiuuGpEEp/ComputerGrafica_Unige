@@ -18,7 +18,7 @@ class HomePage{
         sf::RenderWindow& window;
         sf::Sprite backgroundSprite;
         sf::Text menuText;
-        std::vector<std::string> menuItems = {"Gioca", "Seleziona Deck"};
+        std::vector<std::string> menuItems = {"Gioca", "Seleziona Deck", "Training"};
         std::vector<sf::Text> menuTexts;
         sf::Text deckText;
     

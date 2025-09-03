@@ -794,15 +794,13 @@ inline void drawOpponentHand(
 ) {
     size_t n = hand.size();
     if(n == 0) return;
-    const float scale = AppConfig::Ui::OpponentHandScaleFactor;
-    const sf::Vector2f scaledSize{ cardSize.x * scale, cardSize.y * scale };
-    float totalW = n * scaledSize.x + (n - 1) * spacing;
+    float totalW = n * cardSize.x + (n - 1) * spacing;
     float startX = (windowSize.x - totalW) / 2.f;
     for(size_t i=0;i<n;++i){
         Card c = hand[i];
         RenderUtils::applyBackTexture(c, texMap);
-        sf::Vector2f pos(startX + static_cast<float>(i) * (scaledSize.x + spacing), topMargin);
-        RenderUtils::rotate180Centered(c, pos, scaledSize);
+        sf::Vector2f pos(startX + static_cast<float>(i) * (cardSize.x + spacing), topMargin);
+        RenderUtils::rotate180Centered(c, pos, cardSize);
         c.draw(window);
     }
 }

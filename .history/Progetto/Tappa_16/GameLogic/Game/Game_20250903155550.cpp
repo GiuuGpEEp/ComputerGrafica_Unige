@@ -139,11 +139,6 @@ bool Game::tryNormalSummonToSlot(size_t handIndex, size_t slotIndex){
     if(isMonsterSlotOccupied(cur, slotIndex)) return false;
     // Esegui move e registra slot mapping
     if(!moveCard(CardZone::Hand, CardZone::MonsterZone, handIndex)) return false;
-    // Registra ultimo mostro evocato (Normal)
-    if(!monsterZones[cur].empty()){
-        const auto &just = monsterZones[cur].back();
-        lastSummonedMonster = LastSummonedMonster{ just.getName(), cur };
-    }
     if(!monsterSlotIndex[cur].empty()) monsterSlotIndex[cur].back() = static_cast<int>(slotIndex);
     // Mark flags gia' fatti in moveCard per summoned/positionChanged
     normalSummonUsed = true;
@@ -1019,11 +1014,6 @@ bool Game::completePendingNormalSummon(const std::vector<size_t>& tributeIndices
     // Attenzione: dopo i tributi la mano potrebbe essere cambiata? (no, tributi rimuovono solo dalla monster zone)
     if(!moveCard(CardZone::Hand, CardZone::MonsterZone, handIndex)) return false;
     int cur = turn.getCurrentPlayerIndex();
-    // Registra ultimo mostro evocato (Normal dopo tributi)
-    if(!monsterZones[cur].empty()){
-        const auto &just = monsterZones[cur].back();
-        lastSummonedMonster = LastSummonedMonster{ just.getName(), cur };
-    }
     // Mark summoned/position-changed flags for the newly placed monster
     if(!monsterSummonedThisTurn[cur].empty()) monsterSummonedThisTurn[cur].back() = true;
     if(!monsterPositionChangedThisTurn[cur].empty()) monsterPositionChangedThisTurn[cur].back() = false;
@@ -1611,11 +1601,6 @@ bool Game::specialSummonToMonsterZone(int playerIdx, Card&& c, bool defense, boo
     // assegna primo slot libero disponibile
     auto freeSlot = firstFreeMonsterSlot(playerIdx);
     monsterSlotIndex[playerIdx].push_back(freeSlot.has_value()? static_cast<int>(*freeSlot) : -1);
-    // Registra ultimo mostro evocato (Special)
-    if(!monsterZones[playerIdx].empty()){
-        const auto &just = monsterZones[playerIdx].back();
-        lastSummonedMonster = LastSummonedMonster{ just.getName(), playerIdx };
-    }
     dispatcher.emit(GameEventType::CardMoved);
     dispatcher.emit(GameEventType::MonsterSpecialSummoned);
     return true;
