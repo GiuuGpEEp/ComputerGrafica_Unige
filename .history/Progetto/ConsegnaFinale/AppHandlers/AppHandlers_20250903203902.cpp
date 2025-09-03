@@ -92,7 +92,7 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
         };
     bool useLevel1Dragon = false;
         {
-            // Controlla la presenza del Saggio sul terreno per l'owner
+            // Check presence of Sage on field for owner
             const auto &mz = (owner==g.getTurn().getCurrentPlayerIndex()) ? g.getMonsterZone() : g.getOpponentMonsterZone();
             useLevel1Dragon = std::any_of(mz.begin(), mz.end(), [](const Card& c){
                 const std::string &name = c.getName();
@@ -100,7 +100,7 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
             });
             if(g.getMelodiaAddsRemaining() > 0) useLevel1Dragon = false; // Melodia has priority when active
         }
-    // AI: scelta automatica
+        // AI auto-pick
         if(owner == 1){
             const Deck &d = g.getDeckOf(owner);
             auto candidates = d.collectWhere(useLevel1Dragon ? level1DragonFilter : melodiaFilter);
@@ -149,11 +149,11 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
     });
 
     g.events().subscribe(GameEventType::DeckSendChoiceRequested, [&](){
-        // Determina l'owner della richiesta di invio; preferisci l'owner pendingSend del Game se presente
+        // Decide owner of pending send; prefer Game's pendingSend owner if present
         auto pendingOwnerOpt = g.getPendingSendOwner();
         int owner = pendingOwnerOpt.has_value() ? *pendingOwnerOpt : g.getTurn().getCurrentPlayerIndex();
         
-        // Se l'owner è l'AI (1), risolvi automaticamente scegliendo un drago casuale senza aprire la UI
+        // If owner is AI (1), auto-resolve choose a dragon randomly without opening the UI
         if(owner == 1){
             const Deck &d = g.getDeckOf(owner);
             auto candidates = d.collectWhere(
@@ -166,14 +166,14 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
                 if(ctx.pushBattleFeedbackMsg) ctx.pushBattleFeedbackMsg("Nessun Drago nel Deck");
                 return;
             }
-            // scegli un indice candidato casuale
+            // choose random candidate index
             std::uniform_int_distribution<int> dist(0, static_cast<int>(candidates.size())-1);
             int chosen = dist(_apphandlers_rand);
             (void)g.resolvePendingSendFromDeck(static_cast<size_t>(chosen));
             return;
         }
 
-        // Altrimenti (owner umano) apri il pannello UI come prima
+        // Otherwise (owner is human) open the UI panel as before
         if(ctx.setDeckSendChoiceActive) ctx.setDeckSendChoiceActive(true);
         if(ctx.setDeckSendChoiceActive){
             const Deck &d = g.getDeckOf(owner);
@@ -288,7 +288,7 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
         if(ctx.closeResponsePrompt) ctx.closeResponsePrompt();
         auto ownerOpt = g.getPendingBlueEyesSSOwner();
         int owner = ownerOpt.has_value() ? *ownerOpt : g.getTurn().getCurrentPlayerIndex();
-    // L'AI sceglie casualmente tra i disponibili su mano, deck e cimitero
+        // AI picks randomly from available across hand, deck, gy
         auto isBlueEyesOrSpirit = [](const Card& c){
             if(c.getType() != Type::Monster) return false;
             const std::string &n = c.getName();
@@ -363,7 +363,7 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
         int opp = 1 - owner;
         // AI (owner==1): scegli un indice valido a caso tra ST opp + eventuale Field
         if(owner == 1){
-            size_t stCount = g.getOpponentSpellTrapZone().size(); // avversario relativo al TURNO CORRENTE, ma l'owner potrebbe non essere quello corrente. Ricostruisci assoluto.
+            size_t stCount = g.getOpponentSpellTrapZone().size(); // opponent relative to CURRENT turn, but owner may not be current. Rebuild absolute.
             // Ricava la lista assoluta manualmente
             const auto &oppSTAbs = (opp == g.getTurn().getCurrentPlayerIndex()) ? g.getMonsterZone() : g.getOpponentMonsterZone();
             (void)oppSTAbs; // not needed

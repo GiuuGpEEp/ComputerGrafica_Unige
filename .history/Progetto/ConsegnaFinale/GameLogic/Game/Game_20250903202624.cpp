@@ -210,7 +210,7 @@ void Game::mirrorExternalDeckRemoveByName(const std::string& name, const Deck* s
     // Se non sono collegati deck esterni, nulla da sincronizzare
     bool any = (externalDecks[0] != nullptr) || (externalDecks[1] != nullptr);
     if(!any) return;
-    // Prova a capire quale deck esterno corrisponde alla sorgente (se fornita)
+    // Try to find which external deck corresponds to the source (if provided)
     if(sourceDeck){
         for(int i=0;i<2;++i){
             if(externalDecks[i] && externalDecks[i] == sourceDeck){
@@ -344,7 +344,7 @@ void Game::startTurn(){
         auto &flags = monsterHasAttacked[turn.getCurrentPlayerIndex()];
         std::fill(flags.begin(), flags.end(), false);
     }
-    // Reset del flag di cambio posizione; azzera "evocato in questo turno" dal turno precedente per i mostri del giocatore CORRENTE
+    // Reset position-changed flag; clear summoned-this-turn from previous turn for CURRENT player's monsters
     {
         int cur = turn.getCurrentPlayerIndex();
         auto &posChanged = monsterPositionChangedThisTurn[cur];
@@ -457,7 +457,7 @@ bool Game::moveCard(CardZone from, CardZone to, size_t indexFrom){
         monsterHasAttacked[cur].push_back(false);
         monsterIsDefense[cur].push_back(false);
         monsterIsFaceDown[cur].push_back(false);
-    // Marca come evocato in questo turno; cambio posizione non ancora usato
+        // Mark as newly summoned this turn; position-change not yet used
         monsterSummonedThisTurn[cur].push_back(true);
         monsterPositionChangedThisTurn[cur].push_back(false);
     // Placeholder slot index, verra' impostato dal chiamante se necessario
@@ -1024,7 +1024,7 @@ bool Game::completePendingNormalSummon(const std::vector<size_t>& tributeIndices
         const auto &just = monsterZones[cur].back();
         lastSummonedMonster = LastSummonedMonster{ just.getName(), cur };
     }
-    // Marca i flag di evocazione/cambio posizione per il mostro appena posizionato
+    // Mark summoned/position-changed flags for the newly placed monster
     if(!monsterSummonedThisTurn[cur].empty()) monsterSummonedThisTurn[cur].back() = true;
     if(!monsterPositionChangedThisTurn[cur].empty()) monsterPositionChangedThisTurn[cur].back() = false;
     // Assegna uno slot valido:
@@ -1306,14 +1306,14 @@ bool Game::playerRespondWithActivation(int playerIdx, const std::string& cardNam
 
 void Game::playerPassOnChain(int playerIdx){
     if(!chainActive) return;
-    // Se entrambi i giocatori hanno passato (ossia lastResponder != playerIdx e lastResponder != -1), risolvi la chain
+    // If both players passed (i.e., lastResponder != playerIdx and lastResponder != -1), resolve chain
     if(lastResponder != -1 && lastResponder != playerIdx){
-    // entrambi hanno passato consecutivamente -> risolvi l'intera chain LIFO
+        // both players passed consecutively -> resolve entire chain LIFO
         effects.resolveAllActivations(*this);
         chainActive = false;
         lastResponder = -1;
     } else {
-    // segna che questo giocatore ha passato impostando lastResponder a playerIdx se nessuno ha ancora risposto
+        // mark that this player passed by setting lastResponder to playerIdx if no one has responded yet
         if(lastResponder == -1) lastResponder = playerIdx;
     }
 }

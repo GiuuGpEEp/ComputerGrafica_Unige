@@ -53,5 +53,5 @@ class DrawAnimation{
         bool finished = false; 
         bool constructedSkipCenterReveal = false;
     public:
-    bool isSkipCenterReveal() const { return constructedSkipCenterReveal; }
+        bool isSkipCenterReveal() const { return constructedSkipCenterReveal; }
 };

@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <fstream>
 
-// Controller dell'AI
+// Controller AI
 #include "GameLogic/AI/AIController.h"
 
 #include "InputController/InputController.h"

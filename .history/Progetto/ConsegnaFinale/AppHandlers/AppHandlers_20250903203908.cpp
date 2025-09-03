@@ -92,7 +92,7 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
         };
     bool useLevel1Dragon = false;
         {
-            // Controlla la presenza del Saggio sul terreno per l'owner
+            // Check presence of Sage on field for owner
             const auto &mz = (owner==g.getTurn().getCurrentPlayerIndex()) ? g.getMonsterZone() : g.getOpponentMonsterZone();
             useLevel1Dragon = std::any_of(mz.begin(), mz.end(), [](const Card& c){
                 const std::string &name = c.getName();
@@ -100,7 +100,7 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
             });
             if(g.getMelodiaAddsRemaining() > 0) useLevel1Dragon = false; // Melodia has priority when active
         }
-    // AI: scelta automatica
+        // AI auto-pick
         if(owner == 1){
             const Deck &d = g.getDeckOf(owner);
             auto candidates = d.collectWhere(useLevel1Dragon ? level1DragonFilter : melodiaFilter);
@@ -288,7 +288,7 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
         if(ctx.closeResponsePrompt) ctx.closeResponsePrompt();
         auto ownerOpt = g.getPendingBlueEyesSSOwner();
         int owner = ownerOpt.has_value() ? *ownerOpt : g.getTurn().getCurrentPlayerIndex();
-    // L'AI sceglie casualmente tra i disponibili su mano, deck e cimitero
+        // AI picks randomly from available across hand, deck, gy
         auto isBlueEyesOrSpirit = [](const Card& c){
             if(c.getType() != Type::Monster) return false;
             const std::string &n = c.getName();
@@ -363,7 +363,7 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
         int opp = 1 - owner;
         // AI (owner==1): scegli un indice valido a caso tra ST opp + eventuale Field
         if(owner == 1){
-            size_t stCount = g.getOpponentSpellTrapZone().size(); // avversario relativo al TURNO CORRENTE, ma l'owner potrebbe non essere quello corrente. Ricostruisci assoluto.
+            size_t stCount = g.getOpponentSpellTrapZone().size(); // opponent relative to CURRENT turn, but owner may not be current. Rebuild absolute.
             // Ricava la lista assoluta manualmente
             const auto &oppSTAbs = (opp == g.getTurn().getCurrentPlayerIndex()) ? g.getMonsterZone() : g.getOpponentMonsterZone();
             (void)oppSTAbs; // not needed

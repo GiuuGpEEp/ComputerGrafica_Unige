@@ -286,6 +286,8 @@ add_executable(mainTappa15
     Progetto/Tappa_15/GameLogic/Game/Effects/cards/BluEyes/WhiteStoneAncients/WhiteStoneAncientsEffect.cpp
     Progetto/Tappa_15/GameLogic/Game/Effects/cards/BluEyes/ReliquarioDelDrago/ReliquarioDelDragoEffect.cpp
     Progetto/Tappa_15/GameLogic/Game/Effects/cards/BluEyes/PiantoDiArgento/PiantoDiArgentoEffect.cpp
+    Progetto/Tappa_15/GameLogic/Game/Effects/cards/BluEyes/LaMelodiaDelDragoCheSiRisveglia/LaMelodiaDelDragoCheSiRisvegliaEffect.cpp
+    Progetto/Tappa_15/GameLogic/Game/Effects/cards/BluEyes/RichiamoDelPosseduto/RichiamoDelPossedutoEffect.cpp
     Progetto/Tappa_15/GraveyardOverlay/GraveyardOverlay.cpp
     Progetto/Tappa_15/AppHandlers/AppHandlers.cpp
     Progetto/Tappa_15/GameWiring/GameWiring.cpp)

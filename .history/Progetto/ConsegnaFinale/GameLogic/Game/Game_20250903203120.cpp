@@ -1024,7 +1024,7 @@ bool Game::completePendingNormalSummon(const std::vector<size_t>& tributeIndices
         const auto &just = monsterZones[cur].back();
         lastSummonedMonster = LastSummonedMonster{ just.getName(), cur };
     }
-    // Marca i flag di evocazione/cambio posizione per il mostro appena posizionato
+    // Mark summoned/position-changed flags for the newly placed monster
     if(!monsterSummonedThisTurn[cur].empty()) monsterSummonedThisTurn[cur].back() = true;
     if(!monsterPositionChangedThisTurn[cur].empty()) monsterPositionChangedThisTurn[cur].back() = false;
     // Assegna uno slot valido:

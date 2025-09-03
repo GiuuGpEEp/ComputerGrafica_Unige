@@ -363,7 +363,7 @@ void AppHandlers::attachGameHandlers(Game &g, const Context &ctx){
         int opp = 1 - owner;
         // AI (owner==1): scegli un indice valido a caso tra ST opp + eventuale Field
         if(owner == 1){
-            size_t stCount = g.getOpponentSpellTrapZone().size(); // avversario relativo al TURNO CORRENTE, ma l'owner potrebbe non essere quello corrente. Ricostruisci assoluto.
+            size_t stCount = g.getOpponentSpellTrapZone().size(); // opponent relative to CURRENT turn, but owner may not be current. Rebuild absolute.
             // Ricava la lista assoluta manualmente
             const auto &oppSTAbs = (opp == g.getTurn().getCurrentPlayerIndex()) ? g.getMonsterZone() : g.getOpponentMonsterZone();
             (void)oppSTAbs; // not needed
